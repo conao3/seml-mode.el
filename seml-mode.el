@@ -73,6 +73,19 @@
         (method        1))
     (lisp-indent-specform method state indent-point normal-indent)))
 
+(defalias 'seml-encode-html-region 'libxml-parse-html-region)
+
+(defun seml-encode-html (str)
+  "encode HTML to SEML from STR."
+  (with-temp-buffer
+    (insert str)
+    (seml-encode-html-region (point-min) (point-max))))
+
+(defun seml-encode-html-from-buffer (&optional buf)
+  (seml-encode-html-from-buffer
+   (if buf (with-current-buffer buf (buffer-string))
+     (buffer-string))))
+
 (defun seml-decode-html (dom &optional doctype)
   "decode SEML[str|sexp] to html"
   (let ((dom* (if (stringp dom) (read dom) dom)))
@@ -98,19 +111,6 @@
                                (format "</%s>" tagname))))
                  dom)))
        (funcall decode-fn dom*)))))
-
-(defalias 'seml-encode-html-region 'libxml-parse-html-region)
-
-(defun seml-encode-html (str)
-  "encode HTML to SEML from STR."
-  (with-temp-buffer
-    (insert str)
-    (seml-encode-html-region (point-min) (point-max))))
-
-(defun seml-encode-html-from-buffer (&optional buf)
-  (seml-encode-html-from-buffer
-   (if buf (with-current-buffer buf (buffer-string))
-     (buffer-string))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;
