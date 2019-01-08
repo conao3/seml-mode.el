@@ -59,6 +59,9 @@
 (defconst seml-mode-font-lock-keywords
   `(,seml-mode-keywords-regexp))
 
+(defconst seml-html-single-tags
+  '(base link meta img br area param hr col option input wbr))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;
 ;;  functions
@@ -89,6 +92,31 @@
 	(setq method 1)
 	(lisp-indent-specform method state
 			      indent-point normal-indent)))))
+
+(defun seml-decode-html (domsexp &optional doctype)
+  "decode seml to html"
+  (concat
+   (if doctype doctype "")
+   (let* ((prop--fn) (decode-fn))
+     (setq prop--fn
+           (lambda (x)
+             (format " %s=\"%s\"" (car x) (cdr x))))
+     (setq decode-fn
+           (lambda (dom)
+             (if (listp dom)
+                 (let* ((tag  (pop dom))
+                        (prop (pop dom))
+                        (rest dom)
+                        (tagname (symbol-name tag)))
+                   (if (memq tag seml-html-single-tags)
+                       (format "%s\n"
+                               (format "<%s%s>" tagname (mapconcat prop--fn prop "")))
+                     (format "\n%s%s%s\n"
+                             (format "<%s%s>" tagname (mapconcat prop--fn prop ""))
+                             (mapconcat decode-fn rest "")
+                             (format "</%s>" tagname))))
+               dom)))
+     (funcall decode-fn domsexp))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;
