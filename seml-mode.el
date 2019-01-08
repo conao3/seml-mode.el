@@ -48,6 +48,15 @@
     map)
   "Keymap for SEML mode.")
 
-
+(define-derived-mode seml-mode prog-mode "SEML"
+  "Major mode for editing SEML (S-Expression Markup Language) file."
+  :group 'seml
+  (unless noninteractive
+    (require 'elec-pair)
+    (defvar electric-pair-text-pairs)
+    (setq-local electric-pair-text-pairs
+                (append '((?\` . ?\') (?‘ . ?’)) electric-pair-text-pairs))
+    (setq-local electric-quote-string t)))
+  
 (provide 'seml-mode)
 ;;; seml-mode.el ends here
