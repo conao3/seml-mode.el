@@ -73,6 +73,11 @@
         (method        1))
     (lisp-indent-specform method state indent-point normal-indent)))
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;
+;;  Encode
+;;
+
 (defalias 'seml-encode-html-region 'libxml-parse-html-region)
 
 (defun seml-encode-html (str)
@@ -85,6 +90,11 @@
   (seml-encode-html-from-buffer
    (if buf (with-current-buffer buf (buffer-string))
      (buffer-string))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;
+;;  Decode
+;;
 
 (defun seml-decode-html (dom &optional doctype)
   "decode SEML[str|sexp] to html"
