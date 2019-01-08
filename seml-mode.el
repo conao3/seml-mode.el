@@ -100,6 +100,17 @@
 
 (defalias 'seml-encode-html-region 'libxml-parse-html-region)
 
+(defun seml-encode-html-from-string (str)
+  "encode HTML to SEML from STR."
+  (with-temp-buffer
+    (insert str)
+    (seml-encode-html-region (point-min) (point-max))))
+
+(defun seml-encode-html-from-buffer (&optional buf)
+  (seml-encode-html-from-buffer
+   (if buf (with-current-buffer buf (buffer-string))
+     (buffer-string))))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;
 ;;  Main
