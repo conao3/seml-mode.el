@@ -43,6 +43,11 @@
     map)
   "Keymap for SEML mode.")
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;
+;;  Const
+;;
+
 (defconst seml-mode-syntax-table lisp-mode-syntax-table
   "seml-mode-symtax-table")
 
@@ -53,6 +58,11 @@
 
 (defconst seml-mode-font-lock-keywords
   `(,seml-mode-keywords-regexp))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;
+;;  functions
+;;
 
 (defun seml-indent-function (indent-point state)
   "seml indent calc function"
@@ -79,6 +89,11 @@
 	(setq method 1)
 	(lisp-indent-specform method state
 			      indent-point normal-indent)))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;
+;;  Main
+;;
 
 (define-derived-mode seml-mode lisp-mode "SEML"
   "Major mode for editing SEML (S-Expression Markup Language) file."
