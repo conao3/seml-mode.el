@@ -73,34 +73,35 @@
         (method        1))
     (lisp-indent-specform method state indent-point normal-indent)))
 
-(defun seml-decode-html (domsexp &optional doctype)
-  "decode seml to html"
-  (concat
-   (if doctype doctype "")
-   (let* ((prop--fn) (decode-fn))
-     (setq prop--fn
-           (lambda (x)
-             (format " %s=\"%s\"" (car x) (cdr x))))
-     (setq decode-fn
-           (lambda (dom)
-             (if (listp dom)
-                 (let* ((tag  (pop dom))
-                        (prop (pop dom))
-                        (rest dom)
-                        (tagname (symbol-name tag)))
-                   (if (memq tag seml-html-single-tags)
-                       (format "%s\n"
-                               (format "<%s%s>" tagname (mapconcat prop--fn prop "")))
-                     (format "\n%s%s%s\n"
-                             (format "<%s%s>" tagname (mapconcat prop--fn prop ""))
-                             (mapconcat decode-fn rest "")
-                             (format "</%s>" tagname))))
-               dom)))
-     (funcall decode-fn domsexp))))
+(defun seml-decode-html (dom &optional doctype)
+  "decode SEML[str|sexp] to html"
+  (let ((dom* (if (stringp dom) (read dom) dom)))
+    (concat
+     (if doctype doctype "")
+     (let* ((prop--fn) (decode-fn))
+       (setq prop--fn
+             (lambda (x)
+               (format " %s=\"%s\"" (car x) (cdr x))))
+       (setq decode-fn
+             (lambda (dom)
+               (if (listp dom)
+                   (let* ((tag  (pop dom))
+                          (prop (pop dom))
+                          (rest dom)
+                          (tagname (symbol-name tag)))
+                     (if (memq tag seml-html-single-tags)
+                         (format "%s\n"
+                                 (format "<%s%s>" tagname (mapconcat prop--fn prop "")))
+                       (format "\n%s%s%s\n"
+                               (format "<%s%s>" tagname (mapconcat prop--fn prop ""))
+                               (mapconcat decode-fn rest "")
+                               (format "</%s>" tagname))))
+                 dom)))
+       (funcall decode-fn dom*)))))
 
 (defalias 'seml-encode-html-region 'libxml-parse-html-region)
 
-(defun seml-encode-html-from-string (str)
+(defun seml-encode-html (str)
   "encode HTML to SEML from STR."
   (with-temp-buffer
     (insert str)
