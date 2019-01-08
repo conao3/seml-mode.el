@@ -1,0 +1,12 @@
+#+author: conao
+#+date: <2018-10-25 Thu>
+
+* seml-mode.el
+[[https://github.com/conao3/seml-mode.el][https://img.shields.io/github/tag/conao3/seml-mode.el.svg?style=flat-square]]
+[[https://travis-ci.org/conao3/seml-mode.el][https://img.shields.io/travis/conao3/seml-mode.el/master.svg?style=flat-square]]
+[[https://github.com/conao3/seml-mode.el][https://img.shields.io/github/license/conao3/seml-mode.el.svg?style=flat-square]]
+
+- [[#what-is-it][What is it?]]
+
+* What is it?
+~seml-mode.el~ is major mode for seml (S-Expression Markup Language) file.
