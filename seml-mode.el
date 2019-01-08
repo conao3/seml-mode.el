@@ -122,6 +122,12 @@
                  dom)))
        (funcall decode-fn dom*)))))
 
+(defun seml-decode-html-from-buffer (&optional buf)
+  "decode from buffer."
+  (seml-decode-html
+   (if buf (with-current-buffer buf (buffer-string))
+     (buffer-string))))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;
 ;;  Main
