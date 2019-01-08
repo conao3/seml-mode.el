@@ -33,9 +33,14 @@
   :group 'lisp
   :prefix "seml-")
 
-(defcustom seml-indent-basic 2
+(defcustom seml-mode-hook nil
+  "Hook run when entering seml mode."
+  :type 'hook
+  :group 'seml)
+
+(defcustom seml-indent-offset 2
   "Offset for SEML indentation."
-  :type 'int
+  :type 'integer
   :group 'seml)
 
 (defvar seml-map
