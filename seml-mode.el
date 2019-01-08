@@ -48,6 +48,17 @@
     map)
   "Keymap for SEML mode.")
 
+(defconst seml-mode-syntax-table emacs-lisp-mode-syntax-table
+  "seml-mode-symtax-table")
+
+(defconst seml-mode-keywords-regexp
+  (regexp-opt '("html" "head" "body"
+                "section" "nav" "article" "header" "footer"
+                "div" "form" "input")))
+
+(defconst seml-mode-font-lock-keywords
+  `(,seml-mode-keywords-regexp))
+
 (define-derived-mode seml-mode prog-mode "SEML"
   "Major mode for editing SEML (S-Expression Markup Language) file."
   :group 'seml
