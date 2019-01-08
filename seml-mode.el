@@ -48,29 +48,51 @@
     map)
   "Keymap for SEML mode.")
 
-(defconst seml-mode-syntax-table emacs-lisp-mode-syntax-table
+(defconst seml-mode-syntax-table lisp-mode-syntax-table
   "seml-mode-symtax-table")
 
 (defconst seml-mode-keywords-regexp
-  (regexp-opt '("html" "head" "body"
+  (regexp-opt '("html" "head" "body" "title" "style"
                 "section" "nav" "article" "header" "footer"
                 "div" "form" "input")))
 
 (defconst seml-mode-font-lock-keywords
   `(,seml-mode-keywords-regexp))
 
-(define-derived-mode seml-mode prog-mode "SEML"
+(defun seml-indent-function (indent-point state)
+  "seml indent calc function"
+  (let ((normal-indent (current-column)))
+    (goto-char (1+ (elt state 1)))
+    (parse-partial-sexp (point) calculate-lisp-indent-last-sexp 0 t)
+    (if (and (elt state 2)
+             (not (looking-at "\\sw\\|\\s_")))
+        ;; car of form doesn't seem to be a symbol
+        (progn
+          (if (not (> (save-excursion (forward-line 1) (point))
+                      calculate-lisp-indent-last-sexp))
+	      (progn (goto-char calculate-lisp-indent-last-sexp)
+		     (beginning-of-line)
+		     (parse-partial-sexp (point)
+					 calculate-lisp-indent-last-sexp 0 t)))
+	  ;; Indent under the list or under the first sexp on the same
+	  ;; line as calculate-lisp-indent-last-sexp.  Note that first
+	  ;; thing on that line has to be complete sexp since we are
+          ;; inside the innermost containing sexp.
+          (backward-prefix-chars)
+          (current-column))
+      (let (method)
+	(setq method 1)
+	(lisp-indent-specform method state
+			      indent-point normal-indent)))))
+
+(define-derived-mode seml-mode lisp-mode "SEML"
   "Major mode for editing SEML (S-Expression Markup Language) file."
 
   (set-syntax-table seml-mode-syntax-table)
   (setq-local font-lock-defaults '(seml-mode-font-lock-keywords nil nil))
-
-  (unless noninteractive
-    (require 'elec-pair)
-    (defvar electric-pair-text-pairs)
-    (setq-local electric-pair-text-pairs
-                (append '((?\` . ?\') (?‘ . ?’)) electric-pair-text-pairs))
-    (setq-local electric-quote-string t)))
   
+  (set (make-local-variable 'lisp-indent-function) 'seml-indent-function)
+  ;; (set (make-local-variable 'lisp-indent-offset) sass-indent-offset)
+  )
 (provide 'seml-mode)
 ;;; seml-mode.el ends here
