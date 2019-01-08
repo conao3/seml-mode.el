@@ -38,11 +38,6 @@
   :type 'hook
   :group 'seml)
 
-(defcustom seml-indent-offset 2
-  "Offset for SEML indentation."
-  :type 'integer
-  :group 'seml)
-
 (defvar seml-map
   (let ((map (make-sparse-keymap)))
     map)
@@ -91,8 +86,7 @@
   (set-syntax-table seml-mode-syntax-table)
   (setq-local font-lock-defaults '(seml-mode-font-lock-keywords nil nil))
   
-  (set (make-local-variable 'lisp-indent-function) 'seml-indent-function)
-  ;; (set (make-local-variable 'lisp-indent-offset) sass-indent-offset)
-  )
+  (set (make-local-variable 'lisp-indent-function) 'seml-indent-function))
+
 (provide 'seml-mode)
 ;;; seml-mode.el ends here
