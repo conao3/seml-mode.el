@@ -98,6 +98,8 @@
                dom)))
      (funcall decode-fn domsexp))))
 
+(defalias 'seml-encode-html-region 'libxml-parse-html-region)
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;
 ;;  Main
