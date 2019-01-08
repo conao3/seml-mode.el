@@ -128,6 +128,28 @@
    (if buf (with-current-buffer buf (buffer-string))
      (buffer-string))))
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;
+;;  Replace
+;;
+
+(defun seml-replace-buffer-from-html ()
+  "buffer contents"
+  (interactive)
+  (let ((str (buffer-substring-no-properties (point-min) (point-max))))
+    (erase-buffer)
+    (insert (pp-to-string (seml-encode-html str)))
+    (seml-mode)
+    (indent-region (point-min) (point-max))))
+
+(defun seml-replace-buffer-from-seml ()
+  "buffer contents"
+  (interactive)
+  (let ((str (buffer-string)))
+    (erase-buffer)
+    (insert
+     (seml-decode-html (read str) "<!DOCTYPE html>"))))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;
 ;;  Main
