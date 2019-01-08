@@ -61,7 +61,10 @@
 
 (define-derived-mode seml-mode prog-mode "SEML"
   "Major mode for editing SEML (S-Expression Markup Language) file."
-  :group 'seml
+
+  (set-syntax-table seml-mode-syntax-table)
+  (setq-local font-lock-defaults '(seml-mode-font-lock-keywords nil nil))
+
   (unless noninteractive
     (require 'elec-pair)
     (defvar electric-pair-text-pairs)
