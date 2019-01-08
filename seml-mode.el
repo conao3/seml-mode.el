@@ -1,4 +1,4 @@
-;;; seml-mode.el --- major-mode for seml file        -*- lexical-binding: t; -*-
+;;; seml-mode.el --- major-mode for SEML file        -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2019  Naoya Yamashita
 
@@ -28,6 +28,20 @@
 
 ;;; Code:
 
+(defgroup seml nil
+  "Major mode for editing SEML (S-Expression Markup Language) file."
+  :group 'lisp
+  :prefix "seml-")
+
+(defcustom seml-indent-basic 2
+  "Offset for SEML indentation."
+  :type 'int
+  :group 'seml)
+
+(defvar seml-map
+  (let ((map (make-sparse-keymap)))
+    map)
+  "Keymap for SEML mode.")
 
 
 (provide 'seml-mode)
