@@ -78,6 +78,8 @@
 ;;  Encode
 ;;
 
+;; TODO: comment feature
+
 (defalias 'seml-encode-html-region 'libxml-parse-html-region)
 
 (defun seml-encode-html (str)
