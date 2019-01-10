@@ -165,5 +165,8 @@
   
   (set (make-local-variable 'lisp-indent-function) 'seml-indent-function))
 
+(add-to-list 'auto-mode-alist '("\\.seml\\'" . seml-mode))
+(add-to-list 'interpreter-mode-alist '("seml" . seml-mode))
+
 (provide 'seml-mode)
 ;;; seml-mode.el ends here
