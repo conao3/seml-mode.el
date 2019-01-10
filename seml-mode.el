@@ -51,13 +51,26 @@
 (defconst seml-mode-syntax-table lisp-mode-syntax-table
   "seml-mode-symtax-table")
 
-(defconst seml-mode-keywords-regexp
-  (regexp-opt '("html" "head" "body" "title" "style"
-                "section" "nav" "article" "header" "footer"
-                "div" "form" "input")))
+(defconst seml-mode-keywords
+  '(html
+    head title base link meta style
+    script noscript
+    body section nav article aside hgroup header footer address
+    h1 h2 h3 h4 h5 h6
+    p hr pre backquote ol ul li
+    dl dt dd figure figcaption div main
+    a em strong small s cite q dfn addr time code var
+    samp kbd sub sup i b mark ruby rt rpbdo span br wbr
+    ins del
+    img iframe embed object param
+    video audio source canvas map area
+    table caption colgroup col tbody thead tfoot tr td th
+    form fieldset legend label input button select
+    datalist optgroup option textarea keygen output progress meter
+    details summary command menu))
 
-(defconst seml-mode-font-lock-keywords
-  `(,seml-mode-keywords-regexp))
+(defconst seml-mode-keywords-regexp
+  (eval `(rx (or ,@(mapcar 'symbol-name seml-mode-keywords)))))
 
 (defconst seml-html-single-tags
   '(base link meta img br area param hr col option input wbr))
@@ -69,9 +82,44 @@
 
 (defun seml-indent-function (indent-point state)
   "seml indent calc function"
-  (let ((normal-indent (current-column))
-        (method        1))
-    (lisp-indent-specform method state indent-point normal-indent)))
+  (let ((normal-indent (current-column)))
+    (goto-char (1+ (elt state 1)))
+    (parse-partial-sexp (point) calculate-lisp-indent-last-sexp 0 t)
+    (if (and (elt state 2)
+             (not (looking-at "\\sw\\|\\s_")))
+        ;; car of form doesn't seem to be a symbol
+        (progn
+          (if (not (> (save-excursion (forward-line 1) (point))
+                      calculate-lisp-indent-last-sexp))
+		(progn (goto-char calculate-lisp-indent-last-sexp)
+		       (beginning-of-line)
+		       (parse-partial-sexp (point)
+					   calculate-lisp-indent-last-sexp 0 t)))
+	    ;; Indent under the list or under the first sexp on the same
+	    ;; line as calculate-lisp-indent-last-sexp.  Note that first
+	    ;; thing on that line has to be complete sexp since we are
+          ;; inside the innermost containing sexp.
+          (backward-prefix-chars)
+          (current-column))
+      (let ((function (buffer-substring (point)
+					(progn (forward-sexp 1) (point))))
+	    method)
+	(setq method (or (function-get (intern-soft function)
+                                       'lisp-indent-function)
+			 (get (intern-soft function) 'lisp-indent-hook)))
+	(cond ((or (eq method 'defun)
+		   (and (null method)
+			(> (length function) 3)
+			(string-match "\\`def" function)))
+	       (lisp-indent-defform state indent-point))
+              ((memq (intern-soft function) seml-mode-keywords)
+               (lisp-indent-specform 1 state
+				     indent-point normal-indent))
+	      ((integerp method)
+	       (lisp-indent-specform method state
+				     indent-point normal-indent))
+	      (method
+		(funcall method indent-point state)))))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;
@@ -157,16 +205,43 @@
 ;;  Main
 ;;
 
-(define-derived-mode seml-mode lisp-mode "SEML"
+(define-derived-mode seml-mode emacs-lisp-mode "SEML"
   "Major mode for editing SEML (S-Expression Markup Language) file."
 
   (set-syntax-table seml-mode-syntax-table)
-  (setq-local font-lock-defaults '(seml-mode-font-lock-keywords nil nil))
   
   (set (make-local-variable 'lisp-indent-function) 'seml-indent-function))
 
 (add-to-list 'auto-mode-alist '("\\.seml\\'" . seml-mode))
 (add-to-list 'interpreter-mode-alist '("seml" . seml-mode))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;
+;;  font-lock
+;;
+
+;; (defvar seml-font-lock-keywords
+;;   `(,(eval `(rx "(" (group (regexp ,seml-mode-keywords-regexp)) (* not-wordchar)
+;;                 (or
+;;                  (group "nil")
+;;                  ;; (group "(" (+
+;;                  ;;             (group (* not-wordchar)
+;;                  ;;                    "(" (group (+? any)) "." (+? any) ")"
+;;                  ;;                    (* not-wordchar)))
+;;                  ;;        ")")
+;;                  )))
+;;     (1 font-lock-keyword-face)
+;;     (2 font-lock-constant-face)
+;;     ;; (5 font-lock-constant-face t)
+;;     ))
+;;
+;; (font-lock-add-keywords 'seml-mode seml-font-lock-keywords)
+(font-lock-add-keywords 'seml-mode
+                        `((,(eval
+                            `(rx "(" (group
+                                      (regexp ,seml-mode-keywords-regexp)
+                                      not-wordchar)))
+                           (1 font-lock-keyword-face nil nil))))
 
 (provide 'seml-mode)
 ;;; seml-mode.el ends here
