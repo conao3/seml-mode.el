@@ -216,13 +216,12 @@
   (interactive)
 
   (if seml-live-refresh-timer
-      (progn
-        (setq seml-live-refresh-baffer (buffer-name))
-        (setq seml-live-refresh-timer
-              (run-with-idle-timer 0.3 t 'seml-live-refresh-func))
-        (message "Live refresh enabled (Taget buffer: %s)"
-                 seml-live-refresh-baffer))
-    (message "Already live refresh enabled (Taget buffer: %s)"
+      (message "Already live refresh enabled (Taget buffer: %s)"
+               seml-live-refresh-baffer)
+    (setq seml-live-refresh-baffer (buffer-name))
+    (setq seml-live-refresh-timer
+          (run-with-idle-timer 0.3 t 'seml-live-refresh-func))
+    (message "Live refresh enabled (Taget buffer: %s)"
              seml-live-refresh-baffer))
 
   (defservlet* seml-mode/debug/:_arg1/:_arg2/:_arg3 "text/html" (_query)
