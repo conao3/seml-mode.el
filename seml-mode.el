@@ -268,7 +268,7 @@
           (cond ((equal sexp seml-live-refresh-prev-sexp-history)
                  (funcall fn (format "%s, Nothing to change, Abort\n"
                                      seml-live-refresh-baffer)))
-                ((string-match "localhost.*leaf-browser/debug" url)
+                ((string-match "localhost.*seml-mode/debug" url)
                  (setq seml-live-refresh-prev-sexp-history
                        (eval (read
                               (with-current-buffer seml-live-refresh-baffer
