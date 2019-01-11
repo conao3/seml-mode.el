@@ -6,7 +6,107 @@
 [[https://github.com/conao3/seml-mode.el][https://img.shields.io/github/license/conao3/seml-mode.el.svg?style=flat-square]]
 [[https://github.com/conao3/github-header][https://files.conao3.com/github-header/gif/seml-mode.el.gif]]
 
-- [[#what-is-it][What is it?]]
+# - [[#what-is-it][What is it?]]
 
 * What is it?
-~seml-mode.el~ is major mode for seml (S-Expression Markup Language) file.
+Below 2 files represent the same structure.
+With compare 2 files, SEML is short and easy to understand for Lisp hacker.
+
+#+begin_src html
+  <!DOCTYPE html>
+  <html lang="en">
+    <head>
+      <meta charset="utf-8"/>
+      <title>sample page</title>
+      <link rel="stylesheet" href="sample1.css"/>
+    </head>
+    <body>
+      <h1>sample</h1>
+      <p>
+        text sample
+      </p>
+    </body>
+  </html>
+#+end_src
+
+#+begin_src seml
+  (html ((lang . "en"))
+    (head nil
+      (meta ((charset . "utf-8")))
+      (title nil "sample page")
+      (link ((rel . "stylesheet") (href . "sample1.css"))))
+    (body nil
+      (h1 nil "sample")
+      (p nil "text sample")))
+#+end_src
+
+#+name: simple-SS
+#+caption: simple-seml
+[[https://files.conao3.com/github-header/project/seml-mode.el/simple-seml.png]]
+
+Since SEML can use Elisp freely in SEML file, I think that it has the same power as PHP.
+
+~seml-mode.el~ provides major mode for editing SEML (S-Expression Markup Language) files for you.
+
+* Settings
+Put this package in your ~load-path~, require it.
+#+begin_src emacs-lisp
+  (add-to-list 'load-path
+               (locate-user-emacs-file (format "site-lisp/seml-mode.el" )))
+  (require 'seml-mote)
+#+end_src
+
+* Live-refresh
+(As Depends on AppleScript, it works on macOS with Google Chrome only)
+
+~seml-mode.el~ provides the function of live refresh like other modorn editors.
+
+If ~seml-mode.el~ read buffer string and eval temporally no error,
+send refresh message to Google Chrome.
+
+Sample settings with [[https://github.com/conao3/leaf.el][leaf.el]].
+#+begin_src emacs-lisp
+  (leaf real-auto-save
+    :ensure t
+    :custom ((real-auto-save-interval . 0.3))
+    :hook (find-file-hook . real-auto-save-mode))
+
+  (leaf seml-mode
+    :config (require 'seml-mode)
+    :custom ((seml-live-refresh-interval . 0.35)))
+#+end_src
+
+Then, with activating target SEML buffer, ~M-x seml-live-refresh-start~ to register
+servelet buffer (see [[https://github.com/skeeto/emacs-web-server][simple-httpd]]) and set timer function.
+
+If you stop monitor SEML buffer, ~M-x seml-live-refresh-stop~.
+
+~seml-mode.el~ send refresh message to Google Chrome...
+1. When no error read and eval register buffer string,
+2. When the evaled sexp differs from last time.
+3. When Open ~seml-mode.el~ live-refresh page (http://localhost:8080/seml-mode/live-refresh),
+
+#+name: complex-SS
+#+caption: complex-seml project with live-refresh
+[[https://files.conao3.com/github-header/project/seml-mode.el/complex-seml.png]]
+
+* Projects
+Packages build on seml-mode.
+- [[https://github.com/conao3/leaf-browser.el][leaf-browser.el]] - Web browser frontend of Emacs customize-mode for [[https://github.com/conao3/leaf.el][leaf.el]].
+
+* Welcome PR
+We welcome PR!
+Travis Cl test ~leaf-test.el~ with all Emacs version 24 or above.
+
+We think that it is difficult to prepare the environment locally, 
+so we think that it is good to throw PR and test Travis for the time being!
+Feel free throw PR!
+
+* Special Thanks
+Advice and comments given by [[http://emacs-jp.github.io/][Emacs-JP]]'s forum member has been a great help
+in developing ~leaf.el~.
+
+Thank you very much!!
+
+* Author
+- Naoya Yamashita (conao3)
