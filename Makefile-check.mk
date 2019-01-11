@@ -1,4 +1,4 @@
-%.elc: %.el
+%.elc: %.el $(DEPEND)
 	$(EMACS) -Q --batch -L `pwd` -f batch-byte-compile $<
 
 check: $(ELS:.el=.elc)

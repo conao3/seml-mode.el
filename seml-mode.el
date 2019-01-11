@@ -7,7 +7,7 @@
 ;; Keywords: lisp
 ;; Version: 0.0.1
 ;; URL: https://github.com/conao3/seml-mode
-;; Package-Requires: ((emacs "22.0"))
+;; Package-Requires: ((emacs "24.5"))
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -27,6 +27,8 @@
 ;;
 
 ;;; Code:
+
+(require 'simple-httpd)
 
 (defgroup seml nil
   "Major mode for editing SEML (S-Expression Markup Language) file."
@@ -199,6 +201,93 @@
     (erase-buffer)
     (insert
      (seml-decode-html (read str) "<!DOCTYPE html>"))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;
+;;  Live refresh (Google chrome on macOS only)
+;;
+
+(defvar seml-live-refresh-timer nil)
+(defvar seml-live-refresh-baffer "")
+(defvar seml-live-refresh-prev-sexp-history nil)
+
+(defun seml-live-refresh-start ()
+  "live refresh from buffer-string (without saving)"
+  (interactive)
+
+  (if seml-live-refresh-timer
+      (progn
+        (setq seml-live-refresh-baffer (buffer-name))
+        (setq seml-live-refresh-timer
+              (run-with-idle-timer 0.3 t 'seml-live-refresh-func))
+        (message "Live refresh enabled (Taget buffer: %s)"
+                 seml-live-refresh-baffer))
+    (message "Already live refresh enabled (Taget buffer: %s)"
+             seml-live-refresh-baffer))
+
+  (defservlet* seml-mode/debug/:_arg1/:_arg2/:_arg3 "text/html" (_query)
+    (insert (seml-decode-html
+             (with-current-buffer seml-live-refresh-baffer
+               (eval
+                (read
+                 (buffer-substring-no-properties (point-min) (point-max)))))
+             "<!DOCTYPE html>"))))
+
+(defun seml-live-refresh-stop ()
+  "live refresh from buffer-string (without saving)"
+  (interactive)
+  (when seml-live-refresh-timer
+    (setq seml-live-refresh-baffer "")
+    (cancel-timer seml-live-refresh-timer)
+    (setq seml-live-refresh-timer nil)))
+
+(defun seml-live-refresh-func ()
+  "live refresh from buffer-string (without saving)"
+  (let ((fn (lambda (x)
+              (save-excursion
+                (with-current-buffer (get-buffer-create "*seml-live-refresh*")
+                  (goto-char (point-max))
+                  (when (< 10 (line-number-at-pos))
+                    (erase-buffer))
+                  (insert x)))))
+        (url) (sexp))
+    (condition-case err
+        (progn
+          (setq sexp (eval
+                      (read
+                       (with-current-buffer seml-live-refresh-baffer
+                         (buffer-substring-no-properties (point-min) (point-max))))))
+          (setq url (replace-regexp-in-string
+                     "\n" ""
+                     (shell-command-to-string
+                      (mapconcat 'identity
+                                 '("osascript -e"
+                                   "'tell application \"/Applications/Google Chrome.app\""
+                                   "to URL of active tab of window 1'") " "))))
+
+          (cond ((equal sexp seml-live-refresh-prev-sexp-history)
+                 (funcall fn (format "%s, Nothing to change, Abort\n"
+                                     seml-live-refresh-baffer)))
+                ((string-match "localhost.*leaf-browser/debug" url)
+                 (setq seml-live-refresh-prev-sexp-history
+                       (eval (read
+                              (with-current-buffer seml-live-refresh-baffer
+                                (buffer-substring-no-properties (point-min) (point-max))))))
+
+                 (shell-command-to-string
+                  (mapconcat 'identity
+                             '("osascript -e"
+                               "'tell application \"/Applications/Google Chrome.app\""
+                               "to reload active tab of window 1'") " "))
+
+                 (setq seml-live-refresh-prev-sexp-history sexp)
+                 (funcall fn (format "%s, Success.\n"
+                                     seml-live-refresh-baffer)))
+                (t (funcall fn (format "%s, URL is %s, Abort.\n"
+                                       seml-live-refresh-baffer url)))))
+      
+      (error (funcall fn (format "%s, Cannot eval, Abort. (Err msg: %s)\n"
+                                 seml-live-refresh-baffer err))))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;
