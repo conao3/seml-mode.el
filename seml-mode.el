@@ -242,7 +242,8 @@ NOTE: If you have auto-save settings, set this variable loger than it."
              seml-live-refresh-baffer))
 
   (eval `(defservlet*
-           ,(intern-soft (format "seml-mode/debug/%s" seml-live-refresh-url-variable))
+           ,(intern-soft (format "seml-mode/live-refresh/%s"
+                                 seml-live-refresh-url-variable))
            "text/html"
            (,(intern-soft seml-live-refresh-url-quety))
            (insert (seml-decode-html
@@ -287,7 +288,7 @@ NOTE: If you have auto-save settings, set this variable loger than it."
           (cond ((equal sexp seml-live-refresh-prev-sexp-history)
                  (funcall fn (format "%s, Nothing to change, Abort\n"
                                      seml-live-refresh-baffer)))
-                ((string-match "localhost.*seml-mode/debug" url)
+                ((string-match "localhost.*seml-mode/live-refresh" url)
                  (setq seml-live-refresh-prev-sexp-history
                        (eval (read
                               (with-current-buffer seml-live-refresh-baffer
