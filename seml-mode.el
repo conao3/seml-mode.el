@@ -47,7 +47,19 @@
 
 (defcustom seml-live-refresh-interval 1.1
   "Live-refresh interval.
-NOTE: If you have auto-save settings, set this variable loger than it.")
+NOTE: If you have auto-save settings, set this variable loger than it."
+  :type 'integer
+  :group 'seml)
+
+(defcustom seml-live-refresh-url-variable ":arg1/:arg2/:arg3"
+  "Live-refresh url."
+  :type 'strings
+  :group 'seml)
+
+(defcustom seml-live-refresh-url-quety "query"
+  "Live-refresh url."
+  :type 'string
+  :group 'seml)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;
@@ -229,13 +241,16 @@ NOTE: If you have auto-save settings, set this variable loger than it.")
     (message "Live refresh enabled (Taget buffer: %s)"
              seml-live-refresh-baffer))
 
-  (defservlet* seml-mode/debug/:_arg1/:_arg2/:_arg3 "text/html" (_query)
-    (insert (seml-decode-html
-             (with-current-buffer seml-live-refresh-baffer
-               (eval
-                (read
-                 (buffer-substring-no-properties (point-min) (point-max)))))
-             "<!DOCTYPE html>"))))
+  (eval `(defservlet*
+           ,(intern-soft (format "seml-mode/debug/%s" seml-live-refresh-url-variable))
+           "text/html"
+           (,(intern-soft seml-live-refresh-url-quety))
+           (insert (seml-decode-html
+                    (with-current-buffer seml-live-refresh-baffer
+                      (eval
+                       (read
+                        (buffer-substring-no-properties (point-min) (point-max)))))
+                    "<!DOCTYPE html>")))))
 
 (defun seml-live-refresh-stop ()
   "live refresh from buffer-string (without saving)"
