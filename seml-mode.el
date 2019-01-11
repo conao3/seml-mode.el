@@ -45,6 +45,10 @@
     map)
   "Keymap for SEML mode.")
 
+(defcustom seml-live-refresh-interval 1.1
+  "Live-refresh interval.
+NOTE: If you have auto-save settings, set this variable loger than it.")
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;
 ;;  Const
@@ -220,7 +224,8 @@
                seml-live-refresh-baffer)
     (setq seml-live-refresh-baffer (buffer-name))
     (setq seml-live-refresh-timer
-          (run-with-idle-timer 0.3 t 'seml-live-refresh-func))
+          (run-with-idle-timer
+           seml-live-refresh-interval t 'seml-live-refresh-func))
     (message "Live refresh enabled (Taget buffer: %s)"
              seml-live-refresh-baffer))
 
