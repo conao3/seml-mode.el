@@ -46,7 +46,7 @@
   :group 'lisp
   :prefix "seml-")
 
-(defconst seml-mode-version "1.0.0"
+(defconst seml-mode-version "1.0.1"
   "Version of `seml-mode'.")
 
 (defcustom seml-mode-hook nil
@@ -163,12 +163,14 @@ at INDENT-POINT on STATE.  see function/ `lisp-indent-function'."
 
 (defalias 'seml-encode-html-region 'libxml-parse-html-region)
 
+;;;###autoload
 (defun seml-encode-html (str)
   "Return SEML sexp encoded from HTML STR."
   (with-temp-buffer
     (insert str)
     (seml-encode-html-region (point-min) (point-max))))
 
+;;;###autoload
 (defun seml-encode-html-from-buffer (&optional buf)
   "Return SEML sexp encoded from HTML BUF.
 If omit BUF, use `current-buffer'."
@@ -181,6 +183,7 @@ If omit BUF, use `current-buffer'."
 ;;  Decode
 ;;
 
+;;;###autoload
 (defun seml-decode-html (dom &optional doctype)
   "Return HTML string DOM decoded from SEML[str|sexp].
 If gives DOCTYPE, concat DOCTYPE at head."
@@ -208,6 +211,7 @@ If gives DOCTYPE, concat DOCTYPE at head."
                  dom)))
        (funcall decode-fn dom*)))))
 
+;;;###autoload
 (defun seml-decode-html-from-buffer (&optional buf)
   "Return HTML string decode from BUF."
   (seml-decode-html
@@ -219,6 +223,7 @@ If gives DOCTYPE, concat DOCTYPE at head."
 ;;  Replace
 ;;
 
+;;;###autoload
 (defun seml-replace-buffer-from-html ()
   "Replace buffer string HTML to SEML."
   (interactive)
@@ -228,6 +233,7 @@ If gives DOCTYPE, concat DOCTYPE at head."
     (seml-mode)
     (indent-region (point-min) (point-max))))
 
+;;;###autoload
 (defun seml-replace-buffer-from-seml ()
   "Replace buffer string SEML to HTML."
   (interactive)
@@ -245,6 +251,7 @@ If gives DOCTYPE, concat DOCTYPE at head."
 (defvar seml-live-refresh-baffer "")
 (defvar seml-live-refresh-prev-sexp-history nil)
 
+;;;###autoload
 (defun seml-live-refresh-start ()
   "Start live refresh from buffer string (without saving)."
   (interactive)
@@ -343,6 +350,7 @@ If you stop monitor SEML buffer, `seml-live-refresh-stop'.
 ;;  Main
 ;;
 
+;;;###autoload
 (define-derived-mode seml-mode emacs-lisp-mode "SEML"
   "Major mode for editing SEML (S-Expression Markup Language) file."
 
