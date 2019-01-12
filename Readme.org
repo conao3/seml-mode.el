@@ -90,7 +90,7 @@ If you stop monitor SEML buffer, ~M-x seml-live-refresh-stop~.
 #+caption: complex-seml project with live-refresh
 [[https://files.conao3.com/github-header/project/seml-mode.el/complex-seml.png]]
 
-* Document
+* Documents
 ** Customizable variables
 *** seml-mode-hook
 *** seml-live-refresh-interval
@@ -127,19 +127,19 @@ Define single tag (without closing tag)
 
 ** Functions
 *** Encode functions (HTML to SEML)
-**** seml-encode-html-region (pointmin pointmax)
-**** seml-encode-html (str)
-**** seml-encode-html-from-buffer (&optional buf)
+- (seml-encode-html-region pointmin pointmax)
+- (seml-encode-html str)
+- (seml-encode-html-from-buffer &optional buf)
 *** Decode functions (SEML to HTML)
-**** seml-decode-html (dom &optional doctype)
-**** seml-decode-html-from-buffer (&optional buf)
-**** seml-replace-buffer-from-html
-**** seml-replace-buffer-from-seml
+- (seml-decode-html dom &optional doctype)
+- (seml-decode-html-from-buffer &optional buf)
+- (seml-replace-buffer-from-html
+- (seml-replace-buffer-from-seml 
 *** Live refresh functions
-**** seml-live-refresh-start
-**** seml-live-refresh-stop
+- (seml-live-refresh-start)
+- (seml-live-refresh-stop)
 *** Major mode
-**** seml-mode
+- (seml-mode)
 
 * Projects
 Packages build on seml-mode.
