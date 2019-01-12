@@ -90,6 +90,57 @@ If you stop monitor SEML buffer, ~M-x seml-live-refresh-stop~.
 #+caption: complex-seml project with live-refresh
 [[https://files.conao3.com/github-header/project/seml-mode.el/complex-seml.png]]
 
+* Document
+** Customizable variables
+*** seml-mode-hook
+*** seml-live-refresh-interval
+*** seml-live-refresh-url-variable
+*** seml-live-refresh-url-quety
+** Constants
+*** seml-mode-keywords
+Support HTML5 tags.
+#+begin_src emacs-lisp
+  (defconst seml-mode-keywords
+    '(html
+      head title base link meta style
+      script noscript
+      body section nav article aside hgroup header footer address
+      h1 h2 h3 h4 h5 h6
+      p hr pre backquote ol ul li
+      dl dt dd figure figcaption div main
+      a em strong small s cite q dfn addr time code var
+      samp kbd sub sup i b mark ruby rt rpbdo span br wbr
+      ins del
+      img iframe embed object param
+      video audio source canvas map area
+      table caption colgroup col tbody thead tfoot tr td th
+      form fieldset legend label input button select
+      datalist optgroup option textarea keygen output progress meter
+      details summary command menu))
+#+end_src
+*** seml-html-single-tags
+Define single tag (without closing tag)
+#+begin_src emacs-lisp
+  (defconst seml-html-single-tags
+    '(base link meta img br area param hr col option input wbr))
+#+end_src
+
+** Functions
+*** Encode functions (HTML to SEML)
+**** seml-encode-html-region (pointmin pointmax)
+**** seml-encode-html (str)
+**** seml-encode-html-from-buffer (&optional buf)
+*** Decode functions (SEML to HTML)
+**** seml-decode-html (dom &optional doctype)
+**** seml-decode-html-from-buffer (&optional buf)
+**** seml-replace-buffer-from-html
+**** seml-replace-buffer-from-seml
+*** Live refresh functions
+**** seml-live-refresh-start
+**** seml-live-refresh-stop
+*** Major mode
+**** seml-mode
+
 * Projects
 Packages build on seml-mode.
 - [[https://github.com/conao3/leaf-browser.el][leaf-browser.el]] - Web browser frontend of Emacs customize-mode for [[https://github.com/conao3/leaf.el][leaf.el]].
