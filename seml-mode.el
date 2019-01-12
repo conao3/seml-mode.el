@@ -4,10 +4,10 @@
 
 ;; Author: Naoya Yamashita <conao3@gmail.com>
 ;; Maintainer: Naoya Yamashita <conao3@gmail.com>
-;; Keywords: lisp
-;; Version: 0.0.1
+;; Keywords: lisp html
+;; Version: 1.0.0
 ;; URL: https://github.com/conao3/seml-mode
-;; Package-Requires: ((emacs "24.5"))
+;; Package-Requires: ((emacs "24.3") (simple-httpd "1.5"))
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -23,17 +23,31 @@
 ;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 ;;; Commentary:
-
+;; Sample configuration with [[https://github.com/conao3/leaf.el][leaf.el]]
+;;
+;; (leaf real-auto-save
+;;   :ensure t
+;;   :custom ((real-auto-save-interval . 0.3))
+;;   :hook (find-file-hook . real-auto-save-mode))
+;;
+;; (leaf seml-mode
+;;   :config (require 'seml-mode)
+;;   :custom ((seml-live-refresh-interval . 0.35)))
 ;;
 
 ;;; Code:
 
+(or (require 'elisp-mode nil t)         ; not found elisp-mode on Emacs-24
+    (require 'lisp-mode))
 (require 'simple-httpd)
 
 (defgroup seml nil
   "Major mode for editing SEML (S-Expression Markup Language) file."
   :group 'lisp
   :prefix "seml-")
+
+(defconst seml-mode-version "1.0.0"
+  "Version of `seml-mode'.")
 
 (defcustom seml-mode-hook nil
   "Hook run when entering seml mode."
@@ -67,7 +81,7 @@ NOTE: If you have auto-save settings, set this variable loger than it."
 ;;
 
 (defconst seml-mode-syntax-table lisp-mode-syntax-table
-  "seml-mode-symtax-table")
+  "Syntax table of seml.")
 
 (defconst seml-mode-keywords
   '(html
@@ -99,7 +113,8 @@ NOTE: If you have auto-save settings, set this variable loger than it."
 ;;
 
 (defun seml-indent-function (indent-point state)
-  "seml indent calc function"
+  "Indent calculation function for seml.
+at INDENT-POINT on STATE.  see function/ `lisp-indent-function'."
   (let ((normal-indent (current-column)))
     (goto-char (1+ (elt state 1)))
     (parse-partial-sexp (point) calculate-lisp-indent-last-sexp 0 t)
@@ -149,15 +164,17 @@ NOTE: If you have auto-save settings, set this variable loger than it."
 (defalias 'seml-encode-html-region 'libxml-parse-html-region)
 
 (defun seml-encode-html (str)
-  "encode HTML to SEML from STR."
+  "Return SEML sexp encoded from HTML STR."
   (with-temp-buffer
     (insert str)
     (seml-encode-html-region (point-min) (point-max))))
 
 (defun seml-encode-html-from-buffer (&optional buf)
+  "Return SEML sexp encoded from HTML BUF.
+If omit BUF, use `current-buffer'."
   (seml-encode-html-from-buffer
-   (if buf (with-current-buffer buf (buffer-string))
-     (buffer-string))))
+   (with-current-buffer (or buf (current-buffer))
+     (buffer-substring-no-properties (point-min) (point-max)))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;
@@ -165,7 +182,8 @@ NOTE: If you have auto-save settings, set this variable loger than it."
 ;;
 
 (defun seml-decode-html (dom &optional doctype)
-  "decode SEML[str|sexp] to html"
+  "Return HTML string DOM decoded from SEML[str|sexp].
+If gives DOCTYPE, concat DOCTYPE at head."
   (let ((dom* (if (stringp dom) (read dom) dom)))
     (concat
      (if doctype doctype "")
@@ -191,7 +209,7 @@ NOTE: If you have auto-save settings, set this variable loger than it."
        (funcall decode-fn dom*)))))
 
 (defun seml-decode-html-from-buffer (&optional buf)
-  "decode from buffer."
+  "Return HTML string decode from BUF."
   (seml-decode-html
    (if buf (with-current-buffer buf (buffer-string))
      (buffer-string))))
@@ -202,7 +220,7 @@ NOTE: If you have auto-save settings, set this variable loger than it."
 ;;
 
 (defun seml-replace-buffer-from-html ()
-  "buffer contents"
+  "Replace buffer string HTML to SEML."
   (interactive)
   (let ((str (buffer-substring-no-properties (point-min) (point-max))))
     (erase-buffer)
@@ -211,7 +229,7 @@ NOTE: If you have auto-save settings, set this variable loger than it."
     (indent-region (point-min) (point-max))))
 
 (defun seml-replace-buffer-from-seml ()
-  "buffer contents"
+  "Replace buffer string SEML to HTML."
   (interactive)
   (let ((str (buffer-string)))
     (erase-buffer)
@@ -228,7 +246,7 @@ NOTE: If you have auto-save settings, set this variable loger than it."
 (defvar seml-live-refresh-prev-sexp-history nil)
 
 (defun seml-live-refresh-start ()
-  "live refresh from buffer-string (without saving)"
+  "Start live refresh from buffer string (without saving)."
   (interactive)
 
   (if seml-live-refresh-timer
@@ -254,7 +272,7 @@ NOTE: If you have auto-save settings, set this variable loger than it."
                     "<!DOCTYPE html>")))))
 
 (defun seml-live-refresh-stop ()
-  "live refresh from buffer-string (without saving)"
+  "Stop live refresh."
   (interactive)
   (when seml-live-refresh-timer
     (setq seml-live-refresh-baffer "")
@@ -262,7 +280,18 @@ NOTE: If you have auto-save settings, set this variable loger than it."
     (setq seml-live-refresh-timer nil)))
 
 (defun seml-live-refresh-func ()
-  "live refresh from buffer-string (without saving)"
+  "Send refresh message to Google Chrome timer function.
+
+Then, with activating target SEML buffer, `seml-live-refresh-start'
+to register `servelet*' buffer and set timer function.
+
+If you stop monitor SEML buffer, `seml-live-refresh-stop'.
+
+~seml-mode.el~ send refresh message to Google Chrome...
+1. When no error read and eval register buffer string,
+2. When the evaled sexp differs from last time.
+3. When Open ~seml-mode.el~ live-refresh page
+   (http://localhost:8080/seml-mode/live-refresh)."
   (let ((fn (lambda (x)
               (save-excursion
                 (with-current-buffer (get-buffer-create "*seml-live-refresh*")
