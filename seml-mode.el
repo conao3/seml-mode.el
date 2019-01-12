@@ -46,7 +46,7 @@
   :group 'lisp
   :prefix "seml-")
 
-(defconst seml-mode-version "1.0.2"
+(defconst seml-mode-version "1.0.3"
   "Version of `seml-mode'.")
 
 (defcustom seml-mode-hook nil
@@ -256,6 +256,7 @@ If gives DOCTYPE, concat DOCTYPE at head."
   "Start live refresh from buffer string (without saving)."
   (interactive)
 
+  ;; register timer function
   (if seml-live-refresh-timer
       (message "Already live refresh enabled (Taget buffer: %s)"
                seml-live-refresh-baffer)
@@ -266,11 +267,21 @@ If gives DOCTYPE, concat DOCTYPE at head."
     (message "Live refresh enabled (Taget buffer: %s)"
              seml-live-refresh-baffer))
 
+  ;; defvar simple-httpd's variable
+  (when seml-live-refresh-url-variable
+    (mapc (lambda (x)
+            (eval `(defvar ,(intern x) "")))
+          `(,@(mapcar (lambda (y)
+                        (replace-regexp-in-string "^:" "" y))
+                      (split-string seml-live-refresh-url-variable "/"))
+            ,@(mapcar #'symbol-name seml-live-refresh-url-quety))))
+
+  ;; register servlet
   (eval `(defservlet*
-           ,(intern-soft (format "seml-mode/live-refresh/%s"
-                                 seml-live-refresh-url-variable))
+           ,(intern (format "seml-mode/live-refresh/%s"
+                            seml-live-refresh-url-variable))
            "text/html"
-           (,(intern-soft seml-live-refresh-url-quety))
+           (,@seml-live-refresh-url-quety)
            (insert (seml-decode-html
                     (with-current-buffer seml-live-refresh-baffer
                       (eval
