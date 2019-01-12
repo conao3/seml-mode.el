@@ -6,7 +6,17 @@
 [[https://github.com/conao3/seml-mode.el][https://img.shields.io/github/license/conao3/seml-mode.el.svg?style=flat-square]]
 [[https://github.com/conao3/github-header][https://files.conao3.com/github-header/gif/seml-mode.el.gif]]
 
-# - [[#what-is-it][What is it?]]
+- [[#what-is-it][What is it?]]
+- [[#settings][Settings]]
+- [[#live-refresh][Live-refresh]]
+- [[#documents][Documents]]
+  - [[#customizable-variables][Customizable Variables]]
+  - [[#constants][Constants]]
+  - [[#functions][Functions]]
+- [[#projects][Projects]]
+- [[#welcome-pr][Welcome PR]]
+- [[#special-thanks][Special Thanks]]
+- [[#author][Author]]
 
 * What is it?
 Below 2 files represent the same structure.
@@ -91,7 +101,7 @@ If you stop monitor SEML buffer, ~M-x seml-live-refresh-stop~.
 [[https://files.conao3.com/github-header/project/seml-mode.el/complex-seml.png]]
 
 * Documents
-** Customizable variables
+** Customizable Variables
 *** seml-mode-hook
 *** seml-live-refresh-interval
 *** seml-live-refresh-url-variable
