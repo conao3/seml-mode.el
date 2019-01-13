@@ -22,7 +22,6 @@ CORT_ARGS   := -l $(TESTFILE) -f cort-run-tests
 LOGFILE     := .make-check.log
 
 ##################################################
-# $(if $(findstring 22,$(shell $* --version)),[emacs-22],[else emacs-22])
 
 all: git-hook $(ELS:.el=.elc)
 
