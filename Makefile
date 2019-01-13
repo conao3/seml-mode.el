@@ -20,7 +20,9 @@ CORTELS     := $(TESTFILE) $(DEPEND) cort-test.el
 CORT_ARGS   := -l $(TESTFILE) -f cort-run-tests
 
 LOGFILE     := .make-check.log
-MAKE-NPD    := $(MAKE) --no-print-directory
+MAKE-NPD    = $(MAKE) --no-print-directory
+
+export ELS CORT_ARGS DEPEND
 
 ##################################################
 
@@ -47,12 +49,11 @@ allcheck: $(ALL_EMACS:%=.make-check-%)
 	@rm $(LOGFILE)
 
 .make-check-%: $(DEPEND)
+	$(if $(wildcard .make-$*),rm -rf .make-$*)
 	mkdir -p .make-$*
 	cp -f $(ELS) $(CORTELS) .make-$*/
 	cp -f Makefile-check.mk .make-$*/Makefile
-	$(MAKE) -C .make-$* clean
-	$(call EXPORT,ELS CORT_ARGS DEPEND) \
-	  EMACS=$* $(MAKE-NPD) -C .make-$* check 2>&1 | tee -a $(LOGFILE)
+	+EMACS=$* $(MAKE-NPD) -C .make-$* check 2>&1 | tee -a $(LOGFILE)
 	rm -rf .make-$*
 
 ##############################
@@ -64,10 +65,9 @@ test: $(ALL_EMACS:%=.make-test-%)
 	@rm $(LOGFILE)
 
 .make-test-%: $(DEPEND)
+	$(if $(wildcard .make-$*),rm -rf .make-$*)
 	mkdir -p .make-$*
 	cp -f $(ELS) $(CORTELS) .make-$*/
 	cp -f Makefile-check.mk .make-$*/Makefile
-	$(MAKE-NPD) -C .make-$* clean
-	$(call EXPORT,ELS CORT_ARGS DEPEND) \
-	  EMACS=$* $(MAKE-NPD) -C .make-$* check 2>&1 >> $(LOGFILE)
+	+EMACS=$* $(MAKE-NPD) -C .make-$* check 2>&1 >> $(LOGFILE)
 	rm -rf .make-$*
