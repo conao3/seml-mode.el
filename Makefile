@@ -17,7 +17,7 @@ DEPEND      := $(SIMPLEHTTPD)
 TESTFILE    := seml-mode-tests.el
 ELS         := seml-mode.el
 
-CORTELS     := $(TESTFILE) $(DEPEND) cort.el
+CORTELS     := $(TESTFILE) $(DEPEND) cort-test.el
 CORT_ARGS   := -l $(TESTFILE) -f cort-run-tests
 
 LOGFILE     := .make-check.log

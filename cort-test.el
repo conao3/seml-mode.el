@@ -1,9 +1,13 @@
-;;; cort.el ---                                       -*- lexical-binding: t; -*-
+;;; cort-test.el ---                                 -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2018  Naoya Yamashita
 
-;; Author: Naoya Yamashita
-;; Keywords: test
+;; Author: Naoya Yamashita <conao3@gmail.com>
+;; Maintainer: Naoya Yamashita <conao3@gmail.com>
+;; Keywords: test lisp
+;; Version: 4.0.0
+;; URL: https://github.com/conao3/cort.el
+;; Package-Requires: ((emacs "22.0"))
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -31,7 +35,7 @@
   "Simplify elisp test framework."
   :group 'lisp)
 
-(defconst cort-version "3.0.5"
+(defconst cort-version "4.0.2"
   "cort.el version")
 
 (defconst cort-env-symbols '(:cort-emacs<
@@ -491,5 +495,5 @@ error: (:cort-error EXPECTED-ERROR-TYPE FORM)"
       (princ (format cort-passed-message
                      testc (- testc failc errorc) failc errorc emacs-version)))))
 
-(provide 'cort)
-;;; cort.el ends here
+(provide 'cort-test)
+;;; cort-test.el ends here
