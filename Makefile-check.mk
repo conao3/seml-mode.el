@@ -1,8 +1,8 @@
 %.elc: %.el $(DEPEND)
-	$(EMACS) -Q --batch -L `pwd` -f batch-byte-compile $<
+	$(EMACS) -Q --batch -L . -f batch-byte-compile $<
 
 check: $(ELS:.el=.elc)
-	$(EMACS) -Q --batch -L `pwd` $(CORT_ARGS)
+	$(EMACS) -Q --batch -L . $(CORT_ARGS)
 
 clean:
 	find . -type f -name '*.elc' | xargs rm -rf
