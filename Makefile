@@ -8,7 +8,6 @@ AVAILABLE   := $(strip $(sort $(EMACS_RAW)))
 ALL_EMACS   := $(filter $(AVAILABLE),emacs-24.5 emacs-25.3 emacs-26.1)
 
 EMACS       ?= emacs
-
 BATCH       := $(EMACS) -Q --batch -L $(TOP)
 
 SIMPLEHTTPD := simple-httpd.el
