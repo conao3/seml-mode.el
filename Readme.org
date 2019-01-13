@@ -8,7 +8,7 @@
 
 - [[#what-is-it][What is it?]]
 - [[#settings][Settings]]
-- [[#live-refresh][Live-refresh]]
+- [[#live-refresh-without-save-file][Live-refresh (Without save file)]]
 - [[#documents][Documents]]
   - [[#customizable-variables][Customizable Variables]]
   - [[#constants][Constants]]
@@ -20,7 +20,7 @@
 
 * What is it?
 Below 2 files represent the same structure.
-With compare 2 files, SEML is short and easy to understand for Lisp hacker.
+With compare 2 files, SEML is *short* and *easy to understand* for Lisp hacker.
 
 #+begin_src html
   <!DOCTYPE html>
@@ -54,7 +54,7 @@ With compare 2 files, SEML is short and easy to understand for Lisp hacker.
 #+caption: simple-seml
 [[https://files.conao3.com/github-header/project/seml-mode.el/simple-seml.png]]
 
-Since SEML can use Elisp freely in SEML file, I think that it has the same power as PHP.
+Since SEML can use Elisp freely in SEML file, I think that it has *the same power as PHP*.
 
 ~seml-mode.el~ provides major mode for editing SEML (S-Expression Markup Language) files for you.
 
@@ -63,13 +63,15 @@ Put this package in your ~load-path~, require it.
 #+begin_src emacs-lisp
   (add-to-list 'load-path
                (locate-user-emacs-file (format "site-lisp/seml-mode.el" )))
-  (require 'seml-mote)
+  (require 'seml-mode)
 #+end_src
 
-* Live-refresh
-(As Depends on AppleScript, it works on macOS with Google Chrome only)
+* Auto-refresh (With save file)
+* Live-refresh (Without save file)
+(Without saving file. Use buffer string instead of read file contents.
+As Depends on AppleScript, it works on macOS with Google Chrome only)
 
-~seml-mode.el~ provides the function of live refresh like other modorn editors.
+~seml-mode.el~ provides the function of live refresh like other modern editors.
 
 If ~seml-mode.el~ read buffer string and eval temporally no error,
 send refresh message to Google Chrome.
@@ -93,8 +95,8 @@ If you stop monitor SEML buffer, ~M-x seml-live-refresh-stop~.
 
 ~seml-mode.el~ send refresh message to Google Chrome...
 1. When no error read and eval register buffer string,
-2. When the evaled sexp differs from last time.
-3. When Open ~seml-mode.el~ live-refresh page (http://localhost:8080/seml-mode/live-refresh),
+2. And when the evaled sexp differs from last time,
+3. And when open ~seml-mode.el~ live-refresh page (http://localhost:8080/seml-mode/live-refresh).
 
 #+name: complex-SS
 #+caption: complex-seml project with live-refresh
@@ -102,38 +104,39 @@ If you stop monitor SEML buffer, ~M-x seml-live-refresh-stop~.
 
 * Documents
 ** Customizable Variables
-*** seml-mode-hook
-*** seml-live-refresh-interval
-*** seml-live-refresh-url-variable
-*** seml-live-refresh-url-quety
+- seml-mode-hook
+- seml-live-refresh-interval
+- seml-live-refresh-url-variable
+- seml-live-refresh-url-quety
 ** Constants
-*** seml-mode-keywords
-Support HTML5 tags.
-#+begin_src emacs-lisp
-  (defconst seml-mode-keywords
-    '(html
-      head title base link meta style
-      script noscript
-      body section nav article aside hgroup header footer address
-      h1 h2 h3 h4 h5 h6
-      p hr pre backquote ol ul li
-      dl dt dd figure figcaption div main
-      a em strong small s cite q dfn addr time code var
-      samp kbd sub sup i b mark ruby rt rpbdo span br wbr
-      ins del
-      img iframe embed object param
-      video audio source canvas map area
-      table caption colgroup col tbody thead tfoot tr td th
-      form fieldset legend label input button select
-      datalist optgroup option textarea keygen output progress meter
-      details summary command menu))
-#+end_src
-*** seml-html-single-tags
-Define single tag (without closing tag)
-#+begin_src emacs-lisp
-  (defconst seml-html-single-tags
-    '(base link meta img br area param hr col option input wbr))
-#+end_src
+- seml-mode-keywords
+  Support HTML5 tags.
+  #+begin_src emacs-lisp
+    (defconst seml-mode-keywords
+      '(html
+        head title base link meta style
+        script noscript
+        body section nav article aside hgroup header footer address
+        h1 h2 h3 h4 h5 h6
+        p hr pre backquote ol ul li
+        dl dt dd figure figcaption div main
+        a em strong small s cite q dfn addr time code var
+        samp kbd sub sup i b mark ruby rt rpbdo span br wbr
+        ins del
+        img iframe embed object param
+        video audio source canvas map area
+        table caption colgroup col tbody thead tfoot tr td th
+        form fieldset legend label input button select
+        datalist optgroup option textarea keygen output progress meter
+        details summary command menu))
+  #+end_src
+
+- seml-html-single-tags
+  Define single tag (without closing tag)
+  #+begin_src emacs-lisp
+    (defconst seml-html-single-tags
+      '(base link meta img br area param hr col option input wbr))
+  #+end_src
 
 ** Functions
 *** Encode functions (HTML to SEML)
@@ -165,7 +168,7 @@ Feel free throw PR!
 
 * Special Thanks
 Advice and comments given by [[http://emacs-jp.github.io/][Emacs-JP]]'s forum member has been a great help
-in developing ~leaf.el~.
+in developing ~seml-mode.el~.
 
 Thank you very much!!
 
