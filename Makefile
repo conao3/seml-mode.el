@@ -19,6 +19,8 @@ ELS         := seml-mode.el
 CORTELS     := $(TESTFILE) $(DEPEND) cort-test.el
 CORT_ARGS   := -l $(TESTFILE) -f cort-run-tests
 
+GITHOOKDIR  := git-hooks
+GITHOOKS    := $(wildcard $(GITHOOKDIR)/*)
 LOGFILE     := .make-check.log
 MAKE-NPD    = $(MAKE) --no-print-directory
 
@@ -26,10 +28,10 @@ export ELS CORT_ARGS DEPEND
 
 ##################################################
 
-all: git-hook $(ELS:.el=.elc)
+all: $(GITHOOKS:git-hooks/%=.git/hooks/%) $(ELS:.el=.elc)
 
-git-hook:
-	cp -a git-hooks/* .git/hooks/
+.git/hooks/%:git-hooks/%
+	cp -a $< $@
 
 include Makefile-check.mk
 
