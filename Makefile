@@ -31,6 +31,12 @@ git-hook:
 include Makefile-check.mk
 
 ##############################
+#  depend files
+
+$(SIMPLEHTTPD):
+	curl -O https://raw.githubusercontent.com/skeeto/emacs-web-server/master/$@
+
+##############################
 #  test on all Emacs
 
 allcheck: $(ALL_EMACS:%=.make-check-%)
@@ -63,9 +69,3 @@ test: $(ALL_EMACS:%=.make-test-%)
 	$(call EXPORT,ELS CORT_ARGS DEPEND) \
 	  EMACS=$* $(MAKE) -C .make-$* check 2>&1 >> $(LOGFILE)
 	rm -rf .make-$*
-
-##############################
-#  depend files
-
-$(SIMPLEHTTPD):
-	curl -O https://raw.githubusercontent.com/skeeto/emacs-web-server/master/$@
