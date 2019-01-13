@@ -20,6 +20,7 @@ CORTELS     := $(TESTFILE) $(DEPEND) cort-test.el
 CORT_ARGS   := -l $(TESTFILE) -f cort-run-tests
 
 LOGFILE     := .make-check.log
+MAKE-NPD    := $(MAKE) --no-print-directory
 
 ##################################################
 
@@ -33,8 +34,9 @@ include Makefile-check.mk
 ##############################
 #  depend files
 
+_GITHUB := https://raw.githubusercontent.com
 $(SIMPLEHTTPD):
-	curl -O https://raw.githubusercontent.com/skeeto/emacs-web-server/master/$@
+	curl -O $(_GITHUB)/skeeto/emacs-web-server/master/$@
 
 ##############################
 #  test on all Emacs
@@ -50,7 +52,7 @@ allcheck: $(ALL_EMACS:%=.make-check-%)
 	cp -f Makefile-check.mk .make-$*/Makefile
 	$(MAKE) -C .make-$* clean
 	$(call EXPORT,ELS CORT_ARGS DEPEND) \
-	  EMACS=$* $(MAKE) -C .make-$* check 2>&1 | tee -a $(LOGFILE)
+	  EMACS=$* $(MAKE-NPD) -C .make-$* check 2>&1 | tee -a $(LOGFILE)
 	rm -rf .make-$*
 
 ##############################
@@ -65,7 +67,7 @@ test: $(ALL_EMACS:%=.make-test-%)
 	mkdir -p .make-$*
 	cp -f $(ELS) $(CORTELS) .make-$*/
 	cp -f Makefile-check.mk .make-$*/Makefile
-	$(MAKE) -C .make-$* clean
+	$(MAKE-NPD) -C .make-$* clean
 	$(call EXPORT,ELS CORT_ARGS DEPEND) \
-	  EMACS=$* $(MAKE) -C .make-$* check 2>&1 >> $(LOGFILE)
+	  EMACS=$* $(MAKE-NPD) -C .make-$* check 2>&1 >> $(LOGFILE)
 	rm -rf .make-$*
