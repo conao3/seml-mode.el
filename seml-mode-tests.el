@@ -29,7 +29,7 @@
 ;;; Code:
 
 (require 'seml-mode)
-(require 'cort)
+(require 'cort-test)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;
