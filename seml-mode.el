@@ -46,7 +46,7 @@
   :group 'lisp
   :prefix "seml-")
 
-(defconst seml-mode-version "1.0.8"
+(defconst seml-mode-version "1.0.9"
   "Version of `seml-mode'.")
 
 (defcustom seml-mode-hook nil
@@ -182,6 +182,10 @@ If omit BUF, use `current-buffer'."
 ;;  Decode
 ;;
 
+;;;###autoload
+(defun seml-decode-seml-region (start end &optional doctype)
+  "Return HTML string from buffer region at STRAT to END."
+  (seml-decode-seml (buffer-substring-no-properties start end) doctype))
 
 ;;;###autoload
 (defun seml-decode-seml (dom &optional doctype)
@@ -212,11 +216,12 @@ If gives DOCTYPE, concat DOCTYPE at head."
        (funcall decode-fn dom*)))))
 
 ;;;###autoload
-(defun seml-decode-seml-from-buffer (&optional buf)
+(defun seml-decode-seml-from-buffer (&optional buf doctype)
   "Return HTML string decode from BUF."
-  (seml-decode-html
-   (with-current-buffer (or buf (buffer-string))
-     (buffer-string))))
+  (seml-decode-seml
+   (with-current-buffer (or buf (current-buffer))
+     (buffer-string))
+   doctype))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;
