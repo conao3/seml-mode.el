@@ -132,26 +132,26 @@
 ;;  decode seml
 ;;
 
+(cort-deftest seml-test:/simple-decode-region
+  (seml-str-expansion
+   (let ((buf (get-buffer-create (format "*seml-%s*" (gensym)))))
+     (with-current-buffer buf
+       (insert (prin1-to-string seml-sample-sexp1))
+       (seml-decode-seml-region (point-min) (point-max) "<!DOCTYPE html>")))
+   seml-sample-str1-decode))
+
 (cort-deftest seml-test:/simple-decode
   (seml-str-expansion
    (seml-decode-seml seml-sample-sexp1 "<!DOCTYPE html>")
    seml-sample-str1-decode))
 
-;; (cort-deftest seml-test:/simple-decode-buffer
-;;   (seml-expansion
-;;    (let ((buf (get-buffer-create (format "*seml-%s*" (gensym)))))
-;;      (with-current-buffer buf
-;;        (insert seml-sample-sexp1))
-;;      (seml-decode-html-from-buffer buf))
-;;    seml-sample-str1-decode))
-
-;; (cort-deftest seml-test:/simple-decode-current-buffer
-;;   (seml-expansion
-;;    (let ((buf (get-buffer-create (format "*seml-%s*" (gensym)))))
-;;      (with-current-buffer buf
-;;        (insert seml-sample-sexp1)
-;;        (seml-decode-html-from-buffer)))
-;;    seml-sample-str1-decode))
+(cort-deftest seml-test:/simple-decode-current-buffer
+  (seml-str-expansion
+   (let ((buf (get-buffer-create (format "*seml-%s*" (gensym)))))
+     (with-current-buffer buf
+       (insert (prin1-to-string seml-sample-sexp1))
+       (seml-decode-seml-from-buffer nil "<!DOCTYPE html>")))
+     seml-sample-str1-decode))
 
 (provide 'seml-mode-tests)
 ;;; seml-mode-tests.el ends here
