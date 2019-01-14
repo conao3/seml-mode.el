@@ -184,7 +184,7 @@ If omit BUF, use `current-buffer'."
 ;;
 
 ;;;###autoload
-(defun seml-decode-html (dom &optional doctype)
+(defun seml-decode-seml (dom &optional doctype)
   "Return HTML string DOM decoded from SEML[str|sexp].
 If gives DOCTYPE, concat DOCTYPE at head."
   (let ((dom* (if (stringp dom) (read dom) dom)))
@@ -212,9 +212,9 @@ If gives DOCTYPE, concat DOCTYPE at head."
        (funcall decode-fn dom*)))))
 
 ;;;###autoload
-(defun seml-decode-html-from-buffer (&optional buf)
+(defun seml-decode-seml-from-buffer (&optional buf)
   "Return HTML string decode from BUF."
-  (seml-decode-html
+  (seml-decode-seml
    (if buf (with-current-buffer buf (buffer-string))
      (buffer-string))))
 
@@ -240,7 +240,7 @@ If gives DOCTYPE, concat DOCTYPE at head."
   (let ((str (buffer-string)))
     (erase-buffer)
     (insert
-     (seml-decode-html (read str) "<!DOCTYPE html>"))))
+     (seml-decode-seml (read str) "<!DOCTYPE html>"))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;
@@ -282,7 +282,7 @@ If gives DOCTYPE, concat DOCTYPE at head."
                             seml-live-refresh-url-variable))
            "text/html"
            (,@seml-live-refresh-url-quety)
-           (insert (seml-decode-html
+           (insert (seml-decode-seml
                     (with-current-buffer seml-live-refresh-baffer
                       (eval
                        (read
