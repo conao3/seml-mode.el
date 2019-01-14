@@ -108,7 +108,7 @@
 
 (cort-deftest seml-test:/simple-encode
   (seml-expansion
-   (seml-encode-html seml-sample-str1)
+   (seml-encode-html-string seml-sample-str1)
    seml-sample-sexp1))
 
 (cort-deftest seml-test:/simple-encode-buffer
@@ -142,7 +142,7 @@
 
 (cort-deftest seml-test:/simple-decode
   (seml-str-expansion
-   (seml-decode-seml seml-sample-sexp1 "<!DOCTYPE html>")
+   (seml-decode-seml-string seml-sample-sexp1 "<!DOCTYPE html>")
    seml-sample-str1-decode))
 
 (cort-deftest seml-test:/simple-decode-current-buffer

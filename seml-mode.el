@@ -5,7 +5,7 @@
 ;; Author: Naoya Yamashita <conao3@gmail.com>
 ;; Maintainer: Naoya Yamashita <conao3@gmail.com>
 ;; Keywords: lisp html
-;; Version: 1.0.0
+;; Version: 1.1.0
 ;; URL: https://github.com/conao3/seml-mode
 ;; Package-Requires: ((emacs "24.3") (simple-httpd "1.5"))
 
@@ -46,7 +46,7 @@
   :group 'lisp
   :prefix "seml-")
 
-(defconst seml-mode-version "1.0.9"
+(defconst seml-mode-version "1.1.0"
   "Version of `seml-mode'.")
 
 (defcustom seml-mode-hook nil
@@ -164,7 +164,7 @@ at INDENT-POINT on STATE.  see function/ `lisp-indent-function'."
 (defalias 'seml-encode-html-region 'libxml-parse-html-region)
 
 ;;;###autoload
-(defun seml-encode-html (str)
+(defun seml-encode-html-string (str)
   "Return SEML sexp encoded from HTML STR."
   (with-temp-buffer
     (insert str)
@@ -185,10 +185,10 @@ If omit BUF, use `current-buffer'."
 ;;;###autoload
 (defun seml-decode-seml-region (start end &optional doctype)
   "Return HTML string from buffer region at STRAT to END."
-  (seml-decode-seml (buffer-substring-no-properties start end) doctype))
+  (seml-decode-seml-string (buffer-substring-no-properties start end) doctype))
 
 ;;;###autoload
-(defun seml-decode-seml (dom &optional doctype)
+(defun seml-decode-seml-string (dom &optional doctype)
   "Return HTML string DOM decoded from SEML[str|sexp].
 If gives DOCTYPE, concat DOCTYPE at head."
   (let ((dom* (if (stringp dom) (read dom) dom)))
@@ -218,7 +218,7 @@ If gives DOCTYPE, concat DOCTYPE at head."
 ;;;###autoload
 (defun seml-decode-seml-from-buffer (&optional buf doctype)
   "Return HTML string decode from BUF."
-  (seml-decode-seml
+  (seml-decode-seml-string
    (with-current-buffer (or buf (current-buffer))
      (buffer-string))
    doctype))
@@ -234,7 +234,7 @@ If gives DOCTYPE, concat DOCTYPE at head."
   (interactive)
   (let ((str (buffer-substring-no-properties (point-min) (point-max))))
     (erase-buffer)
-    (insert (pp-to-string (seml-encode-html str)))
+    (insert (pp-to-string (seml-encode-html-string str)))
     (seml-mode)
     (indent-region (point-min) (point-max))))
 
@@ -245,7 +245,7 @@ If gives DOCTYPE, concat DOCTYPE at head."
   (let ((str (buffer-string)))
     (erase-buffer)
     (insert
-     (seml-decode-seml (read str) "<!DOCTYPE html>"))))
+     (seml-decode-seml-string (read str) "<!DOCTYPE html>"))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;
