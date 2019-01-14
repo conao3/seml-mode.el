@@ -134,7 +134,7 @@
 
 (cort-deftest seml-test:/simple-decode
   (seml-str-expansion
-   (seml-decode-html seml-sample-sexp1 "<!DOCTYPE html>")
+   (seml-decode-seml seml-sample-sexp1 "<!DOCTYPE html>")
    seml-sample-str1-decode))
 
 ;; (cort-deftest seml-test:/simple-decode-buffer
