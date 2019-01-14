@@ -174,14 +174,14 @@ at INDENT-POINT on STATE.  see function/ `lisp-indent-function'."
 (defun seml-encode-html-from-buffer (&optional buf)
   "Return SEML sexp encoded from HTML BUF.
 If omit BUF, use `current-buffer'."
-  (seml-encode-html-from-buffer
-   (with-current-buffer (or buf (current-buffer))
-     (buffer-substring-no-properties (point-min) (point-max)))))
+  (with-current-buffer (or buf (current-buffer))
+    (seml-encode-html-region (point-min) (point-max))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;
 ;;  Decode
 ;;
+
 
 ;;;###autoload
 (defun seml-decode-seml (dom &optional doctype)
@@ -214,8 +214,8 @@ If gives DOCTYPE, concat DOCTYPE at head."
 ;;;###autoload
 (defun seml-decode-seml-from-buffer (&optional buf)
   "Return HTML string decode from BUF."
-  (seml-decode-seml
-   (if buf (with-current-buffer buf (buffer-string))
+  (seml-decode-html
+   (with-current-buffer (or buf (buffer-string))
      (buffer-string))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

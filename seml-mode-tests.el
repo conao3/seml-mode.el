@@ -36,6 +36,122 @@
 ;;  test settings
 ;;
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;
+;;  support macros
+;;
+
+(defmacro seml-expansion (given expect)
+  `(:equal ,given ,expect))
+
+(defmacro seml-str-expansion (given expect)
+  `(:string= ,given ,(eval expect)))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;
+;;  support variables
+;;
+
+(defvar seml-sample-str1
+  "<!DOCTYPE html>
+<html lang=\"en\">
+<head><meta charset=\"utf-8\"/>
+<title>sample page</title>
+<link rel=\"stylesheet\" href=\"sample1.css\"/>
+</head>
+<body><h1>sample</h1><p>text sample</p></body>
+</html>")
+
+(defvar seml-sample-str1-decode
+  "<!DOCTYPE html>
+<html lang=\"en\">
+<head><meta charset=\"utf-8\">
+
+<title>sample page</title>
+<link rel=\"stylesheet\" href=\"sample1.css\">
+</head>
+
+<body>
+<h1>sample</h1>
+
+<p>text sample</p>
+</body>
+</html>
+")
+
+(defvar seml-sample-sexp1
+  '(html ((lang . "en"))
+         (head nil
+               (meta ((charset . "utf-8")))
+               (title nil "sample page")
+               (link ((rel . "stylesheet") (href . "sample1.css"))))
+         (body nil
+               (h1 nil "sample")
+               (p nil "text sample"))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;
+;;  test definition
+;;
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;
+;;  encode html
+;;
+
+(cort-deftest seml-test:/simple-encode-region
+  (seml-expansion
+   (with-temp-buffer
+     (insert seml-sample-str1)
+     (seml-encode-html-region (point-min) (point-max)))
+   seml-sample-sexp1))
+
+(cort-deftest seml-test:/simple-encode
+  (seml-expansion
+   (seml-encode-html seml-sample-str1)
+   seml-sample-sexp1))
+
+(cort-deftest seml-test:/simple-encode-buffer
+  (seml-expansion
+   (let ((buf (get-buffer-create (format "*seml-%s*" (gensym)))))
+     (with-current-buffer buf
+       (insert seml-sample-str1))
+     (seml-encode-html-from-buffer buf))
+   seml-sample-sexp1))
+
+(cort-deftest seml-test:/simple-encode-current-buffer
+  (seml-expansion
+   (let ((buf (get-buffer-create (format "*seml-%s*" (gensym)))))
+     (with-current-buffer buf
+       (insert seml-sample-str1)
+       (seml-encode-html-from-buffer)))
+   seml-sample-sexp1))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;
+;;  decode seml
+;;
+
+(cort-deftest seml-test:/simple-decode
+  (seml-str-expansion
+   (seml-decode-html seml-sample-sexp1 "<!DOCTYPE html>")
+   seml-sample-str1-decode))
+
+;; (cort-deftest seml-test:/simple-decode-buffer
+;;   (seml-expansion
+;;    (let ((buf (get-buffer-create (format "*seml-%s*" (gensym)))))
+;;      (with-current-buffer buf
+;;        (insert seml-sample-sexp1))
+;;      (seml-decode-html-from-buffer buf))
+;;    seml-sample-str1-decode))
+
+;; (cort-deftest seml-test:/simple-decode-current-buffer
+;;   (seml-expansion
+;;    (let ((buf (get-buffer-create (format "*seml-%s*" (gensym)))))
+;;      (with-current-buffer buf
+;;        (insert seml-sample-sexp1)
+;;        (seml-decode-html-from-buffer)))
+;;    seml-sample-str1-decode))
 
 (provide 'seml-mode-tests)
 ;;; seml-mode-tests.el ends here
