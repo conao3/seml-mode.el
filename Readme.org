@@ -144,8 +144,8 @@ If you stop monitor SEML buffer, ~M-x seml-live-refresh-stop~.
 - (seml-encode-html str)
 - (seml-encode-html-from-buffer &optional buf)
 *** Decode functions (SEML to HTML)
-- (seml-decode-html dom &optional doctype)
-- (seml-decode-html-from-buffer &optional buf)
+- (seml-decode-seml dom &optional doctype)
+- (seml-decode-seml-from-buffer &optional buf)
 - (seml-replace-buffer-from-html
 - (seml-replace-buffer-from-seml 
 *** Live refresh functions
