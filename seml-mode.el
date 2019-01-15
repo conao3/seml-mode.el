@@ -46,7 +46,7 @@
   :group 'lisp
   :prefix "seml-")
 
-(defconst seml-mode-version "1.1.0"
+(defconst seml-mode-version "1.1.1"
   "Version of `seml-mode'.")
 
 (defcustom seml-mode-hook nil
@@ -161,21 +161,21 @@ at INDENT-POINT on STATE.  see function/ `lisp-indent-function'."
 
 ;; TODO: comment feature
 
-(defalias 'seml-encode-html-region 'libxml-parse-html-region)
+(defalias 'seml-encode-html-from-region 'libxml-parse-html-region)
 
 ;;;###autoload
-(defun seml-encode-html-string (str)
+(defun seml-encode-html-from-string (str)
   "Return SEML sexp encoded from HTML STR."
   (with-temp-buffer
     (insert str)
-    (seml-encode-html-region (point-min) (point-max))))
+    (seml-encode-html-from-region (point-min) (point-max))))
 
 ;;;###autoload
 (defun seml-encode-html-from-buffer (&optional buf)
   "Return SEML sexp encoded from HTML BUF.
 If omit BUF, use `current-buffer'."
   (with-current-buffer (or buf (current-buffer))
-    (seml-encode-html-region (point-min) (point-max))))
+    (seml-encode-html-from-region (point-min) (point-max))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;
@@ -183,12 +183,12 @@ If omit BUF, use `current-buffer'."
 ;;
 
 ;;;###autoload
-(defun seml-decode-seml-region (start end &optional doctype)
+(defun seml-decode-seml-from-region (start end &optional doctype)
   "Return HTML string from buffer region at STRAT to END."
-  (seml-decode-seml-string (buffer-substring-no-properties start end) doctype))
+  (seml-decode-seml-from-string (buffer-substring-no-properties start end) doctype))
 
 ;;;###autoload
-(defun seml-decode-seml-string (dom &optional doctype)
+(defun seml-decode-seml-from-string (dom &optional doctype)
   "Return HTML string DOM decoded from SEML[str|sexp].
 If gives DOCTYPE, concat DOCTYPE at head."
   (let ((dom* (if (stringp dom) (read dom) dom)))
@@ -218,7 +218,7 @@ If gives DOCTYPE, concat DOCTYPE at head."
 ;;;###autoload
 (defun seml-decode-seml-from-buffer (&optional buf doctype)
   "Return HTML string decode from BUF."
-  (seml-decode-seml-string
+  (seml-decode-seml-from-string
    (with-current-buffer (or buf (current-buffer))
      (buffer-string))
    doctype))
@@ -234,7 +234,7 @@ If gives DOCTYPE, concat DOCTYPE at head."
   (interactive)
   (let ((str (buffer-substring-no-properties (point-min) (point-max))))
     (erase-buffer)
-    (insert (pp-to-string (seml-encode-html-string str)))
+    (insert (pp-to-string (seml-encode-html-from-string str)))
     (seml-mode)
     (indent-region (point-min) (point-max))))
 
@@ -245,7 +245,7 @@ If gives DOCTYPE, concat DOCTYPE at head."
   (let ((str (buffer-string)))
     (erase-buffer)
     (insert
-     (seml-decode-seml-string (read str) "<!DOCTYPE html>"))))
+     (seml-decode-seml-from-string (read str) "<!DOCTYPE html>"))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;
