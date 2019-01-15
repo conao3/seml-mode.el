@@ -103,12 +103,12 @@
   (seml-expansion
    (with-temp-buffer
      (insert seml-sample-str1)
-     (seml-encode-html-region (point-min) (point-max)))
+     (seml-encode-html-from-region (point-min) (point-max)))
    seml-sample-sexp1))
 
 (cort-deftest seml-test:/simple-encode
   (seml-expansion
-   (seml-encode-html-string seml-sample-str1)
+   (seml-encode-html-from-string seml-sample-str1)
    seml-sample-sexp1))
 
 (cort-deftest seml-test:/simple-encode-buffer
@@ -137,12 +137,12 @@
    (let ((buf (get-buffer-create (format "*seml-%s*" (gensym)))))
      (with-current-buffer buf
        (insert (prin1-to-string seml-sample-sexp1))
-       (seml-decode-seml-region (point-min) (point-max) "<!DOCTYPE html>")))
+       (seml-decode-seml-from-region (point-min) (point-max) "<!DOCTYPE html>")))
    seml-sample-str1-decode))
 
 (cort-deftest seml-test:/simple-decode
   (seml-str-expansion
-   (seml-decode-seml-string seml-sample-sexp1 "<!DOCTYPE html>")
+   (seml-decode-seml-from-string seml-sample-sexp1 "<!DOCTYPE html>")
    seml-sample-str1-decode))
 
 (cort-deftest seml-test:/simple-decode-current-buffer
