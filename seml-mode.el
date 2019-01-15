@@ -287,7 +287,7 @@ If gives DOCTYPE, concat DOCTYPE at head."
                             seml-live-refresh-url-variable))
            "text/html"
            (,@seml-live-refresh-url-quety)
-           (insert (seml-decode-seml
+           (insert (seml-decode-seml-from-string
                     (with-current-buffer seml-live-refresh-baffer
                       (eval
                        (read
