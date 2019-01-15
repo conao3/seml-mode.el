@@ -46,7 +46,7 @@
   :group 'lisp
   :prefix "seml-")
 
-(defconst seml-mode-version "1.1.1"
+(defconst seml-mode-version "1.1.2"
   "Version of `seml-mode'.")
 
 (defcustom seml-mode-hook nil
@@ -287,7 +287,7 @@ If gives DOCTYPE, concat DOCTYPE at head."
                             seml-live-refresh-url-variable))
            "text/html"
            (,@seml-live-refresh-url-quety)
-           (insert (seml-decode-seml
+           (insert (seml-decode-seml-from-string
                     (with-current-buffer seml-live-refresh-baffer
                       (eval
                        (read
