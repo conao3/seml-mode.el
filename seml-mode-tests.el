@@ -151,9 +151,15 @@
        (seml-decode-seml-from-region (point-min) (point-max) "<!DOCTYPE html>")))
    seml-sample-str1-decode))
 
-(cort-deftest seml-test:/simple-decode
+(cort-deftest seml-test:/simple-decode-sexp
   (seml-str-expansion
-   (seml-decode-seml-from-string seml-sample-sexp1 "<!DOCTYPE html>")
+   (seml-decode-seml-from-sexp seml-sample-sexp1 "<!DOCTYPE html>")
+   seml-sample-str1-decode))
+
+(cort-deftest seml-test:/simple-decode-string
+  (seml-str-expansion
+   (seml-decode-seml-from-string
+    (prin1-to-string `',seml-sample-sexp1) "<!DOCTYPE html>")
    seml-sample-str1-decode))
 
 (cort-deftest seml-test:/simple-decode-current-buffer
