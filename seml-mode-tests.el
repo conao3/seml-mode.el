@@ -89,6 +89,11 @@
                (h1 nil "sample")
                (p nil "text sample"))))
 
+(defvar seml-sample-dir
+  (expand-file-name "sample/"
+                    (file-name-directory
+                     (or load-file-name (buffer-file-name)))))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;
 ;;  test definition
@@ -127,6 +132,12 @@
        (seml-encode-html-from-buffer)))
    seml-sample-sexp1))
 
+(cort-deftest seml-test:/simple-encode-file
+  (seml-expansion
+   (seml-encode-html-from-file
+    (expand-file-name "test-1.html" seml-sample-dir))
+   seml-sample-sexp1))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;
 ;;  decode seml
@@ -136,7 +147,7 @@
   (seml-str-expansion
    (let ((buf (get-buffer-create (format "*seml-%s*" (gensym)))))
      (with-current-buffer buf
-       (insert (prin1-to-string seml-sample-sexp1))
+       (insert (prin1-to-string `',seml-sample-sexp1))
        (seml-decode-seml-from-region (point-min) (point-max) "<!DOCTYPE html>")))
    seml-sample-str1-decode))
 
@@ -149,9 +160,15 @@
   (seml-str-expansion
    (let ((buf (get-buffer-create (format "*seml-%s*" (gensym)))))
      (with-current-buffer buf
-       (insert (prin1-to-string seml-sample-sexp1))
+       (insert (prin1-to-string `',seml-sample-sexp1))
        (seml-decode-seml-from-buffer nil "<!DOCTYPE html>")))
      seml-sample-str1-decode))
+
+(cort-deftest seml-test:/simple-decode-file
+  (seml-str-expansion
+   (seml-decode-seml-from-file
+    (expand-file-name "test-1.seml" seml-sample-dir) "<!DOCTYPE html>")
+   seml-sample-str1-decode))
 
 (provide 'seml-mode-tests)
 ;;; seml-mode-tests.el ends here
