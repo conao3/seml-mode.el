@@ -46,7 +46,7 @@
   :group 'lisp
   :prefix "seml-")
 
-(defconst seml-mode-version "1.1.3"
+(defconst seml-mode-version "1.1.4"
   "Version of `seml-mode'.")
 
 (defcustom seml-mode-hook nil
@@ -196,32 +196,36 @@ If omit BUF, use `current-buffer'."
   (seml-decode-seml-from-string (buffer-substring-no-properties start end) doctype))
 
 ;;;###autoload
-(defun seml-decode-seml-from-string (dom &optional doctype)
-  "Return HTML string DOM decoded from SEML[str|sexp].
+(defun seml-decode-seml-from-sexp (sexp &optional doctype)
+  "Return HTML decoded from seml SEXP.
 If gives DOCTYPE, concat DOCTYPE at head."
-  (let ((dom* (if (stringp dom) (eval (read dom)) dom)))
-    (concat
-     (if doctype doctype "")
-     (let* ((prop--fn) (decode-fn))
-       (setq prop--fn
-             (lambda (x)
-               (format " %s=\"%s\"" (car x) (cdr x))))
-       (setq decode-fn
-             (lambda (dom)
-               (if (listp dom)
-                   (let* ((tag  (pop dom))
-                          (prop (pop dom))
-                          (rest dom)
-                          (tagname (symbol-name tag)))
-                     (if (memq tag seml-html-single-tags)
-                         (format "%s\n"
-                                 (format "<%s%s>" tagname (mapconcat prop--fn prop "")))
-                       (format "\n%s%s%s\n"
-                               (format "<%s%s>" tagname (mapconcat prop--fn prop ""))
-                               (mapconcat decode-fn rest "")
-                               (format "</%s>" tagname))))
-                 dom)))
-       (funcall decode-fn dom*)))))
+  (concat
+   (or doctype "")
+   (let ((prop--fn) (decode-fn))
+     (setq prop--fn
+           (lambda (x)
+             (format " %s=\"%s\"" (car x) (cdr x))))
+     (setq decode-fn
+           (lambda (dom)
+             (if (listp dom)
+                 (let* ((tag  (pop dom))
+                        (prop (pop dom))
+                        (rest dom)
+                        (tagname (symbol-name tag)))
+                   (if (memq tag seml-html-single-tags)
+                       (format "%s\n"
+                               (format "<%s%s>" tagname (mapconcat prop--fn prop "")))
+                     (format "\n%s%s%s\n"
+                             (format "<%s%s>" tagname (mapconcat prop--fn prop ""))
+                             (mapconcat decode-fn rest "")
+                             (format "</%s>" tagname))))
+               dom)))
+     (funcall decode-fn sexp))))
+
+;;;###autoload
+(defun seml-decode-seml-from-string (str &optional doctype)
+  "Return HTML string decode from seml STR."
+  (seml-decode-seml-from-sexp (eval (read str)) doctype))
 
 ;;;###autoload
 (defun seml-decode-seml-from-buffer (&optional buf doctype)
@@ -248,20 +252,18 @@ If gives DOCTYPE, concat DOCTYPE at head."
 (defun seml-replace-buffer-from-html ()
   "Replace buffer string HTML to SEML."
   (interactive)
-  (let ((str (buffer-substring-no-properties (point-min) (point-max))))
-    (erase-buffer)
-    (insert (pp-to-string (seml-encode-html-from-string str)))
-    (seml-mode)
-    (indent-region (point-min) (point-max))))
+  (erase-buffer)
+  (insert (pp-to-string (seml-encode-html-from-buffer)))
+  (seml-mode)
+  (indent-region (point-min) (point-max)))
 
 ;;;###autoload
 (defun seml-replace-buffer-from-seml ()
   "Replace buffer string SEML to HTML."
   (interactive)
-  (let ((str (buffer-string)))
-    (erase-buffer)
-    (insert
-     (seml-decode-seml-from-string (read str) "<!DOCTYPE html>"))))
+  (erase-buffer)
+  (insert
+   (seml-decode-seml-from-buffer nil "<!DOCTYPE html>")))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;
