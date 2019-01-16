@@ -110,6 +110,7 @@ If you stop monitor SEML buffer, ~M-x seml-live-refresh-stop~.
 - seml-live-refresh-url-quety
 ** Constants
 - seml-mode-keywords
+
   Support HTML5 tags.
   #+begin_src emacs-lisp
     (defconst seml-mode-keywords
@@ -132,6 +133,7 @@ If you stop monitor SEML buffer, ~M-x seml-live-refresh-stop~.
   #+end_src
 
 - seml-html-single-tags
+
   Define single tag (without closing tag)
   #+begin_src emacs-lisp
     (defconst seml-html-single-tags
@@ -140,12 +142,16 @@ If you stop monitor SEML buffer, ~M-x seml-live-refresh-stop~.
 
 ** Functions
 *** Encode functions (HTML to SEML)
-- (seml-encode-html-region pointmin pointmax)
-- (seml-encode-html str)
+- (seml-encode-html-from-region pointmin pointmax)
+- (seml-encode-html-from-string str)
 - (seml-encode-html-from-buffer &optional buf)
+- (seml-encode-html-from-file filepath)
 *** Decode functions (SEML to HTML)
-- (seml-decode-seml dom &optional doctype)
-- (seml-decode-seml-from-buffer &optional buf)
+- (seml-decode-seml-from-region start end &optional doctype)
+- (seml-decode-seml-from-string dom &optional doctype)
+- (seml-decode-seml-from-buffer &optional buf doctype)
+- (seml-decode-seml-from-file filepath &optional doctype)
+*** Buffer replace functions
 - (seml-replace-buffer-from-html
 - (seml-replace-buffer-from-seml 
 *** Live refresh functions

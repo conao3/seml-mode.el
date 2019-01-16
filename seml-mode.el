@@ -46,7 +46,7 @@
   :group 'lisp
   :prefix "seml-")
 
-(defconst seml-mode-version "1.1.2"
+(defconst seml-mode-version "1.1.3"
   "Version of `seml-mode'.")
 
 (defcustom seml-mode-hook nil
@@ -177,6 +177,14 @@ If omit BUF, use `current-buffer'."
   (with-current-buffer (or buf (current-buffer))
     (seml-encode-html-from-region (point-min) (point-max))))
 
+;;;###autoload
+(defun seml-encode-html-from-file (filepath)
+  "Return SEML sexp encoded from html file."
+  (let ((buf (generate-new-buffer " *seml-encode*")))
+    (with-current-buffer buf
+     (insert-file-contents filepath))
+    (seml-encode-html-from-buffer buf)))
+    
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;
 ;;  Decode
@@ -191,7 +199,7 @@ If omit BUF, use `current-buffer'."
 (defun seml-decode-seml-from-string (dom &optional doctype)
   "Return HTML string DOM decoded from SEML[str|sexp].
 If gives DOCTYPE, concat DOCTYPE at head."
-  (let ((dom* (if (stringp dom) (read dom) dom)))
+  (let ((dom* (if (stringp dom) (eval (read dom)) dom)))
     (concat
      (if doctype doctype "")
      (let* ((prop--fn) (decode-fn))
@@ -222,6 +230,14 @@ If gives DOCTYPE, concat DOCTYPE at head."
    (with-current-buffer (or buf (current-buffer))
      (buffer-string))
    doctype))
+
+;;;###autoload
+(defun seml-decode-seml-from-file (filepath &optional doctype)
+  "Return HTML string decoded from seml file."
+  (let ((buf (generate-new-buffer " *seml-decode*")))
+    (with-current-buffer buf
+      (insert-file-contents filepath))
+    (seml-decode-seml-from-buffer buf doctype)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;
