@@ -276,18 +276,20 @@ If gives DOCTYPE, concat DOCTYPE at head."
 (defun seml-replace-buffer-from-html ()
   "Replace buffer string HTML to SEML."
   (interactive)
-  (erase-buffer)
-  (insert (pp-to-string (seml-encode-html-from-buffer)))
-  (seml-mode)
-  (indent-region (point-min) (point-max)))
+  (let ((content (buffer-substring-no-properties (point-min) (point-max))))
+    (erase-buffer)
+    (insert (pp-to-string (seml-encode-html-from-string content)))
+    (seml-mode)
+    (indent-region (point-min) (point-max))))
 
 ;;;###autoload
 (defun seml-replace-buffer-from-seml ()
   "Replace buffer string SEML to HTML."
   (interactive)
-  (erase-buffer)
-  (insert
-   (seml-decode-seml-from-buffer nil "<!DOCTYPE html>")))
+  (let ((content (buffer-substring-no-properties (point-min) (point-max))))
+    (erase-buffer)
+    (insert
+     (seml-decode-seml-from-string content "<!DOCTYPE html>"))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;
