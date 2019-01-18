@@ -36,6 +36,8 @@
 ;;  test settings
 ;;
 
+(defalias 'message 'ignore)
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;
 ;;  support macros
@@ -199,5 +201,37 @@
 <!-- Created by htmlize-1.55 in css mode. -->
 "))
 
-(provide 'seml-mode-tests)
-;;; seml-mode-tests.el ends here
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;
+;;  other functions
+;;
+
+(cort-deftest seml-test:simple-format
+  (seml-str-expansion
+   (seml-format-from-sexp
+    '(html ((lang . "en"))
+           (head nil
+                 (meta ((charset . "utf-8")))
+                 (title nil
+                        "sample page")
+                 (link ((rel . "stylesheet") (href . "sample1.css"))))
+           (body nil
+                 (h1 nil
+                     "sample")
+                 (p nil
+                    "sample"
+                    "text sample"))))
+   "
+(html ((lang . \"en\"))
+  (head nil
+    (meta ((charset . \"utf-8\")))
+    (title nil
+      \"sample page\")
+    (link ((rel . \"stylesheet\") (href . \"sample1.css\"))))
+  (body nil
+    (h1 nil
+      \"sample\")
+    (p nil
+      \"sample\"
+      \"text sample\")))
+"))

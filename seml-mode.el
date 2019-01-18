@@ -46,7 +46,7 @@
   :group 'lisp
   :prefix "seml-")
 
-(defconst seml-mode-version "1.2.1"
+(defconst seml-mode-version "1.2.2"
   "Version of `seml-mode'.")
 
 (defcustom seml-mode-hook nil
@@ -156,6 +156,28 @@ at INDENT-POINT on STATE.  see function/ `lisp-indent-function'."
 				     indent-point normal-indent))
 	      (method
 		(funcall method indent-point state)))))))
+
+;;;###autoload
+(defun seml-format-from-sexp (sexp)
+  "Return formated string from seml sexp"
+  (with-temp-buffer
+    (insert (prin1-to-string sexp))
+    (goto-char (point-min))
+    (ignore-errors
+      (while t
+        (insert "\n")
+        (if (equal (following-char) ?\")
+            (forward-char
+             (+ 2
+                (length
+                 (read (buffer-substring-no-properties (point) (point-max))))))
+          (forward-char)
+          (forward-sexp)(forward-sexp))
+        (skip-chars-forward ") ")))
+    (delete-trailing-whitespace)
+    (seml-mode)
+    (indent-region (point-min) (point-max))
+    (buffer-substring-no-properties (point-min) (point-max))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;

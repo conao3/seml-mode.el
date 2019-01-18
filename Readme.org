@@ -156,11 +156,14 @@ If you stop monitor SEML buffer, ~M-x seml-live-refresh-stop~.
 - (seml-decode-seml-from-buffer &optional buf doctype)
 - (seml-decode-seml-from-file filepath &optional doctype)
 *** Buffer replace functions
-- (seml-replace-buffer-from-html
-- (seml-replace-buffer-from-seml 
+- (seml-replace-buffer-from-html)
+- (seml-replace-buffer-from-seml)
 *** Live refresh functions
 - (seml-live-refresh-start)
 - (seml-live-refresh-stop)
+*** Utility functions
+- (seml-indent-function indent-point state)
+- (seml-format-from-sexp sexp)
 *** Major mode
 - (seml-mode)
 
