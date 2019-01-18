@@ -52,15 +52,20 @@
 ;;  support variables
 ;;
 
-(defvar seml-sample-str1
-  "<!DOCTYPE html>
+(defvar seml-sample-str1 "
+<!DOCTYPE html>
 <html lang=\"en\">
-<head><meta charset=\"utf-8\"/>
-<title>sample page</title>
-<link rel=\"stylesheet\" href=\"sample1.css\"/>
-</head>
-<body><h1>sample</h1><p>text sample</p></body>
+  <head>
+    <meta charset=\"utf-8\">
+    <title>sample page</title>
+    <link rel=\"stylesheet\" href=\"sample1.css\">
+  </head>
+  <body>
+    <h1>sample</h1>
+    <p>text sample</p>
+  </body>
 </html>")
+
 
 (defvar seml-sample-str1-decode
   "<!DOCTYPE html>
