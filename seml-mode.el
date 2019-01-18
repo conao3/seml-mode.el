@@ -162,8 +162,6 @@ at INDENT-POINT on STATE.  see function/ `lisp-indent-function'."
 ;;  Encode
 ;;
 
-;; TODO: comment feature
-
 (defalias 'seml-encode-html-from-region 'libxml-parse-html-region)
 
 ;;;###autoload
