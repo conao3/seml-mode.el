@@ -234,3 +234,26 @@
       \"sample\"
       \"text sample\")))
 "))
+
+(cort-deftest seml-test:simple-pre
+  (seml-str-expansion
+   (seml-decode-seml-from-sexp
+    '(pre nil
+          "\n("
+          (span ((class . "keyword")) "leaf")
+          " real-auto-save\n  "
+          (span ((class . "builtin")) ":ensure")
+          " t\n  "
+          (span ((class . "builtin")) ":custom")
+          " ((real-auto-save-interval . 0.3))\n  "
+          (span ((class . "builtin")) ":commands")
+          " real-auto-save-mode\n  "
+          (span ((class . "builtin")) ":hook")
+          " (find-file-hook . real-auto-save-mode))\n"))
+   "<pre>
+(<span class=\"keyword\">leaf</span> real-auto-save
+  <span class=\"builtin\">:ensure</span> t
+  <span class=\"builtin\">:custom</span> ((real-auto-save-interval . 0.3))
+  <span class=\"builtin\">:commands</span> real-auto-save-mode
+  <span class=\"builtin\">:hook</span> (find-file-hook . real-auto-save-mode))
+</pre>"))

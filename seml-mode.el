@@ -46,7 +46,7 @@
   :group 'lisp
   :prefix "seml-")
 
-(defconst seml-mode-version "1.2.4"
+(defconst seml-mode-version "1.2.5"
   "Version of `seml-mode'.")
 
 (defcustom seml-mode-hook nil
@@ -249,12 +249,13 @@ If gives DOCTYPE, concat DOCTYPE at head."
                              (mapconcat decode-fn rest "")
                              (format "</%s>" tagname)))
                     ((eq tag 'pre)
-                     (let ((prep t)
-                           (content
-                            (format "%s%s%s"
-                                    (format "<%s%s>" tagname (mapconcat prop--fn prop ""))
-                                    (mapconcat decode-fn rest "")
-                                    (format "</%s>" tagname))))
+                     (let ((content))
+                       (setq prep t)
+                       (setq content (format "%s%s%s"
+                                             (format "<%s%s>" tagname (mapconcat prop--fn prop ""))
+                                             (mapconcat decode-fn rest "")
+                                             (format "</%s>" tagname)))
+                       (setq prep nil)
                        content))
                     ((eq tag 'top)
                      (format "%s"
