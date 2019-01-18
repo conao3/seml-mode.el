@@ -216,16 +216,16 @@ If gives DOCTYPE, concat DOCTYPE at head."
                         (rest dom)
                         (tagname (symbol-name tag)))
                    (cond
-                      ((eq tag 'comment)
-                       (format "\n<!--%s-->\n"
-                               (mapconcat decode-fn rest "")))
-                      ((memq tag seml-html-single-tags)
-                       (format "%s\n"
-                               (format "<%s%s>" tagname (mapconcat prop--fn prop ""))))
-                      (t (format "\n%s%s%s\n"
-                                 (format "<%s%s>" tagname (mapconcat prop--fn prop ""))
-                                 (mapconcat decode-fn rest "")
-                                 (format "</%s>" tagname)))))
+                    ((eq tag 'comment)
+                     (format "\n<!--%s-->\n"
+                             (mapconcat decode-fn rest "")))
+                    ((memq tag seml-html-single-tags)
+                     (format "%s\n"
+                             (format "<%s%s>" tagname (mapconcat prop--fn prop ""))))
+                    (t (format "\n%s%s%s\n"
+                               (format "<%s%s>" tagname (mapconcat prop--fn prop ""))
+                               (mapconcat decode-fn rest "")
+                               (format "</%s>" tagname)))))
                dom)))
      (funcall decode-fn sexp))))
 
