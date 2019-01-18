@@ -46,7 +46,7 @@
   :group 'lisp
   :prefix "seml-")
 
-(defconst seml-mode-version "1.2.2"
+(defconst seml-mode-version "1.2.3"
   "Version of `seml-mode'.")
 
 (defcustom seml-mode-hook nil
@@ -158,7 +158,7 @@ at INDENT-POINT on STATE.  see function/ `lisp-indent-function'."
 		(funcall method indent-point state)))))))
 
 ;;;###autoload
-(defun seml-format-from-sexp (sexp)
+(defun seml-to-string (sexp)
   "Return formated string from seml sexp"
   (with-temp-buffer
     (insert (prin1-to-string sexp))
@@ -305,7 +305,7 @@ If gives DOCTYPE, concat DOCTYPE at head."
   (interactive)
   (let ((content (buffer-substring-no-properties (point-min) (point-max))))
     (erase-buffer)
-    (insert (pp-to-string (seml-encode-html-from-string content)))
+    (insert (seml-to-string (seml-encode-html-from-string content)))
     (seml-mode)
     (indent-region (point-min) (point-max))))
 
