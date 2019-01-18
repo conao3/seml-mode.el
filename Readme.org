@@ -129,7 +129,10 @@ If you stop monitor SEML buffer, ~M-x seml-live-refresh-stop~.
         table caption colgroup col tbody thead tfoot tr td th
         form fieldset legend label input button select
         datalist optgroup option textarea keygen output progress meter
-        details summary command menu))
+        details summary command menu
+
+        ;; libxml-parse keywords
+        comment))
   #+end_src
 
 - seml-html-single-tags
