@@ -46,7 +46,7 @@
   :group 'lisp
   :prefix "seml-")
 
-(defconst seml-mode-version "1.2.0"
+(defconst seml-mode-version "1.2.1"
   "Version of `seml-mode'.")
 
 (defcustom seml-mode-hook nil
@@ -162,9 +162,14 @@ at INDENT-POINT on STATE.  see function/ `lisp-indent-function'."
 ;;  Encode
 ;;
 
-;; TODO: comment feature
-
-(defalias 'seml-encode-html-from-region 'libxml-parse-html-region)
+;;;###autoload
+(defun seml-encode-html-from-region (start end)
+  "Return SEML sexp encoded from region from START to END."
+  (interactive "r")
+  (let ((raw (libxml-parse-html-region start end)))
+    (read
+     (replace-regexp-in-string
+      " *\"[\n ]*\" *" "" (prin1-to-string raw)))))
 
 ;;;###autoload
 (defun seml-encode-html-from-string (str)
