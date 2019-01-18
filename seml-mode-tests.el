@@ -221,8 +221,7 @@
                  (p nil
                     "sample"
                     "text sample"))))
-   "
-(html ((lang . \"en\"))
+   "(html ((lang . \"en\"))
   (head nil
     (meta ((charset . \"utf-8\")))
     (title nil
