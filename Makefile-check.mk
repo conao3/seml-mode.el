@@ -1,4 +1,4 @@
-%.elc: %.el $(DEPEND)
+%.elc: %.el $(DEPEND) $(DEPENDDIR)
 	$(EMACS) -Q --batch -L . -f batch-byte-compile $<
 
 check: $(ELS:.el=.elc)
