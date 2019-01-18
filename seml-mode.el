@@ -46,7 +46,7 @@
   :group 'lisp
   :prefix "seml-")
 
-(defconst seml-mode-version "1.1.6"
+(defconst seml-mode-version "1.1.7"
   "Version of `seml-mode'.")
 
 (defcustom seml-mode-hook nil
@@ -102,7 +102,7 @@ NOTE: If you have auto-save settings, set this variable loger than it."
     details summary command menu
 
     ;; libxml-parse keywords
-    comment))
+    comment top))
 
 (defconst seml-mode-keywords-regexp
   (eval `(rx (or ,@(mapcar 'symbol-name seml-mode-keywords)))))
@@ -216,16 +216,20 @@ If gives DOCTYPE, concat DOCTYPE at head."
                         (rest dom)
                         (tagname (symbol-name tag)))
                    (cond
-                      ((eq tag 'comment)
-                       (format "\n<!--%s-->\n"
-                               (mapconcat decode-fn rest "")))
-                      ((memq tag seml-html-single-tags)
-                       (format "%s\n"
-                               (format "<%s%s>" tagname (mapconcat prop--fn prop ""))))
-                      (t (format "\n%s%s%s\n"
-                                 (format "<%s%s>" tagname (mapconcat prop--fn prop ""))
-                                 (mapconcat decode-fn rest "")
-                                 (format "</%s>" tagname)))))
+                    ((eq tag 'top)
+                     (format "%s"
+                             (mapconcat decode-fn rest "")))
+                    ((eq tag 'comment)
+                     (format "\n<!--%s-->\n"
+                             (mapconcat decode-fn rest "")))
+                    ((memq tag seml-html-single-tags)
+                     (format "%s\n"
+                             (format "<%s%s>" tagname (mapconcat prop--fn prop ""))))
+                    (t
+                     (format "\n%s%s%s\n"
+                             (format "<%s%s>" tagname (mapconcat prop--fn prop ""))
+                             (mapconcat decode-fn rest "")
+                             (format "</%s>" tagname)))))
                dom)))
      (funcall decode-fn sexp))))
 

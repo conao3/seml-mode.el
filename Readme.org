@@ -132,7 +132,7 @@ If you stop monitor SEML buffer, ~M-x seml-live-refresh-stop~.
         details summary command menu
 
         ;; libxml-parse keywords
-        comment))
+        comment top))
   #+end_src
 
 - seml-html-single-tags

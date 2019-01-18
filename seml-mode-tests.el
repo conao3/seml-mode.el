@@ -183,5 +183,16 @@
 <!-- Created by htmlize-1.55 in css mode. -->
 "))
 
+(cort-deftest seml-test:/simple-top
+  (seml-str-expansion
+   (seml-decode-seml-from-sexp '(top nil
+                                     (comment nil " Created by htmlize-1.55 in css mode. ")
+                                     (comment nil " Created by htmlize-1.55 in css mode. ")))
+   "
+<!-- Created by htmlize-1.55 in css mode. -->
+
+<!-- Created by htmlize-1.55 in css mode. -->
+"))
+
 (provide 'seml-mode-tests)
 ;;; seml-mode-tests.el ends here
