@@ -176,5 +176,12 @@
     (expand-file-name "test-1.seml" seml-sample-dir) "<!DOCTYPE html>")
    seml-sample-str1-decode))
 
+(cort-deftest seml-test:/simple-comment
+  (seml-str-expansion
+   (seml-decode-seml-from-sexp '(comment nil " Created by htmlize-1.55 in css mode. "))
+   "
+<!-- Created by htmlize-1.55 in css mode. -->
+"))
+
 (provide 'seml-mode-tests)
 ;;; seml-mode-tests.el ends here
