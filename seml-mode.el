@@ -112,6 +112,15 @@ NOTE: If you have auto-save settings, set this variable loger than it."
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;
+;;  Polifills
+;;
+
+(defsubst seml-pairp (var)
+  "Return t if var is pair."
+  (and (listp var) (atom (cdr var))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;
 ;;  functions
 ;;
 
@@ -188,10 +197,14 @@ at INDENT-POINT on STATE.  see function/ `lisp-indent-function'."
 (defun seml-encode-html-from-region (start end)
   "Return SEML sexp encoded from region from START to END."
   (interactive "r")
-  (let ((raw (libxml-parse-html-region start end)))
-    (read
-     (replace-regexp-in-string
-      " *\"[\n ]*\" *" "" (prin1-to-string raw)))))
+  (let ((fn))
+    (setq fn (lambda (x)
+              (if (and (consp x) (not (seml-pairp x)))
+                  `(,(mapcan fn x))
+                (if (stringp x)
+                    (when (string-match-p "[[:graph:]]" x) `(,x))
+                  `(,x)))))
+    (mapcan fn (libxml-parse-html-region start end))))
 
 ;;;###autoload
 (defun seml-encode-html-from-string (str)
