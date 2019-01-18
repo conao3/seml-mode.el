@@ -204,7 +204,7 @@ If omit BUF, use `current-buffer'."
 If gives DOCTYPE, concat DOCTYPE at head."
   (concat
    (or doctype "")
-   (let ((prop--fn) (decode-fn))
+   (let ((prop--fn) (decode-fn) (prep))
      (setq prop--fn
            (lambda (x)
              (format " %s=\"%s\"" (car x) (cdr x))))
@@ -216,6 +216,19 @@ If gives DOCTYPE, concat DOCTYPE at head."
                         (rest dom)
                         (tagname (symbol-name tag)))
                    (cond
+                    (prep
+                     (format "%s%s%s"
+                             (format "<%s%s>" tagname (mapconcat prop--fn prop ""))
+                             (mapconcat decode-fn rest "")
+                             (format "</%s>" tagname)))
+                    ((eq tag 'pre)
+                     (let ((prep t)
+                           (content
+                            (format "%s%s%s"
+                                    (format "<%s%s>" tagname (mapconcat prop--fn prop ""))
+                                    (mapconcat decode-fn rest "")
+                                    (format "</%s>" tagname))))
+                       content))
                     ((eq tag 'top)
                      (format "%s"
                              (mapconcat decode-fn rest "")))
