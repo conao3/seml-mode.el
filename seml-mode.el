@@ -46,7 +46,7 @@
   :group 'lisp
   :prefix "seml-")
 
-(defconst seml-mode-version "1.2.5"
+(defconst seml-mode-version "1.2.6"
   "Version of `seml-mode'.")
 
 (defcustom seml-mode-hook nil
@@ -109,6 +109,15 @@ NOTE: If you have auto-save settings, set this variable loger than it."
 
 (defconst seml-html-single-tags
   '(base link meta img br area param hr col option input wbr))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;
+;;  Polifills
+;;
+
+(defsubst seml-pairp (var)
+  "Return t if var is pair."
+  (and (listp var) (atom (cdr var))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;
@@ -188,10 +197,14 @@ at INDENT-POINT on STATE.  see function/ `lisp-indent-function'."
 (defun seml-encode-html-from-region (start end)
   "Return SEML sexp encoded from region from START to END."
   (interactive "r")
-  (let ((raw (libxml-parse-html-region start end)))
-    (read
-     (replace-regexp-in-string
-      " *\"[\n ]*\" *" "" (prin1-to-string raw)))))
+  (let ((fn))
+    (setq fn (lambda (x)
+              (if (and (consp x) (not (seml-pairp x)))
+                  `(,(mapcan fn x))
+                (if (stringp x)
+                    (when (string-match-p "[[:graph:]]" x) `(,x))
+                  `(,x)))))
+    (mapcan fn (libxml-parse-html-region start end))))
 
 ;;;###autoload
 (defun seml-encode-html-from-string (str)
