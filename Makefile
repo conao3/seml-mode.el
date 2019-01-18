@@ -12,6 +12,7 @@ BATCH       := $(EMACS) -Q --batch -L $(TOP)
 
 SIMPLEHTTPD := simple-httpd.el
 DEPEND      := $(SIMPLEHTTPD)
+DEPENDDIR   := sample
 
 TESTFILE    := seml-mode-tests.el
 ELS         := seml-mode.el
@@ -24,7 +25,7 @@ GITHOOKS    := $(wildcard $(GITHOOKDIR)/*)
 LOGFILE     := .make-check.log
 MAKE-NPD    = $(MAKE) --no-print-directory
 
-export ELS CORT_ARGS DEPEND
+export ELS CORT_ARGS DEPEND DEPENDDIR
 
 ##################################################
 
@@ -50,10 +51,10 @@ allcheck: $(ALL_EMACS:%=.make-check-%)
 	@cat $(LOGFILE) | grep =====
 	@rm $(LOGFILE)
 
-.make-check-%: $(DEPEND)
+.make-check-%: $(DEPEND) $(DIPENDDIR)
 	$(if $(wildcard .make-$*),rm -rf .make-$*)
 	mkdir -p .make-$*
-	cp -f $(ELS) $(CORTELS) .make-$*/
+	cp -rf $(ELS) $(CORTELS) $(DEPENDDIR) .make-$*/
 	cp -f Makefile-check.mk .make-$*/Makefile
 	+EMACS=$* $(MAKE-NPD) -C .make-$* check 2>&1 | tee -a $(LOGFILE)
 	rm -rf .make-$*
@@ -66,10 +67,10 @@ test: $(ALL_EMACS:%=.make-test-%)
 	@cat $(LOGFILE) | grep =====
 	@rm $(LOGFILE)
 
-.make-test-%: $(DEPEND)
+.make-test-%: $(DEPEND) $(DEPENDDIR)
 	$(if $(wildcard .make-$*),rm -rf .make-$*)
 	mkdir -p .make-$*
-	cp -f $(ELS) $(CORTELS) .make-$*/
+	cp -rf $(ELS) $(CORTELS) $(DEPENDDIR) .make-$*/
 	cp -f Makefile-check.mk .make-$*/Makefile
 	+EMACS=$* $(MAKE-NPD) -C .make-$* check 2>&1 >> $(LOGFILE)
 	rm -rf .make-$*
