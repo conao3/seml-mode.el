@@ -305,7 +305,7 @@ If gives DOCTYPE, concat DOCTYPE at head."
   (interactive)
   (let ((content (buffer-substring-no-properties (point-min) (point-max))))
     (erase-buffer)
-    (insert (pp-to-string (seml-encode-html-from-string content)))
+    (insert (seml-to-string (seml-encode-html-from-string content)))
     (seml-mode)
     (indent-region (point-min) (point-max))))
 
