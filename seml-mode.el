@@ -5,7 +5,7 @@
 ;; Author: Naoya Yamashita <conao3@gmail.com>
 ;; Maintainer: Naoya Yamashita <conao3@gmail.com>
 ;; Keywords: lisp html
-;; Version: 1.1.0
+;; Version: 1.2.0
 ;; URL: https://github.com/conao3/seml-mode
 ;; Package-Requires: ((emacs "24.3") (simple-httpd "1.5"))
 
@@ -46,7 +46,7 @@
   :group 'lisp
   :prefix "seml-")
 
-(defconst seml-mode-version "1.1.9"
+(defconst seml-mode-version "1.2.0"
   "Version of `seml-mode'.")
 
 (defcustom seml-mode-hook nil
@@ -276,18 +276,20 @@ If gives DOCTYPE, concat DOCTYPE at head."
 (defun seml-replace-buffer-from-html ()
   "Replace buffer string HTML to SEML."
   (interactive)
-  (erase-buffer)
-  (insert (pp-to-string (seml-encode-html-from-buffer)))
-  (seml-mode)
-  (indent-region (point-min) (point-max)))
+  (let ((content (buffer-substring-no-properties (point-min) (point-max))))
+    (erase-buffer)
+    (insert (pp-to-string (seml-encode-html-from-string content)))
+    (seml-mode)
+    (indent-region (point-min) (point-max))))
 
 ;;;###autoload
 (defun seml-replace-buffer-from-seml ()
   "Replace buffer string SEML to HTML."
   (interactive)
-  (erase-buffer)
-  (insert
-   (seml-decode-seml-from-buffer nil "<!DOCTYPE html>")))
+  (let ((content (buffer-substring-no-properties (point-min) (point-max))))
+    (erase-buffer)
+    (insert
+     (seml-decode-seml-from-string content "<!DOCTYPE html>"))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;
