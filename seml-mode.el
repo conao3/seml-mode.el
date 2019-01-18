@@ -102,7 +102,7 @@ NOTE: If you have auto-save settings, set this variable loger than it."
     details summary command menu
 
     ;; libxml-parse keywords
-    comment))
+    comment top))
 
 (defconst seml-mode-keywords-regexp
   (eval `(rx (or ,@(mapcar 'symbol-name seml-mode-keywords)))))
@@ -216,6 +216,9 @@ If gives DOCTYPE, concat DOCTYPE at head."
                         (rest dom)
                         (tagname (symbol-name tag)))
                    (cond
+                    ((eq tag 'top)
+                     (format "%s"
+                             (mapconcat decode-fn rest "")))
                     ((eq tag 'comment)
                      (format "\n<!--%s-->\n"
                              (mapconcat decode-fn rest "")))
