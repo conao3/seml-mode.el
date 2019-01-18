@@ -208,7 +208,7 @@
 
 (cort-deftest seml-test:simple-format
   (seml-str-expansion
-   (seml-format-from-sexp
+   (seml-to-string
     '(html ((lang . "en"))
            (head nil
                  (meta ((charset . "utf-8")))

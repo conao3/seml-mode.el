@@ -158,7 +158,7 @@ at INDENT-POINT on STATE.  see function/ `lisp-indent-function'."
 		(funcall method indent-point state)))))))
 
 ;;;###autoload
-(defun seml-format-from-sexp (sexp)
+(defun seml-to-string (sexp)
   "Return formated string from seml sexp"
   (with-temp-buffer
     (insert (prin1-to-string sexp))
