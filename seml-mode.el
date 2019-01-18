@@ -5,7 +5,7 @@
 ;; Author: Naoya Yamashita <conao3@gmail.com>
 ;; Maintainer: Naoya Yamashita <conao3@gmail.com>
 ;; Keywords: lisp html
-;; Version: 1.1.0
+;; Version: 1.2.0
 ;; URL: https://github.com/conao3/seml-mode
 ;; Package-Requires: ((emacs "24.3") (simple-httpd "1.5"))
 
@@ -46,7 +46,7 @@
   :group 'lisp
   :prefix "seml-")
 
-(defconst seml-mode-version "1.1.9"
+(defconst seml-mode-version "1.2.0"
   "Version of `seml-mode'.")
 
 (defcustom seml-mode-hook nil
