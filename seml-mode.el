@@ -99,7 +99,10 @@ NOTE: If you have auto-save settings, set this variable loger than it."
     table caption colgroup col tbody thead tfoot tr td th
     form fieldset legend label input button select
     datalist optgroup option textarea keygen output progress meter
-    details summary command menu))
+    details summary command menu
+
+    ;; libxml-parse keywords
+    comment))
 
 (defconst seml-mode-keywords-regexp
   (eval `(rx (or ,@(mapcar 'symbol-name seml-mode-keywords)))))
@@ -212,13 +215,17 @@ If gives DOCTYPE, concat DOCTYPE at head."
                         (prop (pop dom))
                         (rest dom)
                         (tagname (symbol-name tag)))
-                   (if (memq tag seml-html-single-tags)
+                   (cond
+                      ((eq tag 'comment)
+                       (format "\n<!--%s-->\n"
+                               (mapconcat decode-fn rest "")))
+                      ((memq tag seml-html-single-tags)
                        (format "%s\n"
-                               (format "<%s%s>" tagname (mapconcat prop--fn prop "")))
-                     (format "\n%s%s%s\n"
-                             (format "<%s%s>" tagname (mapconcat prop--fn prop ""))
-                             (mapconcat decode-fn rest "")
-                             (format "</%s>" tagname))))
+                               (format "<%s%s>" tagname (mapconcat prop--fn prop ""))))
+                      (t (format "\n%s%s%s\n"
+                                 (format "<%s%s>" tagname (mapconcat prop--fn prop ""))
+                                 (mapconcat decode-fn rest "")
+                                 (format "</%s>" tagname)))))
                dom)))
      (funcall decode-fn sexp))))
 
