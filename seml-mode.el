@@ -46,7 +46,7 @@
   :group 'lisp
   :prefix "seml-")
 
-(defconst seml-mode-version "1.2.0"
+(defconst seml-mode-version "1.2.1"
   "Version of `seml-mode'.")
 
 (defcustom seml-mode-hook nil
