@@ -7,7 +7,7 @@
 ;; Keywords: lisp html
 ;; Version: 1.2.0
 ;; URL: https://github.com/conao3/seml-mode
-;; Package-Requires: ((emacs "24.3") (simple-httpd "1.5"))
+;; Package-Requires: ((emacs "24.3") (simple-httpd "1.5") (htmlize "1.5"))
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -220,13 +220,14 @@ XPATH is now supported below forms
 ;;;###autoload
 (defun seml-htmlize (majormode codestr)
   "Return seml sexp formated CODESTR by Emacs fontlock on MAJORMODE."
-  (let ((source-buf (generate-new-buffer "*seml*")) ; don't use " *seml*"
+  (let ((source-buf (generate-new-buffer " *seml*"))
         (htmlize-buf) (result))
     (unwind-protect
         (progn
           (with-current-buffer source-buf
             (insert codestr)
             (funcall majormode)
+            (font-lock-ensure)
             (indent-region (point-min) (point-max)))
           (setq htmlize-buf (htmlize-buffer source-buf))
           (setq result (seml-encode-html-from-buffer htmlize-buf)))
