@@ -47,7 +47,7 @@
   :group 'lisp
   :prefix "seml-")
 
-(defconst seml-mode-version "1.2.8"
+(defconst seml-mode-version "1.2.9"
   "Version of `seml-mode'.")
 
 (defcustom seml-mode-hook nil
@@ -59,6 +59,11 @@
   (let ((map (make-sparse-keymap)))
     map)
   "Keymap for SEML mode.")
+
+(defcustom seml-root-dir (locate-user-emacs-file "seml")
+  "`seml-import' search directory."
+  :type 'string
+  :group 'seml)
 
 (defcustom seml-live-refresh-interval 1.1
   "Live-refresh interval.
@@ -228,6 +233,15 @@ XPATH is now supported below forms
       (kill-buffer source-buf)
       (kill-buffer htmlize-buf))
     (car (seml-xpath '(pre) result))))
+
+;;;###autoload
+(defun seml-import (path)
+  "Import external seml file at `seml-root-dir'/PATH"
+  (eval
+   (read
+    (with-temp-buffer
+      (insert-file-contents (expand-file-name path seml-root-dir))
+      (buffer-substring-no-properties (point-min) (point-max))))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;
