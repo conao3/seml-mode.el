@@ -105,6 +105,7 @@ If you stop monitor SEML buffer, ~M-x seml-live-refresh-stop~.
 * Documents
 ** Customizable Variables
 - seml-mode-hook
+- seml-import-dir
 - seml-live-refresh-interval
 - seml-live-refresh-url-variable
 - seml-live-refresh-url-quety
