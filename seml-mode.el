@@ -142,13 +142,13 @@ at INDENT-POINT on STATE.  see function/ `lisp-indent-function'."
         (progn
           (if (not (> (save-excursion (forward-line 1) (point))
                       calculate-lisp-indent-last-sexp))
-		(progn (goto-char calculate-lisp-indent-last-sexp)
-		       (beginning-of-line)
-		       (parse-partial-sexp (point)
-					   calculate-lisp-indent-last-sexp 0 t)))
-	    ;; Indent under the list or under the first sexp on the same
-	    ;; line as calculate-lisp-indent-last-sexp.  Note that first
-	    ;; thing on that line has to be complete sexp since we are
+	      (progn (goto-char calculate-lisp-indent-last-sexp)
+		     (beginning-of-line)
+		     (parse-partial-sexp (point)
+					 calculate-lisp-indent-last-sexp 0 t)))
+	  ;; Indent under the list or under the first sexp on the same
+	  ;; line as calculate-lisp-indent-last-sexp.  Note that first
+	  ;; thing on that line has to be complete sexp since we are
           ;; inside the innermost containing sexp.
           (backward-prefix-chars)
           (current-column))
@@ -170,7 +170,7 @@ at INDENT-POINT on STATE.  see function/ `lisp-indent-function'."
 	       (lisp-indent-specform method state
 				     indent-point normal-indent))
 	      (method
-		(funcall method indent-point state)))))))
+	       (funcall method indent-point state)))))))
 
 ;;;###autoload
 (defun seml-to-string (sexp)
@@ -252,11 +252,11 @@ XPATH is now supported below forms
   (interactive "r")
   (let ((fn))
     (setq fn (lambda (x)
-              (if (and (consp x) (not (seml-pairp x)))
-                  `(,(mapcan fn x))
-                (if (stringp x)
-                    (when (string-match-p "[[:graph:]]" x) `(,x))
-                  `(,x)))))
+               (if (and (consp x) (not (seml-pairp x)))
+                   `(,(mapcan fn x))
+                 (if (stringp x)
+                     (when (string-match-p "[[:graph:]]" x) `(,x))
+                   `(,x)))))
     (mapcan fn (libxml-parse-html-region start end))))
 
 ;;;###autoload
@@ -278,9 +278,9 @@ If omit BUF, use `current-buffer'."
   "Return SEML sexp encoded from html file."
   (let ((buf (generate-new-buffer " *seml-encode*")))
     (with-current-buffer buf
-     (insert-file-contents filepath))
+      (insert-file-contents filepath))
     (seml-encode-html-from-buffer buf)))
-    
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;
 ;;  Decode
@@ -534,9 +534,9 @@ If you stop monitor SEML buffer, `seml-live-refresh-stop'.
 ;; (font-lock-add-keywords 'seml-mode seml-font-lock-keywords)
 (font-lock-add-keywords 'seml-mode
                         `((,(eval
-                            `(rx "(" (group
-                                      (regexp ,seml-mode-keywords-regexp)
-                                      not-wordchar)))
+                             `(rx "(" (group
+                                       (regexp ,seml-mode-keywords-regexp)
+                                       not-wordchar)))
                            (1 font-lock-keyword-face nil nil))))
 
 (provide 'seml-mode)
