@@ -60,7 +60,7 @@
     map)
   "Keymap for SEML mode.")
 
-(defcustom seml-root-dir (locate-user-emacs-file "seml")
+(defcustom seml-import-dir (locate-user-emacs-file "seml")
   "`seml-import' search directory."
   :type 'string
   :group 'seml)
@@ -233,11 +233,11 @@ XPATH is now supported below forms
 
 ;;;###autoload
 (defun seml-import (path)
-  "Import external seml file at `seml-root-dir'/PATH"
+  "Import external seml file at `seml-import-dir'/PATH"
   (eval
    (read
     (with-temp-buffer
-      (insert-file-contents (expand-file-name path seml-root-dir))
+      (insert-file-contents (expand-file-name path seml-import-dir))
       (buffer-substring-no-properties (point-min) (point-max))))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
