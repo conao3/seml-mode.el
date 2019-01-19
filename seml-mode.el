@@ -47,7 +47,7 @@
   :group 'lisp
   :prefix "seml-")
 
-(defconst seml-mode-version "1.3.2"
+(defconst seml-mode-version "1.3.3"
   "Version of `seml-mode'.")
 
 (defcustom seml-mode-hook nil
@@ -125,6 +125,16 @@ NOTE: If you have auto-save settings, set this variable loger than it."
   "Return t if var is pair."
   (and (listp var) (atom (cdr var))))
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;
+;;  macros
+;;
+
+(defmacro with-seml-elisp (&rest body)
+  "Provide environment of eval BODY in seml.  Use ,@(with-seml-elisp (sexp))."
+  (declare (indent 0) (debug t))
+  `(progn ,@body nil))
+    
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;
 ;;  functions

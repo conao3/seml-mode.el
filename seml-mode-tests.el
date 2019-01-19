@@ -287,3 +287,8 @@
 ("
                 (span ((class . "keyword")) "require")" '"
                 (span ((class . "constant")) "seml") ")")))
+
+(cort-deftest seml-mode:/simple-with-elisp
+  (:equal (with-seml-elisp
+            emacs-version)
+          nil))
