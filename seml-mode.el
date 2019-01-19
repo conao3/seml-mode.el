@@ -37,8 +37,8 @@
 
 ;;; Code:
 
-(or (require 'elisp-mode nil t)         ; not found elisp-mode on Emacs-24
-    (require 'lisp-mode))
+(require 'elisp-mode nil t)         ; not found elisp-mode on Emacs-24
+(require 'lisp-mode)
 (require 'simple-httpd)
 (require 'htmlize)
 
@@ -130,6 +130,7 @@ NOTE: If you have auto-save settings, set this variable loger than it."
 ;;  functions
 ;;
 
+(defvar calculate-lisp-indent-last-sexp)
 (defun seml-indent-function (indent-point state)
   "Indent calculation function for seml.
 at INDENT-POINT on STATE.  see function/ `lisp-indent-function'."
