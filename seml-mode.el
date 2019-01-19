@@ -37,8 +37,8 @@
 
 ;;; Code:
 
-(or (require 'elisp-mode nil t)         ; not found elisp-mode on Emacs-24
-    (require 'lisp-mode))
+(require 'elisp-mode nil t)         ; not found elisp-mode on Emacs-24
+(require 'lisp-mode)
 (require 'simple-httpd)
 (require 'htmlize)
 
@@ -47,7 +47,7 @@
   :group 'lisp
   :prefix "seml-")
 
-(defconst seml-mode-version "1.3.1"
+(defconst seml-mode-version "1.3.2"
   "Version of `seml-mode'.")
 
 (defcustom seml-mode-hook nil
@@ -60,7 +60,7 @@
     map)
   "Keymap for SEML mode.")
 
-(defcustom seml-root-dir (locate-user-emacs-file "seml")
+(defcustom seml-import-dir (locate-user-emacs-file "seml")
   "`seml-import' search directory."
   :type 'string
   :group 'seml)
@@ -130,6 +130,7 @@ NOTE: If you have auto-save settings, set this variable loger than it."
 ;;  functions
 ;;
 
+(defvar calculate-lisp-indent-last-sexp)
 (defun seml-indent-function (indent-point state)
   "Indent calculation function for seml.
 at INDENT-POINT on STATE.  see function/ `lisp-indent-function'."
@@ -197,21 +198,20 @@ at INDENT-POINT on STATE.  see function/ `lisp-indent-function'."
 XPATH is now supported below forms
 - '(top html body pre)
 "
-  (let ((fn) (result) (current) (last))
+  (let ((fn) (result) (current))
     (setq fn (lambda (dom)
-               (setq last current)
                (cond
                 ((and (listp dom) (not (seml-pairp dom))
                       (eq (car xpath) (car dom)))
                  (setq current (pop xpath))
                  (if xpath
-                     (mapcar fn dom)
+                     (mapc fn dom)
                    (push dom result)
                    (push current xpath)))
                 ((and (listp dom) (not (seml-pairp dom)))
-                 (mapcar fn dom))
+                 (mapc fn dom))
                 (t nil))))
-    (mapcar fn `(,sexp))
+    (mapc fn `(,sexp))
     (nreverse result)))
 
 ;;;###autoload
@@ -234,11 +234,11 @@ XPATH is now supported below forms
 
 ;;;###autoload
 (defun seml-import (path)
-  "Import external seml file at `seml-root-dir'/PATH"
+  "Import external seml file at `seml-import-dir'/PATH"
   (eval
    (read
     (with-temp-buffer
-      (insert-file-contents (expand-file-name path seml-root-dir))
+      (insert-file-contents (expand-file-name path seml-import-dir))
       (buffer-substring-no-properties (point-min) (point-max))))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
