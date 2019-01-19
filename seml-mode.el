@@ -127,6 +127,16 @@ NOTE: If you have auto-save settings, set this variable loger than it."
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;
+;;  macros
+;;
+
+(defmacro with-seml-elisp (&rest body)
+  "Provide environment of eval BODY in seml.  Use ,@(with-seml-elisp (sexp))."
+  (declare (indent 0) (debug t))
+  `(progn ,@body nil))
+    
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;
 ;;  functions
 ;;
 
