@@ -257,3 +257,26 @@
   <span class=\"builtin\">:commands</span> real-auto-save-mode
   <span class=\"builtin\">:hook</span> (find-file-hook . real-auto-save-mode))
 </pre>"))
+
+(cort-deftest seml-test:simple-xpath
+  (:equal
+   (seml-xpath '(html head link)
+               '(html ((lang . "en"))
+                      (head nil
+                            (meta ((charset . "utf-8")))
+                            (title nil
+                                   "sample page")
+                            (link ((rel . "stylesheet") (href . "sample1.css")))
+                            (link ((rel . "stylesheet") (href . "sample2.css"))))
+                      (body nil
+                            (h1 nil
+                                "sample")
+                            (p nil
+                               "sample"
+                               "text sample"))))
+   '((link
+      ((rel . "stylesheet")
+       (href . "sample1.css")))
+     (link
+      ((rel . "stylesheet")
+       (href . "sample2.css"))))))

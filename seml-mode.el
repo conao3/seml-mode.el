@@ -188,6 +188,29 @@ at INDENT-POINT on STATE.  see function/ `lisp-indent-function'."
     (indent-region (point-min) (point-max))
     (buffer-substring-no-properties (point-min) (point-max))))
 
+;;;###autoload
+(defun seml-xpath (xpath sexp)
+  "Get element at XPATH like specification from seml SEXP.
+XPATH is now supported below forms
+- '(top html body pre)
+"
+  (let ((fn) (result) (current) (last))
+    (setq fn (lambda (dom)
+               (setq last current)
+               (cond
+                ((and (listp dom) (not (seml-pairp dom))
+                      (eq (car xpath) (car dom)))
+                 (setq current (pop xpath))
+                 (if xpath
+                     (mapcar fn dom)
+                   (push dom result)
+                   (push current xpath)))
+                ((and (listp dom) (not (seml-pairp dom)))
+                 (mapcar fn dom))
+                (t nil))))
+    (mapcar fn `(,sexp))
+    (nreverse result)))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;
 ;;  Encode
