@@ -281,25 +281,9 @@
       ((rel . "stylesheet")
        (href . "sample2.css"))))))
 
-;; (cort-deftest seml-mode:/simple-htmlize
-;;   (:equal (seml-htmlize 'emacs-lisp-mode "(leaf real-auto-save
-;;   :ensure t
-;;   :custom ((real-auto-save-interval . 0.3))
-;;   :commands real-auto-save-mode
-;;   :hook (find-file-hook . real-auto-save-mode))")
-;;           '(pre nil "
-;; ("
-;;                 (span ((class . "keyword")) "leaf")
-;;                 " real-auto-save
-;;   "
-;;                 (span ((class . "builtin")) ":ensure")
-;;                 " t
-;;   "
-;;                 (span ((class . "builtin")) ":custom")
-;;                 " ((real-auto-save-interval . 0.3))
-;;   "
-;;                 (span ((class . "builtin")) ":commands")
-;;                 " real-auto-save-mode
-;;   "
-;;                 (span ((class . "builtin")) ":hook")
-;;                 " (find-file-hook . real-auto-save-mode))")))
+(cort-deftest seml-mode:/simple-htmlize
+  (:equal (seml-htmlize 'emacs-lisp-mode "(require 'seml)")
+          '(pre nil "
+("
+                (span ((class . "keyword")) "require")" '"
+                (span ((class . "constant")) "seml") ")")))
