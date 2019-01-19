@@ -181,12 +181,9 @@ at INDENT-POINT on STATE.  see function/ `lisp-indent-function'."
     (ignore-errors
       (while t
         (if (equal (following-char) ?\")
-            (forward-char
-             (+ 2
-                (length
-                 (read (buffer-substring-no-properties (point) (point-max))))))
+            (forward-sexp)
           (forward-char)
-          (forward-sexp)(forward-sexp))
+          (forward-sexp) (forward-sexp))
         (skip-chars-forward ") ")
         (insert "\n")))
     (delete-trailing-whitespace)
