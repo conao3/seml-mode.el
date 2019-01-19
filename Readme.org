@@ -214,8 +214,7 @@ If you stop monitor SEML buffer, ~M-x seml-live-refresh-stop~.
                     (span ((class . "builtin")) ":hook")
                     " (find-file-hook . real-auto-save-mode))")))
   #+end_src
-
-
+- (seml-import path)
 *** Major mode
 - (seml-mode)
 
