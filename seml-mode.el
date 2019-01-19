@@ -197,21 +197,20 @@ at INDENT-POINT on STATE.  see function/ `lisp-indent-function'."
 XPATH is now supported below forms
 - '(top html body pre)
 "
-  (let ((fn) (result) (current) (last))
+  (let ((fn) (result) (current))
     (setq fn (lambda (dom)
-               (setq last current)
                (cond
                 ((and (listp dom) (not (seml-pairp dom))
                       (eq (car xpath) (car dom)))
                  (setq current (pop xpath))
                  (if xpath
-                     (mapcar fn dom)
+                     (mapc fn dom)
                    (push dom result)
                    (push current xpath)))
                 ((and (listp dom) (not (seml-pairp dom)))
-                 (mapcar fn dom))
+                 (mapc fn dom))
                 (t nil))))
-    (mapcar fn `(,sexp))
+    (mapc fn `(,sexp))
     (nreverse result)))
 
 ;;;###autoload
