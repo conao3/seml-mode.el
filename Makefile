@@ -11,7 +11,8 @@ EMACS       ?= emacs
 BATCH       := $(EMACS) -Q --batch -L $(TOP)
 
 SIMPLEHTTPD := simple-httpd.el
-DEPEND      := $(SIMPLEHTTPD)
+HTMLIZE     := htmlize.el
+DEPEND      := $(SIMPLEHTTPD) $(HTMLIZE)
 DEPENDDIR   := sample
 
 TESTFILE    := seml-mode-tests.el
@@ -42,6 +43,9 @@ include Makefile-check.mk
 _GITHUB := https://raw.githubusercontent.com
 $(SIMPLEHTTPD):
 	curl -O $(_GITHUB)/skeeto/emacs-web-server/master/$@
+
+$(HTMLIZE):
+	curl -O $(_GITHUB)/hniksic/emacs-htmlize/master/$@
 
 ##############################
 #  test on all Emacs

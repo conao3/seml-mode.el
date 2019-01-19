@@ -206,7 +206,7 @@
 ;;  other functions
 ;;
 
-(cort-deftest seml-test:simple-format
+(cort-deftest seml-test:/simple-format
   (seml-str-expansion
    (seml-to-string
     '(html ((lang . "en"))
@@ -235,7 +235,7 @@
       \"text sample\")))
 "))
 
-(cort-deftest seml-test:simple-pre
+(cort-deftest seml-test:/simple-pre
   (seml-str-expansion
    (seml-decode-seml-from-sexp
     '(pre nil
@@ -258,7 +258,7 @@
   <span class=\"builtin\">:hook</span> (find-file-hook . real-auto-save-mode))
 </pre>"))
 
-(cort-deftest seml-test:simple-xpath
+(cort-deftest seml-test:/simple-xpath
   (:equal
    (seml-xpath '(html head link)
                '(html ((lang . "en"))
@@ -280,3 +280,26 @@
      (link
       ((rel . "stylesheet")
        (href . "sample2.css"))))))
+
+;; (cort-deftest seml-mode:/simple-htmlize
+;;   (:equal (seml-htmlize 'emacs-lisp-mode "(leaf real-auto-save
+;;   :ensure t
+;;   :custom ((real-auto-save-interval . 0.3))
+;;   :commands real-auto-save-mode
+;;   :hook (find-file-hook . real-auto-save-mode))")
+;;           '(pre nil "
+;; ("
+;;                 (span ((class . "keyword")) "leaf")
+;;                 " real-auto-save
+;;   "
+;;                 (span ((class . "builtin")) ":ensure")
+;;                 " t
+;;   "
+;;                 (span ((class . "builtin")) ":custom")
+;;                 " ((real-auto-save-interval . 0.3))
+;;   "
+;;                 (span ((class . "builtin")) ":commands")
+;;                 " real-auto-save-mode
+;;   "
+;;                 (span ((class . "builtin")) ":hook")
+;;                 " (find-file-hook . real-auto-save-mode))")))

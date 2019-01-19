@@ -40,6 +40,7 @@
 (or (require 'elisp-mode nil t)         ; not found elisp-mode on Emacs-24
     (require 'lisp-mode))
 (require 'simple-httpd)
+(require 'htmlize)
 
 (defgroup seml nil
   "Major mode for editing SEML (S-Expression Markup Language) file."
@@ -210,6 +211,23 @@ XPATH is now supported below forms
                 (t nil))))
     (mapcar fn `(,sexp))
     (nreverse result)))
+
+;;;###autoload
+(defun seml-htmlize (majormode codestr)
+  "Return seml sexp formated CODESTR by Emacs fontlock on MAJORMODE."
+  (let ((source-buf (generate-new-buffer "*seml*")) ; don't use " *seml*"
+        (htmlize-buf) (result))
+    (unwind-protect
+        (progn
+          (with-current-buffer source-buf
+            (insert codestr)
+            (funcall majormode)
+            (indent-region (point-min) (point-max)))
+          (setq htmlize-buf (htmlize-buffer source-buf))
+          (setq result (seml-encode-html-from-buffer htmlize-buf)))
+      (kill-buffer source-buf)
+      (kill-buffer htmlize-buf))
+    (car (seml-xpath '(pre) result))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;
