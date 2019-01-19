@@ -46,7 +46,7 @@
   :group 'lisp
   :prefix "seml-")
 
-(defconst seml-mode-version "1.2.6"
+(defconst seml-mode-version "1.2.7"
   "Version of `seml-mode'.")
 
 (defcustom seml-mode-hook nil
@@ -187,6 +187,29 @@ at INDENT-POINT on STATE.  see function/ `lisp-indent-function'."
     (seml-mode)
     (indent-region (point-min) (point-max))
     (buffer-substring-no-properties (point-min) (point-max))))
+
+;;;###autoload
+(defun seml-xpath (xpath sexp)
+  "Get element at XPATH like specification from seml SEXP.
+XPATH is now supported below forms
+- '(top html body pre)
+"
+  (let ((fn) (result) (current) (last))
+    (setq fn (lambda (dom)
+               (setq last current)
+               (cond
+                ((and (listp dom) (not (seml-pairp dom))
+                      (eq (car xpath) (car dom)))
+                 (setq current (pop xpath))
+                 (if xpath
+                     (mapcar fn dom)
+                   (push dom result)
+                   (push current xpath)))
+                ((and (listp dom) (not (seml-pairp dom)))
+                 (mapcar fn dom))
+                (t nil))))
+    (mapcar fn `(,sexp))
+    (nreverse result)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;
