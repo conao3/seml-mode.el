@@ -143,6 +143,14 @@ If you stop monitor SEML buffer, ~M-x seml-live-refresh-stop~.
     (defconst seml-html-single-tags
       '(base link meta img br area param hr col option input wbr))
   #+end_src
+** Macros
+- with-seml-elisp
+
+  Provide environment to eval Elisp. Use ~,@(with-seml-elisp (sexp) (sexp) ...)~
+
+  (seml-mode misunderstands Elisp's return value as a component of SEML.
+  If you want to freely execute Elisp that does not need a return value,
+  you need to use this macro to remove the return value from seml.)
 
 ** Functions
 *** Encode functions (HTML to SEML)
