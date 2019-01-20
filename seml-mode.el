@@ -47,7 +47,7 @@
   :group 'lisp
   :prefix "seml-")
 
-(defconst seml-mode-version "1.3.3"
+(defconst seml-mode-version "1.3.4"
   "Version of `seml-mode'.")
 
 (defcustom seml-mode-hook nil
@@ -235,7 +235,8 @@ XPATH is now supported below forms
             (insert codestr)
             (funcall majormode)
             (font-lock-ensure)
-            (indent-region (point-min) (point-max)))
+            (ignore-errors
+              (indent-region (point-min) (point-max))))
           (setq htmlize-buf (htmlize-buffer source-buf))
           (setq result (seml-encode-html-from-buffer htmlize-buf)))
       (kill-buffer source-buf)
@@ -245,11 +246,12 @@ XPATH is now supported below forms
 ;;;###autoload
 (defun seml-import (path)
   "Import external seml file at `seml-import-dir'/PATH"
+  (let ((path path))
   (eval
    (read
     (with-temp-buffer
       (insert-file-contents (expand-file-name path seml-import-dir))
-      (buffer-substring-no-properties (point-min) (point-max))))))
+      (buffer-substring-no-properties (point-min) (point-max)))))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;
