@@ -292,3 +292,11 @@
   (:equal (with-seml-elisp
             emacs-version)
           nil))
+
+(cort-deftest seml-mode:/simple-pre-do-not-reduce-space
+  (:string= (seml-decode-seml-from-sexp
+             (seml-htmlize
+              'emacs-lisp-mode
+              "(string :tag \"Sun\")"))
+            "<pre>
+(string <span class=\"builtin\">:tag</span> <span class=\"string\">\"Sun\"</span>)</pre>"))

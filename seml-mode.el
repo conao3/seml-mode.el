@@ -263,13 +263,32 @@ XPATH is now supported below forms
 (defun seml-encode-html-from-region (start end)
   "Return SEML sexp encoded from region from START to END."
   (interactive "r")
-  (let ((fn))
+  (let ((fn) (prep))
     (setq fn (lambda (x)
-               (if (and (consp x) (not (seml-pairp x)))
-                   `(,(mapcan fn x))
-                 (if (stringp x)
-                     (when (string-match-p "[[:graph:]]" x) `(,x))
-                   `(,x)))))
+               (cond
+                (prep
+                 (cond
+                  ((and (consp x) (not (seml-pairp x)))
+                   `(,(mapcan fn x)))
+                  (t
+                   `(,x))))
+                ((and (consp x) (eq (car x) 'pre) (not (seml-pairp x)))
+                 (prog2
+                     (setq prep t)
+                     (cond
+                      ((and (consp x) (not (seml-pairp x)))
+                       `(,(mapcan fn x)))
+                      ((stringp x)
+                       (when (string-match-p "[[:graph:]]" x) `(,x)))
+                      (t
+                       `(,x)))
+                   (setq prep nil)))
+                ((and (consp x) (not (seml-pairp x)))
+                 `(,(mapcan fn x)))
+                ((stringp x)
+                 (when (string-match-p "[[:graph:]]" x) `(,x)))
+                (t
+                  `(,x)))))
     (mapcan fn (libxml-parse-html-region start end))))
 
 ;;;###autoload
@@ -336,6 +355,8 @@ If gives DOCTYPE, concat DOCTYPE at head."
                                              (format "</%s>" tagname)))
                        (setq prep nil)
                        content))
+
+                    
                     ((eq tag 'top)
                      (format "%s"
                              (mapconcat decode-fn rest "")))
