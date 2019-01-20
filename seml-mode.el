@@ -232,7 +232,7 @@ XPATH is now supported below forms
     (unwind-protect
         (progn
           (with-current-buffer source-buf
-            (insert codestr)
+            (insert (or codestr ""))
             (funcall majormode)
             (font-lock-ensure)
             (ignore-errors
