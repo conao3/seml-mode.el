@@ -47,7 +47,7 @@
   :group 'lisp
   :prefix "seml-")
 
-(defconst seml-mode-version "1.3.4"
+(defconst seml-mode-version "1.3.5"
   "Version of `seml-mode'.")
 
 (defcustom seml-mode-hook nil
@@ -232,7 +232,7 @@ XPATH is now supported below forms
     (unwind-protect
         (progn
           (with-current-buffer source-buf
-            (insert codestr)
+            (insert (or codestr ""))
             (funcall majormode)
             (font-lock-ensure)
             (ignore-errors
