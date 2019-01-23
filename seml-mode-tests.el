@@ -314,5 +314,26 @@
   (:string= (expand-file-name "../mail" "/leaf-browser/group/applications//")
             "/leaf-browser/group/mail"))
 
+(cort-deftest seml-mode:/simple-format
+  (:string= (seml-to-string
+             (seml-htmlize
+              'emacs-lisp-mode
+              (prin1-to-string
+               '(debug.seml footer.seml main.seml))
+              nil
+              (lambda ()
+                (save-excursion
+                  (goto-char (point-min))
+                  (forward-char)
+                  (ignore-errors
+                    (while t
+                      (forward-sexp)
+                      (insert "\n")))))))
+            "(pre nil
+  \"
+(debug\\\\.seml
+ footer\\\\.seml
+ main\\\\.seml
+ )\")
+"))
 
-            
