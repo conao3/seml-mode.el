@@ -198,7 +198,7 @@ If you stop monitor SEML buffer, ~M-x seml-live-refresh-stop~.
           ((rel . "stylesheet")
            (href . "sample2.css"))))))
   #+end_src
-- (seml-htmlize majormode codestr &optional noindentp)
+- (seml-htmlize majormode codestr &optional noindentp formatfn)
   #+begin_src emacs-lisp
     (cort-deftest seml-mode:/simple-htmlize
       (:equal (seml-htmlize 'emacs-lisp-mode "(leaf real-auto-save
