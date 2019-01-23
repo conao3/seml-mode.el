@@ -47,7 +47,7 @@
   :group 'lisp
   :prefix "seml-")
 
-(defconst seml-mode-version "1.3.7"
+(defconst seml-mode-version "1.3.8"
   "Version of `seml-mode'.")
 
 (defcustom seml-mode-hook nil
@@ -225,8 +225,11 @@ XPATH is now supported below forms
     (nreverse result)))
 
 ;;;###autoload
-(defun seml-htmlize (majormode codestr &optional noindentp)
-  "Return seml sexp formated CODESTR by Emacs fontlock on MAJORMODE."
+(defun seml-htmlize (majormode codestr &optional noindentp formatfn)
+  "Return seml sexp formated CODESTR by Emacs fontlock on MAJORMODE.
+optional:
+  - NOINDENTP is non-nil, do not indent the entire buffer.
+  - FORMATFN is function, executed before indent."
   (let ((source-buf (generate-new-buffer " *seml*"))
         (htmlize-buf) (result))
     (unwind-protect
@@ -235,6 +238,8 @@ XPATH is now supported below forms
             (insert codestr)
             (funcall majormode)
             (font-lock-ensure)
+            (when formatfn
+              (funcall formatfn))
             (unless noindentp
               (ignore-errors
                 (indent-region (point-min) (point-max)))))
