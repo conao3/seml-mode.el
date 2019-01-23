@@ -47,7 +47,7 @@
   :group 'lisp
   :prefix "seml-")
 
-(defconst seml-mode-version "1.3.6"
+(defconst seml-mode-version "1.3.7"
   "Version of `seml-mode'.")
 
 (defcustom seml-mode-hook nil
@@ -253,6 +253,11 @@ XPATH is now supported below forms
     (with-temp-buffer
       (insert-file-contents (expand-file-name path seml-import-dir))
       (buffer-substring-no-properties (point-min) (point-max)))))))
+
+;;;###autoload
+(defun seml-expand-url (path baseurl)
+  "Return expanded url base at BASEURL to PATH."
+  (expand-file-name path baseurl))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;

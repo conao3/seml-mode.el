@@ -300,3 +300,19 @@
               "(string :tag \"Sun\")"))
             "<pre>
 (string <span class=\"builtin\">:tag</span> <span class=\"string\">\"Sun\"</span>)</pre>"))
+
+(cort-deftest seml-mode:/simple-expand
+  (:string= (expand-file-name "mail" "/leaf-browser/group/applications")
+            "/leaf-browser/group/applications/mail"))
+(cort-deftest seml-mode:/simple-expand
+  (:string= (expand-file-name "mail" "/leaf-browser/group/applications/")
+            "/leaf-browser/group/applications/mail"))
+(cort-deftest seml-mode:/simple-expand
+  (:string= (expand-file-name "../mail" "/leaf-browser/group/applications/")
+            "/leaf-browser/group/mail"))
+(cort-deftest seml-mode:/simple-expand
+  (:string= (expand-file-name "../mail" "/leaf-browser/group/applications//")
+            "/leaf-browser/group/mail"))
+
+
+            
