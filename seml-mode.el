@@ -254,6 +254,11 @@ XPATH is now supported below forms
       (insert-file-contents (expand-file-name path seml-import-dir))
       (buffer-substring-no-properties (point-min) (point-max)))))))
 
+;;;###autoload
+(defun seml-expand-url (path baseurl)
+  "Return expanded url base at BASEURL to PATH."
+  (expand-file-name path baseurl))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;
 ;;  Encode
