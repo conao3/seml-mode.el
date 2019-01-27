@@ -339,10 +339,9 @@ If omit BUF, use `current-buffer'."
 If gives DOCTYPE, concat DOCTYPE at head."
   (concat
    (or doctype "")
-   (let ((prop--fn) (decode-fn) (prep))
-     (setq prop--fn
-           (lambda (x)
-             (format " %s=\"%s\"" (car x) (cdr x))))
+   (let ((prop--fn (lambda (x)
+                     (format " %s=\"%s\"" (car x) (cdr x))))
+         (decode-fn) (prep))
      (setq decode-fn
            (lambda (dom)
              (if (listp dom)
