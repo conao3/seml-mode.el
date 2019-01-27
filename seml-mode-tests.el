@@ -337,3 +337,14 @@
  )\")
 "))
 
+(cort-deftest seml-mode:/simple-jade
+  (:string= (seml-decode-seml-from-sexp '(h1 ("#header.class1.class2") "sample"))
+            "
+<h1 id=\"header\" class=\"class1 class2\">sample</h1>
+"))
+
+(cort-deftest seml-mode:/simple-jade2
+  (:string= (seml-decode-seml-from-sexp '(h1 ("#header.class1") "sample"))
+            "
+<h1 id=\"header\" class=\"class1\">sample</h1>
+"))

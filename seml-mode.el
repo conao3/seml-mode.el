@@ -341,12 +341,25 @@ If gives DOCTYPE, concat DOCTYPE at head."
    (or doctype "")
    (let ((prop--fn (lambda (x)
                      (format " %s=\"%s\"" (car x) (cdr x))))
+         (jade--fn (lambda (x)
+                     (if (not (stringp x))
+                         `(,x)
+                       (let ((elms (split-string x "\\."))
+                             (ret))
+                         (when (string-match (rx bos "#" (group (* any))) (car elms))
+                           (push `(id . ,(match-string 1 (car elms)))
+                                 ret)
+                           (pop elms))
+                         (when elms
+                           (push `(class . ,(mapconcat 'identity elms " "))
+                                 ret))
+                         (nreverse ret)))))
          (decode-fn) (prep))
      (setq decode-fn
            (lambda (dom)
              (if (listp dom)
                  (let* ((tag  (pop dom))
-                        (prop (pop dom))
+                        (prop (mapcan jade--fn (pop dom)))
                         (rest dom)
                         (tagname (symbol-name tag)))
                    (cond
@@ -364,8 +377,6 @@ If gives DOCTYPE, concat DOCTYPE at head."
                                              (format "</%s>" tagname)))
                        (setq prep nil)
                        content))
-
-                    
                     ((eq tag 'top)
                      (format "%s"
                              (mapconcat decode-fn rest "")))
