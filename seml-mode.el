@@ -340,7 +340,7 @@ If gives DOCTYPE, concat DOCTYPE at head."
   (concat
    (or doctype "")
    (let ((prop--fn (lambda (x)
-                     (format " %s=\"%s\"" (car x) (cdr x))))
+                     (when x (format " %s=\"%s\"" (car x) (cdr x)))))
          (jade--fn (lambda (x)
                      (if (not (stringp x))
                          `(,x)

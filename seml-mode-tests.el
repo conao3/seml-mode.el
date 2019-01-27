@@ -374,3 +374,10 @@
 <li>item-5</li>
 </ul>
 "))
+
+(cort-deftest seml-mode:simple-ignore-nil
+  (:string= (seml-decode-seml-from-sexp '(h1 ("#d" nil (class . "class")) "s"))
+           "
+<h1 id=\"d\" class=\"class\">s</h1>
+"))
+
