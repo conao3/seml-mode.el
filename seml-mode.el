@@ -350,6 +350,8 @@ If gives DOCTYPE, concat DOCTYPE at head."
                            (push `(id . ,(match-string 1 (car elms)))
                                  ret)
                            (pop elms))
+                         (when (and elms (string= (car elms) ""))
+                           (pop elms))
                          (when elms
                            (push `(class . ,(mapconcat 'identity elms " "))
                                  ret))
