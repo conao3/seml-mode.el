@@ -381,3 +381,15 @@
 <h1 id=\"d\" class=\"class\">s</h1>
 "))
 
+(cort-deftest seml-mode:simple-ignore-beginning-dot
+  (:string= (seml-decode-seml-from-sexp '(h1 (".class") "s"))
+           "
+<h1 class=\"class\">s</h1>
+"))
+
+
+
+
+
+
+

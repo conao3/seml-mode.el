@@ -47,7 +47,7 @@
   :group 'lisp
   :prefix "seml-")
 
-(defconst seml-mode-version "1.4.0"
+(defconst seml-mode-version "1.4.1"
   "Version of `seml-mode'.")
 
 (defcustom seml-mode-hook nil
@@ -349,6 +349,8 @@ If gives DOCTYPE, concat DOCTYPE at head."
                          (when (string-match (rx bos "#" (group (* any))) (car elms))
                            (push `(id . ,(match-string 1 (car elms)))
                                  ret)
+                           (pop elms))
+                         (when (and elms (string= (car elms) ""))
                            (pop elms))
                          (when elms
                            (push `(class . ,(mapconcat 'identity elms " "))
