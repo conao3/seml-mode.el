@@ -348,3 +348,29 @@
             "
 <h1 id=\"header\" class=\"class1\">sample</h1>
 "))
+
+(cort-deftest seml-mode:/simple-jade3
+  (:string= (seml-decode-seml-from-sexp '(h1 ("class1") "sample"))
+            "
+<h1 class=\"class1\">sample</h1>
+"))
+
+(cort-deftest seml-mode:/simple-ul
+  (:string= (seml-decode-seml-from-sexp
+             `(ul nil
+                  ,@(mapcar (lambda (x)
+                             `(li nil ,(format "item-%s" x)))
+                           (number-sequence 1 5))))
+            "
+<ul>
+<li>item-1</li>
+
+<li>item-2</li>
+
+<li>item-3</li>
+
+<li>item-4</li>
+
+<li>item-5</li>
+</ul>
+"))

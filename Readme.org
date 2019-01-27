@@ -58,6 +58,67 @@ Since SEML can use Elisp freely in SEML file, I think that it has *the same powe
 
 ~seml-mode.el~ provides major mode for editing SEML (S-Expression Markup Language) files for you.
 
+** SEML Syntax
+SEML syntax is very easy.
+
+#+begin_src emacs-lisp
+  (TAG ATTRS VALUE...)
+#+end_src
+
+- ~TAG~ is symbol of html tag name.
+- ~ATTRS~ is list of ~attribute~.
+  - ~attribute~ is dotted pair such as ~(ATTR . VALUE)~.
+  - ~attribute~ is also allowed jade/pug like syntax sugar such as ~#id.class1.class2~
+    
+    You do not need to specify ~id~, but you need to put it at the beginning.
+    And ~class~ must be separated by ~.~.
+- ~VALUE~ is string.
+- ~VALUE~ is also allowed another SEML.
+
+#+begin_src emacs-lisp
+  (cort-deftest seml-mode:/simple-jade
+    (:string= (seml-decode-seml-from-sexp '(h1 ("#header.class1.class2") "sample"))
+              "
+  <h1 id=\"header\" class=\"class1 class2\">sample</h1>
+  "))
+
+  (cort-deftest seml-mode:/simple-jade2
+    (:string= (seml-decode-seml-from-sexp '(h1 ("#header.class1") "sample"))
+              "
+  <h1 id=\"header\" class=\"class1\">sample</h1>
+  "))
+
+  (cort-deftest seml-mode:/simple-jade3
+    (:string= (seml-decode-seml-from-sexp '(h1 ("class1") "sample"))
+              "
+  <h1 class=\"class1\">sample</h1>
+  "))
+#+end_src
+
+*** Complex SEML example
+#+begin_src emacs-lisp
+  (cort-deftest seml-mode:/simple-ul
+    (:string= (seml-decode-seml-from-sexp
+               `(ul nil
+                    ,@(mapcar (lambda (x)
+                               `(li nil ,(format "item-%s" x)))
+                             (number-sequence 1 5))))
+              "
+  <ul>
+  <li>item-1</li>
+
+  <li>item-2</li>
+
+  <li>item-3</li>
+
+  <li>item-4</li>
+
+  <li>item-5</li>
+  </ul>
+  "))
+#+end_src
+You only need to think about passing SEML list to SEML decoder.
+So you can use *any* function returning list.
 * Settings
 Put this package in your ~load-path~, require it.
 #+begin_src emacs-lisp
