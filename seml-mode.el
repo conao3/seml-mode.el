@@ -215,8 +215,9 @@ This function is seml version of `pp'."
     (if return-p ppstr nil)))
 
 ;;;###autoload
-(defun seml-xpath (xpath sexp)
+(defun seml-xpath (xpath sexp &optional without-top)
   "Get element at XPATH like specification from seml SEXP.
+When WITHOUT-TOP is nonnil, return SEML sexp without top tag.
 XPATH is now supported below forms
 - '(top html body pre)
 "
@@ -229,7 +230,7 @@ XPATH is now supported below forms
                  (setq current (pop xpath))
                  (if xpath
                      (mapc fn dom)
-                   (push dom result)
+                   (push (if without-top (cddr dom) dom) result)
                    (push current xpath)))
                 ((and (listp dom) (not (seml-pairp dom)))
                  (mapc fn dom))
@@ -238,11 +239,11 @@ XPATH is now supported below forms
     (nreverse result)))
 
 ;;;###autoload
-(defun seml-xpath-single (xpath sexp)
+(defun seml-xpath-single (xpath sexp &optional without-top)
   "Get one element at XPATH like specifiction from seml SEXP.
 Supported XPATH more information, see `seml-xpath'."
   (declare (indent 1))
-  (car (seml-xpath xpath sexp)))
+  (car (seml-xpath xpath sexp without-top)))
 
 ;;;###autoload
 (defun seml-htmlize (majormode codestr &optional noindentp formatfn)
