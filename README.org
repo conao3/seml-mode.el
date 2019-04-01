@@ -1,10 +1,14 @@
 #+author: conao
 #+date: <2018-10-25 Thu>
 
-[[https://github.com/conao3/seml-mode.el][https://img.shields.io/github/tag/conao3/seml-mode.el.svg?style=flat-square]]
-[[https://travis-ci.org/conao3/seml-mode.el][https://img.shields.io/travis/conao3/seml-mode.el/master.svg?style=flat-square]]
-[[https://github.com/conao3/seml-mode.el][https://img.shields.io/github/license/conao3/seml-mode.el.svg?style=flat-square]]
-[[https://github.com/conao3/github-header][https://files.conao3.com/github-header/gif/seml-mode.el.gif]]
+[[https://github.com/conao3/conao3.com][https://raw.githubusercontent.com/conao3/files/master/header/png/conao3.com.png]]
+[[https://github.com/conao3/conao3.com/blob/master/LICENSE][https://img.shields.io/github/license/conao3/conao3.com.svg?style=flat-square]]
+[[https://github.com/conao3/conao3.com/releases][https://img.shields.io/github/tag/conao3/conao3.com.svg?style=flat-square]]
+[[https://travis-ci.org/conao3/conao3.com][https://img.shields.io/travis/conao3/conao3.com/master.svg?style=flat-square]]
+[[https://app.codacy.com/project/conao3/conao3.com/dashboard][https://img.shields.io/codacy/grade/25e70ac497e14479bb21bd29c206802b.svg?logo=codacy&style=flat-square]]
+[[https://www.patreon.com/conao3][https://img.shields.io/badge/patreon-@conao3-orange.svg?logo=patreon&style=flat-square]]
+[[https://twitter.com/conao_3][https://img.shields.io/badge/twitter-@conao__3-blue.svg?logo=twitter&style=flat-square]]
+[[https://join.slack.com/t/conao3-support/shared_invite/enQtNTg2MTY0MjkzOTU0LTFjOTdhOTFiNTM2NmY5YTE5MTNlYzNiOTE2MTZlZWZkNDEzZmRhN2E0NjkwMWViZTZiYjA4MDUxYTUzNDZiNjY][https://img.shields.io/badge/chat-on_slack-blue.svg?logo=slack&style=flat-square]]
 
 - [[#what-is-it][What is it?]]
 - [[#settings][Settings]]
@@ -14,9 +18,13 @@
   - [[#constants][Constants]]
   - [[#functions][Functions]]
 - [[#projects][Projects]]
-- [[#welcome-pr][Welcome PR]]
-- [[#special-thanks][Special Thanks]]
-- [[#author][Author]]
+- [[#information][Information]]
+  - [[#donation][Donation]]
+  - [[#community][Community]]
+  - [[#contribution][Contribution]]
+  - [[#license][License]]
+  - [[#author][Author]]
+  - [[#contributors][Contributors]]
 
 * What is it?
 Below 2 files represent the same structure.
@@ -294,19 +302,33 @@ If you stop monitor SEML buffer, ~M-x seml-live-refresh-stop~.
 Packages build on seml-mode.
 - [[https://github.com/conao3/leaf-browser.el][leaf-browser.el]] - Web browser frontend of Emacs customize-mode for [[https://github.com/conao3/leaf.el][leaf.el]].
 
-* Welcome PR
-We welcome PR!
-Travis Cl test ~leaf-test.el~ with all Emacs version 24 or above.
+* Information
+** Donation
+I love OSS and I am dreaming of working on it as *full-time* job.
 
-We think that it is difficult to prepare the environment locally, 
-so we think that it is good to throw PR and test Travis for the time being!
-Feel free throw PR!
+*With your support*, I will be able to spend more time at OSS!
 
-* Special Thanks
-Advice and comments given by [[http://emacs-jp.github.io/][Emacs-JP]]'s forum member has been a great help
-in developing ~seml-mode.el~.
+[[https://www.patreon.com/conao3][https://c5.patreon.com/external/logo/become_a_patron_button.png]]
 
-Thank you very much!!
+** Community
+All feedback and suggestions are welcome!
 
-* Author
-- Naoya Yamashita (conao3)
+You can use github issues, but you can also use [[https://join.slack.com/t/conao3-support/shared_invite/enQtNTg2MTY0MjkzOTU0LTFjOTdhOTFiNTM2NmY5YTE5MTNlYzNiOTE2MTZlZWZkNDEzZmRhN2E0NjkwMWViZTZiYjA4MDUxYTUzNDZiNjY][Slack]]
+if you want a more casual conversation.
+
+** Contribution
+Feel free to send PR!
+
+** License
+#+begin_example
+  Affero General Public License Version 3 (AGPLv3)
+  Copyright (c) Naoya Yamashita - https://conao3.com
+  https://github.com/conao3/conao3.com/blob/master/LICENSE
+#+end_example
+
+** Author
+- Naoya Yamashita ([[https://github.com/conao3][conao3]])
+
+** Contributors
+- Not yet... Now send PR and add your name!!
+
