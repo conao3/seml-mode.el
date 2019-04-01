@@ -47,7 +47,7 @@
   :group 'lisp
   :prefix "seml-")
 
-(defconst seml-mode-version "1.4.3"
+(defconst seml-mode-version "1.4.4"
   "Version of `seml-mode'.")
 
 (defcustom seml-mode-hook nil
@@ -208,6 +208,7 @@ at INDENT-POINT on STATE.  see function/ `lisp-indent-function'."
 XPATH is now supported below forms
 - '(top html body pre)
 "
+  (declare (indent 1))
   (let ((fn) (result) (current))
     (setq fn (lambda (dom)
                (cond
@@ -228,6 +229,7 @@ XPATH is now supported below forms
 (defun seml-xpath-single (xpath sexp)
   "Get one element at XPATH like specifiction from seml SEXP.
 Supported XPATH more information, see `seml-xpath'."
+  (declare (indent 1))
   (car (seml-xpath xpath sexp)))
 
 ;;;###autoload
