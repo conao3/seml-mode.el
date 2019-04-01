@@ -242,6 +242,7 @@ If you stop monitor SEML buffer, ~M-x seml-live-refresh-stop~.
 *** Utility functions
 - (seml-indent-function indent-point state)
 - (seml-to-string sexp)
+- (seml-pp sexp &optional stream return-p)
 - (seml-xpath xpath sexp)
   #+begin_src emacs-lisp
     (cort-deftest seml-test:simple-xpath
