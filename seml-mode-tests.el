@@ -324,6 +324,31 @@
      ("sample-2")
      ("sample-3"))))
 
+(cort-deftest seml-test:/simple-xpath-single
+  (:equal
+   (seml-xpath-single '(html body)
+     '(html ((lang . "en"))
+            (head nil
+                  (meta ((charset . "utf-8")))
+                  (title nil
+                         "sample page")
+                  (link ((rel . "stylesheet") (href . "sample1.css")))
+                  (link ((rel . "stylesheet") (href . "sample2.css"))))
+            (body nil
+                  (h2 nil "sample-1")
+                  (h2 nil "sample-2")
+                  (h2 nil "sample-3")
+                  (p nil
+                     "sample"
+                     "text sample"))))
+   '(body nil
+          (h2 nil "sample-1")
+          (h2 nil "sample-2")
+          (h2 nil "sample-3")
+          (p nil
+             "sample"
+             "text sample"))))
+
 (cort-deftest seml-mode:/simple-htmlize
   (:equal (seml-htmlize 'emacs-lisp-mode "(require 'seml)")
           '(pre nil "
