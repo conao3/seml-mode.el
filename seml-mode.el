@@ -203,6 +203,17 @@ at INDENT-POINT on STATE.  see function/ `lisp-indent-function'."
     (buffer-substring-no-properties (point-min) (point-max))))
 
 ;;;###autoload
+(defun seml-pp (sexp &optional stream return-p)
+  "Output pretty-printed representation of SEML.
+Output to STREAM, or value of `standard-output'
+When RETURN is nonnil, return pp string.
+
+This function is seml version of `pp'."
+  (let ((ppstr (seml-to-string sexp)))
+    (princ ppstr (or stream standard-output))
+    (if return-p ppstr nil))))
+
+;;;###autoload
 (defun seml-xpath (xpath sexp)
   "Get element at XPATH like specification from seml SEXP.
 XPATH is now supported below forms
