@@ -47,7 +47,7 @@
   :group 'lisp
   :prefix "seml-")
 
-(defconst seml-mode-version "1.4.5"
+(defconst seml-mode-version "1.4.6"
   "Version of `seml-mode'.")
 
 (defcustom seml-mode-hook nil
@@ -189,18 +189,30 @@ at INDENT-POINT on STATE.  see function/ `lisp-indent-function'."
   (with-temp-buffer
     (insert (prin1-to-string sexp))
     (goto-char (point-min))
-    (ignore-errors
-      (while t
-        (if (equal (following-char) ?\")
-            (forward-sexp)
-          (forward-char)
-          (forward-sexp) (forward-sexp))
-        (skip-chars-forward ") ")
-        (insert "\n")))
+    (save-excursion
+      (ignore-errors
+        (while t
+          (if (equal (following-char) ?\")
+              (forward-sexp)
+            (forward-char)
+            (forward-sexp) (forward-sexp))
+          (skip-chars-forward ") ")
+          (insert "\n"))))
     (delete-trailing-whitespace)
     (seml-mode)
-    (indent-region (point-min) (point-max))
+    (indent-sexp)
     (buffer-substring-no-properties (point-min) (point-max))))
+
+;;;###autoload
+(defun seml-pp (sexp &optional stream return-p)
+  "Output pretty-printed representation of SEML.
+Output to STREAM, or value of `standard-output'
+When RETURN is nonnil, return pp string.
+
+This function is seml version of `pp'."
+  (let ((ppstr (seml-to-string sexp)))
+    (princ ppstr (or stream standard-output))
+    (if return-p ppstr nil)))
 
 ;;;###autoload
 (defun seml-xpath (xpath sexp)
