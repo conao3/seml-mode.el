@@ -259,6 +259,7 @@ If you stop monitor SEML buffer, ~M-x seml-live-refresh-stop~.
           ((rel . "stylesheet")
            (href . "sample2.css"))))))
   #+end_src
+- (seml-xpath-single xpath sexp)
 - (seml-htmlize majormode codestr &optional noindentp formatfn)
   #+begin_src emacs-lisp
     (cort-deftest seml-mode:/simple-htmlize

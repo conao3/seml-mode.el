@@ -47,7 +47,7 @@
   :group 'lisp
   :prefix "seml-")
 
-(defconst seml-mode-version "1.4.1"
+(defconst seml-mode-version "1.4.2"
   "Version of `seml-mode'.")
 
 (defcustom seml-mode-hook nil
@@ -223,6 +223,12 @@ XPATH is now supported below forms
                 (t nil))))
     (mapc fn `(,sexp))
     (nreverse result)))
+
+;;;###autoload
+(defun seml-xpath-single (xpath sexp)
+  "Get one element at XPATH like specifiction from seml SEXP.
+Supported XPATH more information, see `seml-xpath'."
+  (car (seml-xpath xpath sexp)))
 
 ;;;###autoload
 (defun seml-htmlize (majormode codestr &optional noindentp formatfn)
