@@ -225,6 +225,12 @@ XPATH is now supported below forms
     (nreverse result)))
 
 ;;;###autoload
+(defun seml-xpath-single (xpath sexp)
+  "Get one element at XPATH like specifiction from seml SEXP.
+Supported XPATH more information, see `seml-xpath'."
+  (car (seml-xpath xpath sexp)))
+
+;;;###autoload
 (defun seml-htmlize (majormode codestr &optional noindentp formatfn)
   "Return seml sexp formated CODESTR by Emacs fontlock on MAJORMODE.
 optional:
