@@ -246,6 +246,18 @@ Supported XPATH more information, see `seml-xpath'."
   (car (seml-xpath xpath sexp without-top)))
 
 ;;;###autoload
+(defun seml-xpath-without-top (xpath sexp)
+  "Call `seml-xpath' with without-top option."
+  (declare (indent 1))
+  (seml-xpath xpath sexp t))
+
+;;;###autoload
+(defun seml-xpath-single-without-top (xpath sexp)
+  "Call `seml-xpath-single with without-top option."
+  (declare (indent 1))
+  (seml-xpath-single xpath sexp t))
+
+;;;###autoload
 (defun seml-htmlize (majormode codestr &optional noindentp formatfn)
   "Return seml sexp formated CODESTR by Emacs fontlock on MAJORMODE.
 optional:
