@@ -60,7 +60,7 @@ With compare 2 files, SEML is *short* and *easy to understand* for Lisp hacker.
 
 #+name: simple-SS
 #+caption: simple-seml
-[[https://files.seml-mode.el/github-header/project/seml-mode.el/simple-seml.png]]
+[[https://raw.githubusercontent.com/conao3/files/master/project/seml-mode.el/simple-seml.png]]
 
 Since SEML can use Elisp freely in SEML file, I think that it has *the same power as PHP*.
 
@@ -169,7 +169,7 @@ If you stop monitor SEML buffer, ~M-x seml-live-refresh-stop~.
 
 #+name: complex-SS
 #+caption: complex-seml project with live-refresh
-[[https://files.seml-mode.el/github-header/project/seml-mode.el/complex-seml.png]]
+[[https://raw.githubusercontent.com/conao3/files/master/project/seml-mode.el/complex-seml.png]]
 
 * Documents
 ** Customizable Variables
