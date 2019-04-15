@@ -37,7 +37,7 @@
 
 ;;; Code:
 
-(require 'elisp-mode nil t)         ; not found elisp-mode on Emacs-24
+(require 'elisp-mode)
 (require 'lisp-mode)
 (require 'simple-httpd)
 (require 'htmlize)
