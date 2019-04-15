@@ -7,7 +7,7 @@
 ;; Keywords: lisp html
 ;; Version: 1.4.0
 ;; URL: https://github.com/conao3/seml-mode
-;; Package-Requires: ((emacs "24.3") (simple-httpd "1.5") (htmlize "1.5"))
+;; Package-Requires: ((emacs "25") (simple-httpd "1.5") (htmlize "1.5"))
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -47,7 +47,7 @@
   :group 'lisp
   :prefix "seml-")
 
-(defconst seml-mode-version "1.4.8"
+(defconst seml-mode-version "1.4.9"
   "Version of `seml-mode'.")
 
 (defcustom seml-mode-hook nil
@@ -122,7 +122,7 @@ NOTE: If you have auto-save settings, set this variable loger than it."
 ;;
 
 (defsubst seml-pairp (var)
-  "Return t if var is pair."
+  "Return t if VAR is pair."
   (and (listp var) (atom (cdr var))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -185,7 +185,7 @@ at INDENT-POINT on STATE.  see function/ `lisp-indent-function'."
 
 ;;;###autoload
 (defun seml-to-string (sexp)
-  "Return formated string from seml sexp"
+  "Return formated string from seml SEXP."
   (with-temp-buffer
     (insert (prin1-to-string sexp))
     (goto-char (point-min))
@@ -205,9 +205,9 @@ at INDENT-POINT on STATE.  see function/ `lisp-indent-function'."
 
 ;;;###autoload
 (defun seml-pp (sexp &optional stream return-p)
-  "Output pretty-printed representation of SEML.
+  "Output pretty-printed representation of seml SEXP.
 Output to STREAM, or value of `standard-output'
-When RETURN is nonnil, return pp string.
+When RETURN-P is non-nil, return `pp' string.
 
 This function is seml version of `pp'."
   (let ((ppstr (seml-to-string sexp)))
@@ -219,8 +219,7 @@ This function is seml version of `pp'."
   "Get element at XPATH like specification from seml SEXP.
 When WITHOUT-TOP is nonnil, return SEML sexp without top tag.
 XPATH is now supported below forms
-- '(top html body pre)
-"
+- '(top html body pre)"
   (declare (indent 1))
   (let ((fn) (result) (current))
     (setq fn (lambda (dom)
@@ -241,19 +240,21 @@ XPATH is now supported below forms
 ;;;###autoload
 (defun seml-xpath-single (xpath sexp &optional without-top)
   "Get one element at XPATH like specifiction from seml SEXP.
-Supported XPATH more information, see `seml-xpath'."
+Supported XPATH more information, see `seml-xpath'.
+
+When WITHOUT-TOP is non-nil, remove root tag."
   (declare (indent 1))
   (car (seml-xpath xpath sexp without-top)))
 
 ;;;###autoload
 (defun seml-xpath-without-top (xpath sexp)
-  "Call `seml-xpath' with without-top option."
+  "Call `seml-xpath' with without-top option (and call with XPATH SEXP)."
   (declare (indent 1))
   (seml-xpath xpath sexp t))
 
 ;;;###autoload
 (defun seml-xpath-single-without-top (xpath sexp)
-  "Call `seml-xpath-single with without-top option."
+  "Call `seml-xpath-single' with without-top option (and call with XPATH SEXP)."
   (declare (indent 1))
   (seml-xpath-single xpath sexp t))
 
@@ -284,7 +285,7 @@ optional:
 
 ;;;###autoload
 (defun seml-import (path)
-  "Import external seml file at `seml-import-dir'/PATH"
+  "Import external seml file at `seml-import-dir'/PATH."
   (let ((path path))
   (eval
    (read
@@ -350,7 +351,7 @@ If omit BUF, use `current-buffer'."
 
 ;;;###autoload
 (defun seml-encode-html-from-file (filepath)
-  "Return SEML sexp encoded from html file."
+  "Return SEML sexp encoded from html file located in FILEPATH."
   (let ((buf (generate-new-buffer " *seml-encode*")))
     (with-current-buffer buf
       (insert-file-contents filepath))
@@ -363,7 +364,8 @@ If omit BUF, use `current-buffer'."
 
 ;;;###autoload
 (defun seml-decode-seml-from-region (start end &optional doctype)
-  "Return HTML string from buffer region at STRAT to END."
+  "Return HTML string from buffer region at START to END.
+If gives DOCTYPE, concat DOCTYPE at head."
   (seml-decode-seml-from-string (buffer-substring-no-properties start end) doctype))
 
 ;;;###autoload
@@ -431,12 +433,14 @@ If gives DOCTYPE, concat DOCTYPE at head."
 
 ;;;###autoload
 (defun seml-decode-seml-from-string (str &optional doctype)
-  "Return HTML string decode from seml STR."
+  "Return HTML string decode from seml STR.
+If gives DOCTYPE, concat DOCTYPE at head."
   (seml-decode-seml-from-sexp (eval (read str)) doctype))
 
 ;;;###autoload
 (defun seml-decode-seml-from-buffer (&optional buf doctype)
-  "Return HTML string decode from BUF."
+  "Return HTML string decode from BUF.
+If gives DOCTYPE, concat DOCTYPE at head."
   (seml-decode-seml-from-string
    (with-current-buffer (or buf (current-buffer))
      (buffer-string))
@@ -444,7 +448,8 @@ If gives DOCTYPE, concat DOCTYPE at head."
 
 ;;;###autoload
 (defun seml-decode-seml-from-file (filepath &optional doctype)
-  "Return HTML string decoded from seml file."
+  "Return HTML string decoded from seml file located in FILEPATH.
+If gives DOCTYPE, concat DOCTYPE at head."
   (let ((buf (generate-new-buffer " *seml-decode*")))
     (with-current-buffer buf
       (insert-file-contents filepath))
