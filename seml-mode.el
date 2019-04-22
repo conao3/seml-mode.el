@@ -40,6 +40,7 @@
 (require 'elisp-mode)                  ; seml-mode is a derivative of elisp-mode
 (require 'simple-httpd)                ; seml provide Emacs's httpd process
 (require 'htmlize)                     ; Embed code with each fontlock
+(require 'cl-lib)                      ; cl-mapcan
 
 (defgroup seml nil
   "Major mode for editing SEML (S-Expression Markup Language) file."
@@ -308,7 +309,7 @@ optional:
                 (prep
                  (cond
                   ((and (consp x) (not (seml-pairp x)))
-                   `(,(mapcan fn x)))
+                   `(,(cl-mapcan fn x)))
                   (t
                    `(,x))))
                 ((and (consp x) (eq (car x) 'pre) (not (seml-pairp x)))
@@ -316,19 +317,19 @@ optional:
                      (setq prep t)
                      (cond
                       ((and (consp x) (not (seml-pairp x)))
-                       `(,(mapcan fn x)))
+                       `(,(cl-mapcan fn x)))
                       ((stringp x)
                        (when (string-match-p "[[:graph:]]" x) `(,x)))
                       (t
                        `(,x)))
                    (setq prep nil)))
                 ((and (consp x) (not (seml-pairp x)))
-                 `(,(mapcan fn x)))
+                 `(,(cl-mapcan fn x)))
                 ((stringp x)
                  (when (string-match-p "[[:graph:]]" x) `(,x)))
                 (t
                   `(,x)))))
-    (mapcan fn (libxml-parse-html-region start end))))
+    (cl-mapcan fn (libxml-parse-html-region start end))))
 
 ;;;###autoload
 (defun seml-encode-html-from-string (str)
@@ -391,7 +392,7 @@ If gives DOCTYPE, concat DOCTYPE at head."
            (lambda (dom)
              (if (listp dom)
                  (let* ((tag  (pop dom))
-                        (prop (mapcan jade--fn (pop dom)))
+                        (prop (cl-mapcan jade--fn (pop dom)))
                         (rest dom)
                         (tagname (symbol-name tag)))
                    (cond
