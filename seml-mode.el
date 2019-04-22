@@ -111,7 +111,7 @@ NOTE: If you have auto-save settings, set this variable loger than it."
     comment top))
 
 (defconst seml-mode-keywords-regexp
-  (eval `(rx (or ,@(mapcar 'symbol-name seml-mode-keywords)))))
+  (rx-to-string `(or ,@(mapcar 'symbol-name seml-mode-keywords))))
 
 (defconst seml-html-single-tags
   '(base link meta img br area param hr col option input wbr))
