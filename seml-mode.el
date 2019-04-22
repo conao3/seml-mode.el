@@ -5,7 +5,7 @@
 ;; Author: Naoya Yamashita <conao3@gmail.com>
 ;; Maintainer: Naoya Yamashita <conao3@gmail.com>
 ;; Keywords: lisp html
-;; Version: 1.5.0
+;; Version: 1.5.1
 ;; URL: https://github.com/conao3/seml-mode
 ;; Package-Requires: ((emacs "25") (simple-httpd "1.5") (htmlize "1.5"))
 
@@ -37,27 +37,22 @@
 
 ;;; Code:
 
-(require 'elisp-mode)
-(require 'lisp-mode)
-(require 'simple-httpd)
-(require 'htmlize)
+(require 'elisp-mode)                  ; seml-mode is a derivative of elisp-mode
+(require 'simple-httpd)                ; seml provide Emacs's httpd process
+(require 'htmlize)                     ; Embed code with each fontlock
+(require 'cl-lib)                      ; cl-mapcan
 
 (defgroup seml nil
   "Major mode for editing SEML (S-Expression Markup Language) file."
   :group 'lisp
   :prefix "seml-")
 
-(defconst seml-mode-version "1.5.0"
-  "Version of `seml-mode'.")
-
 (defcustom seml-mode-hook nil
   "Hook run when entering seml mode."
   :type 'hook
   :group 'seml)
 
-(defvar seml-map
-  (let ((map (make-sparse-keymap)))
-    map)
+(defvar seml-map (make-sparse-keymap)
   "Keymap for SEML mode.")
 
 (defcustom seml-import-dir (locate-user-emacs-file "seml")
@@ -111,7 +106,7 @@ NOTE: If you have auto-save settings, set this variable loger than it."
     comment top))
 
 (defconst seml-mode-keywords-regexp
-  (eval `(rx (or ,@(mapcar 'symbol-name seml-mode-keywords)))))
+  (rx-to-string `(or ,@(mapcar 'symbol-name seml-mode-keywords))))
 
 (defconst seml-html-single-tags
   '(base link meta img br area param hr col option input wbr))
@@ -140,10 +135,11 @@ NOTE: If you have auto-save settings, set this variable loger than it."
 ;;  functions
 ;;
 
-(defvar calculate-lisp-indent-last-sexp)
+(require 'lisp-mode)                   ; define seml indent function from lisp's
+(defvar calculate-lisp-indent-last-sexp) ; lisp-mode: L888
 (defun seml-indent-function (indent-point state)
   "Indent calculation function for seml.
-at INDENT-POINT on STATE.  see function/ `lisp-indent-function'."
+at INDENT-POINT on STATE.  see original function `lisp-indent-function'."
   (let ((normal-indent (current-column)))
     (goto-char (1+ (elt state 1)))
     (parse-partial-sexp (point) calculate-lisp-indent-last-sexp 0 t)
@@ -313,7 +309,7 @@ optional:
                 (prep
                  (cond
                   ((and (consp x) (not (seml-pairp x)))
-                   `(,(mapcan fn x)))
+                   `(,(cl-mapcan fn x)))
                   (t
                    `(,x))))
                 ((and (consp x) (eq (car x) 'pre) (not (seml-pairp x)))
@@ -321,19 +317,19 @@ optional:
                      (setq prep t)
                      (cond
                       ((and (consp x) (not (seml-pairp x)))
-                       `(,(mapcan fn x)))
+                       `(,(cl-mapcan fn x)))
                       ((stringp x)
                        (when (string-match-p "[[:graph:]]" x) `(,x)))
                       (t
                        `(,x)))
                    (setq prep nil)))
                 ((and (consp x) (not (seml-pairp x)))
-                 `(,(mapcan fn x)))
+                 `(,(cl-mapcan fn x)))
                 ((stringp x)
                  (when (string-match-p "[[:graph:]]" x) `(,x)))
                 (t
                   `(,x)))))
-    (mapcan fn (libxml-parse-html-region start end))))
+    (cl-mapcan fn (libxml-parse-html-region start end))))
 
 ;;;###autoload
 (defun seml-encode-html-from-string (str)
@@ -396,7 +392,7 @@ If gives DOCTYPE, concat DOCTYPE at head."
            (lambda (dom)
              (if (listp dom)
                  (let* ((tag  (pop dom))
-                        (prop (mapcan jade--fn (pop dom)))
+                        (prop (cl-mapcan jade--fn (pop dom)))
                         (rest dom)
                         (tagname (symbol-name tag)))
                    (cond
