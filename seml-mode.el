@@ -55,9 +55,7 @@
   :type 'hook
   :group 'seml)
 
-(defvar seml-map
-  (let ((map (make-sparse-keymap)))
-    map)
+(defvar seml-map (make-sparse-keymap)
   "Keymap for SEML mode.")
 
 (defcustom seml-import-dir (locate-user-emacs-file "seml")
