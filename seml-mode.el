@@ -37,10 +37,9 @@
 
 ;;; Code:
 
-(require 'elisp-mode)
-(require 'lisp-mode)
-(require 'simple-httpd)
-(require 'htmlize)
+(require 'elisp-mode)                  ; seml-mode is a derivative of elisp-mode
+(require 'simple-httpd)                ; seml provide Emacs's httpd process
+(require 'htmlize)                     ; Embed code with each fontlock
 
 (defgroup seml nil
   "Major mode for editing SEML (S-Expression Markup Language) file."
@@ -135,10 +134,11 @@ NOTE: If you have auto-save settings, set this variable loger than it."
 ;;  functions
 ;;
 
-(defvar calculate-lisp-indent-last-sexp)
+(require 'lisp-mode)                   ; define seml indent function from lisp's
+(defvar calculate-lisp-indent-last-sexp) ; lisp-mode: L888
 (defun seml-indent-function (indent-point state)
   "Indent calculation function for seml.
-at INDENT-POINT on STATE.  see function/ `lisp-indent-function'."
+at INDENT-POINT on STATE.  see original function `lisp-indent-function'."
   (let ((normal-indent (current-column)))
     (goto-char (1+ (elt state 1)))
     (parse-partial-sexp (point) calculate-lisp-indent-last-sexp 0 t)
