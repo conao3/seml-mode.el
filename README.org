@@ -1,7 +1,7 @@
 #+author: conao
 #+date: <2018-10-25 Thu>
 
-[[https://github.com/conao3/seml-mode.el][https://raw.githubusercontent.com/conao3/files/master/header/png/seml-mode.el.png]]
+[[https://github.com/conao3/seml-mode.el][https://raw.githubusercontent.com/conao3/files/master/blob/headers/png/seml-mode.el.png]]
 [[https://github.com/conao3/seml-mode.el/blob/master/LICENSE][https://img.shields.io/github/license/conao3/seml-mode.el.svg?style=flat-square]]
 [[https://github.com/conao3/seml-mode.el/releases][https://img.shields.io/github/tag/conao3/seml-mode.el.svg?style=flat-square]]
 [[https://travis-ci.org/conao3/seml-mode.el][https://img.shields.io/travis/conao3/seml-mode.el/master.svg?style=flat-square]]
@@ -60,7 +60,7 @@ With compare 2 files, SEML is *short* and *easy to understand* for Lisp hacker.
 
 #+name: simple-SS
 #+caption: simple-seml
-[[https://raw.githubusercontent.com/conao3/files/master/project/seml-mode.el/simple-seml.png]]
+[[https://raw.githubusercontent.com/conao3/files/master/blob/seml-mode.el/simple-seml.png]]
 
 Since SEML can use Elisp freely in SEML file, I think that it has *the same power as PHP*.
 
@@ -169,7 +169,7 @@ If you stop monitor SEML buffer, ~M-x seml-live-refresh-stop~.
 
 #+name: complex-SS
 #+caption: complex-seml project with live-refresh
-[[https://raw.githubusercontent.com/conao3/files/master/project/seml-mode.el/complex-seml.png]]
+[[https://raw.githubusercontent.com/conao3/files/master/blob/seml-mode.el/complex-seml.png]]
 
 * Documents
 ** Customizable Variables

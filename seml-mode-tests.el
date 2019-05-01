@@ -5,7 +5,7 @@
 ;; Author: Naoya Yamashita <conao3@gmail.com>
 ;; Maintainer: Naoya Yamashita <conao3@gmail.com>
 ;; Keywords: lisp
-;; Version: 1.4.0
+;; Version: 1.4.1
 ;; URL: https://github.com/conao3/seml-mode.el
 ;; Package-Requires: ((emacs "24.3") (simple-httpd "1.5") (htmlize "1.5"))
 
