@@ -495,5 +495,5 @@ error: (:cort-error EXPECTED-ERROR-TYPE FORM)"
       (princ (format cort-passed-message
                      testc (- testc failc errorc) failc errorc emacs-version)))))
 
-(provide 'cort-test)
+;; (provide 'cort-test)
 ;;; cort-test.el ends here

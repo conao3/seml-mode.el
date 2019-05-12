@@ -28,8 +28,8 @@
 
 ;;; Code:
 
+(load "cort-test")
 (require 'seml-mode)
-(require 'cort-test)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;
