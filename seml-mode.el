@@ -1,4 +1,4 @@
-;;; seml-mode.el --- major-mode for SEML file        -*- lexical-binding: t; -*-
+;;; seml-mode.el --- major-mode for SEML, S-Expression Markup Language, file        -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2019  Naoya Yamashita
 
