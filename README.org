@@ -91,21 +91,15 @@ SEML syntax is very easy.
 #+begin_src emacs-lisp
   (cort-deftest seml-mode:/simple-jade
     (:string= (seml-decode-seml-from-sexp '(h1 ("#header.class1.class2") "sample"))
-              "
-  <h1 id=\"header\" class=\"class1 class2\">sample</h1>
-  "))
+              "<h1 id=\"header\" class=\"class1 class2\">sample</h1>"))
 
   (cort-deftest seml-mode:/simple-jade2
     (:string= (seml-decode-seml-from-sexp '(h1 ("#header.class1") "sample"))
-              "
-  <h1 id=\"header\" class=\"class1\">sample</h1>
-  "))
+              "<h1 id=\"header\" class=\"class1\">sample</h1>"))
 
   (cort-deftest seml-mode:/simple-jade3
     (:string= (seml-decode-seml-from-sexp '(h1 ("class1") "sample"))
-              "
-  <h1 class=\"class1\">sample</h1>
-  "))
+              "<h1 class=\"class1\">sample</h1>"))
 #+end_src
 
 *** Complex SEML example
@@ -116,19 +110,13 @@ SEML syntax is very easy.
                     ,@(mapcar (lambda (x)
                                `(li nil ,(format "item-%s" x)))
                              (number-sequence 1 5))))
-              "
-  <ul>
-  <li>item-1</li>
-
-  <li>item-2</li>
-
-  <li>item-3</li>
-
-  <li>item-4</li>
-
-  <li>item-5</li>
-  </ul>
-  "))
+              "<ul>
+    <li>item-1</li>
+    <li>item-2</li>
+    <li>item-3</li>
+    <li>item-4</li>
+    <li>item-5</li>
+  </ul>"))
 #+end_src
 You only need to think about *passing SEML list* to SEML decoder.
 So you can use *any* function returning list.
@@ -365,6 +353,8 @@ If you stop monitor SEML buffer, ~M-x seml-live-refresh-stop~.
 
 - (seml-xpath-single-without-top xpath sexp)
 - (seml-htmlize majormode codestr &optional noindentp formatfn)
+
+  Get SEML expression of any code in syntax highlight as specify major-mode.
   #+begin_src emacs-lisp
     (cort-deftest seml-mode:/simple-htmlize
       (:equal (seml-htmlize 'emacs-lisp-mode "(leaf real-auto-save
