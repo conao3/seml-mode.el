@@ -7,7 +7,7 @@
 ;; Keywords: lisp html
 ;; Version: 1.5.4
 ;; URL: https://github.com/conao3/seml-mode
-;; Package-Requires: ((emacs "25") (simple-httpd "1.5") (htmlize "1.5"))
+;; Package-Requires: ((emacs "25") (simple-httpd "1.5") (htmlize "1.5") (web-mode "16.0"))
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -78,6 +78,7 @@
 (require 'elisp-mode)                  ; seml-mode is a derivative of elisp-mode
 (require 'simple-httpd)                ; seml provide Emacs's httpd process
 (require 'htmlize)                     ; Embed code with each fontlock
+(require 'web-mode)                    ; well-indent html by web-mode
 (require 'cl-lib)                      ; cl-mapcan
 
 (defgroup seml nil
@@ -406,64 +407,69 @@ If gives DOCTYPE, concat DOCTYPE at head."
 (defun seml-decode-seml-from-sexp (sexp &optional doctype)
   "Return HTML decoded from seml SEXP.
 If gives DOCTYPE, concat DOCTYPE at head."
-  (concat
-   (or doctype "")
-   (let ((prop--fn (lambda (x)
-                     (when x (format " %s=\"%s\"" (car x) (cdr x)))))
-         (jade--fn (lambda (x)
-                     (if (not (stringp x))
-                         `(,x)
-                       (let ((elms (split-string x "\\."))
-                             (ret))
-                         (when (string-match (rx bos "#" (group (* any))) (car elms))
-                           (push `(id . ,(match-string 1 (car elms)))
-                                 ret)
-                           (pop elms))
-                         (when (and elms (string= (car elms) ""))
-                           (pop elms))
-                         (when elms
-                           (push `(class . ,(mapconcat 'identity elms " "))
-                                 ret))
-                         (nreverse ret)))))
-         (decode-fn) (prep))
-     (setq decode-fn
-           (lambda (dom)
-             (if (listp dom)
-                 (let* ((tag  (pop dom))
-                        (prop (cl-mapcan jade--fn (pop dom)))
-                        (rest dom)
-                        (tagname (symbol-name tag)))
-                   (cond
-                    (prep
-                     (format "%s%s%s"
-                             (format "<%s%s>" tagname (mapconcat prop--fn prop ""))
-                             (mapconcat decode-fn rest "")
-                             (format "</%s>" tagname)))
-                    ((eq tag 'pre)
-                     (let ((content))
-                       (setq prep t)
-                       (setq content (format "%s%s%s"
-                                             (format "<%s%s>" tagname (mapconcat prop--fn prop ""))
-                                             (mapconcat decode-fn rest "")
-                                             (format "</%s>" tagname)))
-                       (setq prep nil)
-                       content))
-                    ((eq tag 'top)
-                     (format "%s"
-                             (mapconcat decode-fn rest "")))
-                    ((eq tag 'comment)
-                     (format "\n<!--%s-->\n"
-                             (mapconcat decode-fn rest "")))
-                    ((memq tag seml-html-single-tags)
-                     (format "%s\n"
-                             (format "<%s%s>" tagname (mapconcat prop--fn prop ""))))
-                    (t
-                     (format "\n%s%s%s\n"
-                             (format "<%s%s>" tagname (mapconcat prop--fn prop ""))
-                             (mapconcat decode-fn rest "")
-                             (format "</%s>" tagname)))))
-               dom)))
-     (funcall decode-fn sexp))))
+  (let ((prop--fn (lambda (x)
+                    (when x (format " %s=\"%s\"" (car x) (cdr x)))))
+        (jade--fn (lambda (x)
+                    (if (not (stringp x))
+                        `(,x)
+                      (let ((elms (split-string x "\\."))
+                            (ret))
+                        (when (string-match (rx bos "#" (group (* any))) (car elms))
+                          (push `(id . ,(match-string 1 (car elms)))
+                                ret)
+                          (pop elms))
+                        (when (and elms (string= (car elms) ""))
+                          (pop elms))
+                        (when elms
+                          (push `(class . ,(mapconcat 'identity elms " "))
+                                ret))
+                        (nreverse ret)))))
+        (decode-fn) (prep))
+    (setq decode-fn
+          (lambda (dom)
+            (if (atom dom)
+                dom
+              (let* ((tag  (pop dom))
+                     (prop (cl-mapcan jade--fn (pop dom)))
+                     (rest dom)
+                     (tagname (symbol-name tag)))
+                (cond
+                 (prep
+                  (format "%s%s%s"
+                          (format "<%s%s>" tagname (mapconcat prop--fn prop ""))
+                          (mapconcat decode-fn rest "")
+                          (format "</%s>" tagname)))
+                 ((eq tag 'pre)
+                  (prog2
+                      (setq prep t)
+                      (format "%s%s%s"
+                              (format "<%s%s>" tagname (mapconcat prop--fn prop ""))
+                              (mapconcat decode-fn rest "")
+                              (format "</%s>" tagname))
+                    (setq prep nil)))
+                 ((eq tag 'top)
+                  (format "%s"
+                          (mapconcat decode-fn rest "\n")))
+                 ((eq tag 'comment)
+                  (format "<!--%s-->"
+                          (mapconcat decode-fn rest "\n")))
+                 ((memq tag seml-html-single-tags)
+                  (format "%s"
+                          (format "<%s%s>" tagname (mapconcat prop--fn prop ""))))
+                 (t
+                  (format "%s%s%s%s%s"
+                          (format "<%s%s>" tagname (mapconcat prop--fn prop ""))
+                          (if (< 1 (length rest)) "\n" "")
+                          (mapconcat decode-fn rest "\n")
+                          (if (< 1 (length rest)) "\n" "")
+                          (format "</%s>" tagname))))))))
+    (with-temp-buffer
+      (and doctype (insert (concat doctype "\n")))
+      (insert (funcall decode-fn sexp))
+      (web-mode)
+      (let ((web-mode-markup-indent-offset 2))
+        (indent-region (point-min) (point-max)))
+      (buffer-substring-no-properties (point-min) (point-max)))))
 
 ;;;###autoload
 (defun seml-decode-seml-from-string (str &optional doctype)
