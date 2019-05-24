@@ -12,7 +12,8 @@ BATCH       := $(EMACS) -Q --batch -L $(TOP)
 
 SIMPLEHTTPD := simple-httpd.el
 HTMLIZE     := htmlize.el
-DEPEND      := $(SIMPLEHTTPD) $(HTMLIZE)
+WEBMODE     := web-mode.el
+DEPEND      := $(SIMPLEHTTPD) $(HTMLIZE) $(WEBMODE)
 DEPENDDIR   := sample
 
 TESTFILE    := seml-mode-tests.el
@@ -46,6 +47,9 @@ $(SIMPLEHTTPD):
 
 $(HTMLIZE):
 	curl -O $(_GITHUB)/hniksic/emacs-htmlize/master/$@
+
+$(WEBMODE):
+	curl -O $(_GITHUB)/fxbois/web-mode/master/$@
 
 ##############################
 #  test on all Emacs

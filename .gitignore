@@ -6,3 +6,4 @@
 # depend files
 simple-httpd.el
 htmlize.el
+web-mode.el

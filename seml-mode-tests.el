@@ -72,19 +72,16 @@
 (defvar seml-sample-str1-decode
   "<!DOCTYPE html>
 <html lang=\"en\">
-<head><meta charset=\"utf-8\">
-
-<title>sample page</title>
-<link rel=\"stylesheet\" href=\"sample1.css\">
-</head>
-
-<body>
-<h1>sample</h1>
-
-<p>text sample</p>
-</body>
-</html>
-")
+  <head>
+    <meta charset=\"utf-8\">
+    <title>sample page</title>
+    <link rel=\"stylesheet\" href=\"sample1.css\">
+  </head>
+  <body>
+    <h1>sample</h1>
+    <p>text sample</p>
+  </body>
+</html>")
 
 (defvar seml-sample-sexp1
   '(html ((lang . "en"))
@@ -186,20 +183,15 @@
 (cort-deftest seml-test:/simple-comment
   (seml-str-expansion
    (seml-decode-seml-from-sexp '(comment nil " Created by htmlize-1.55 in css mode. "))
-   "
-<!-- Created by htmlize-1.55 in css mode. -->
-"))
+   "<!-- Created by htmlize-1.55 in css mode. -->"))
 
 (cort-deftest seml-test:/simple-top
   (seml-str-expansion
    (seml-decode-seml-from-sexp '(top nil
                                      (comment nil " Created by htmlize-1.55 in css mode. ")
                                      (comment nil " Created by htmlize-1.55 in css mode. ")))
-   "
-<!-- Created by htmlize-1.55 in css mode. -->
-
-<!-- Created by htmlize-1.55 in css mode. -->
-"))
+   "<!-- Created by htmlize-1.55 in css mode. -->
+<!-- Created by htmlize-1.55 in css mode. -->"))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;
@@ -407,21 +399,15 @@
 
 (cort-deftest seml-mode:/simple-jade
   (:string= (seml-decode-seml-from-sexp '(h1 ("#header.class1.class2") "sample"))
-            "
-<h1 id=\"header\" class=\"class1 class2\">sample</h1>
-"))
+            "<h1 id=\"header\" class=\"class1 class2\">sample</h1>"))
 
 (cort-deftest seml-mode:/simple-jade2
   (:string= (seml-decode-seml-from-sexp '(h1 ("#header.class1") "sample"))
-            "
-<h1 id=\"header\" class=\"class1\">sample</h1>
-"))
+            "<h1 id=\"header\" class=\"class1\">sample</h1>"))
 
 (cort-deftest seml-mode:/simple-jade3
   (:string= (seml-decode-seml-from-sexp '(h1 ("class1") "sample"))
-            "
-<h1 class=\"class1\">sample</h1>
-"))
+            "<h1 class=\"class1\">sample</h1>"))
 
 (cort-deftest seml-mode:/simple-ul
   (:string= (seml-decode-seml-from-sexp
@@ -429,28 +415,18 @@
                   ,@(mapcar (lambda (x)
                              `(li nil ,(format "item-%s" x)))
                            (number-sequence 1 5))))
-            "
-<ul>
-<li>item-1</li>
-
-<li>item-2</li>
-
-<li>item-3</li>
-
-<li>item-4</li>
-
-<li>item-5</li>
-</ul>
-"))
+            "<ul>
+  <li>item-1</li>
+  <li>item-2</li>
+  <li>item-3</li>
+  <li>item-4</li>
+  <li>item-5</li>
+</ul>"))
 
 (cort-deftest seml-mode:simple-ignore-nil
   (:string= (seml-decode-seml-from-sexp '(h1 ("#d" nil (class . "class")) "s"))
-           "
-<h1 id=\"d\" class=\"class\">s</h1>
-"))
+           "<h1 id=\"d\" class=\"class\">s</h1>"))
 
 (cort-deftest seml-mode:simple-ignore-beginning-dot
   (:string= (seml-decode-seml-from-sexp '(h1 (".class") "s"))
-           "
-<h1 class=\"class\">s</h1>
-"))
+           "<h1 class=\"class\">s</h1>"))
