@@ -1,4 +1,4 @@
-;;; seml-mode.el --- major-mode for SEML file        -*- lexical-binding: t; -*-
+;;; seml-mode.el --- major-mode for SEML, S-Expression Markup Language, file        -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2019  Naoya Yamashita
 
@@ -23,6 +23,44 @@
 ;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 ;;; Commentary:
+;;
+;; Below 2 files represent the same structure.
+;; I call the S expression representation of the markup language
+;; (especially with HTML) SEML and this package provides
+;; the major mode and utility for that file.
+;;
+;; SEML is *short* and *easy to understand* for Lisp hacker.
+;;
+;; #+begin_src html
+;;   <!DOCTYPE html>
+;;   <html lang="en">
+;;     <head>
+;;       <meta charset="utf-8"/>
+;;       <title>sample page</title>
+;;       <link rel="stylesheet" href="sample1.css"/>
+;;     </head>
+;;     <body>
+;;       <h1>sample</h1>
+;;       <p>
+;;         text sample
+;;       </p>
+;;     </body>
+;;   </html>
+;; #+end_src
+;;
+;; #+begin_src seml
+;;   (html ((lang . "en"))
+;;     (head nil
+;;       (meta ((charset . "utf-8")))
+;;       (title nil "sample page")
+;;       (link ((rel . "stylesheet") (href . "sample1.css"))))
+;;     (body nil
+;;       (h1 nil "sample")
+;;       (p nil "text sample")))
+;; #+end_src
+;;
+;; More information at [[https://github.com/conao3/seml-mode][github]]
+;;
 ;; Sample configuration with [[https://github.com/conao3/leaf.el][leaf.el]]
 ;;
 ;; (leaf real-auto-save
@@ -598,7 +636,9 @@ If you stop monitor SEML buffer, `seml-live-refresh-stop'.
   
   (set (make-local-variable 'lisp-indent-function) 'seml-indent-function))
 
+;;;###autoload
 (add-to-list 'auto-mode-alist '("\\.seml\\'" . seml-mode))
+;;;###autoload
 (add-to-list 'interpreter-mode-alist '("seml" . seml-mode))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
