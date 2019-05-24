@@ -10,7 +10,7 @@
 [[https://twitter.com/conao_3][https://img.shields.io/badge/twitter-@conao__3-blue.svg?logo=twitter&style=flat-square]]
 [[https://join.slack.com/t/conao3-support/shared_invite/enQtNTg2MTY0MjkzOTU0LTFjOTdhOTFiNTM2NmY5YTE5MTNlYzNiOTE2MTZlZWZkNDEzZmRhN2E0NjkwMWViZTZiYjA4MDUxYTUzNDZiNjY][https://img.shields.io/badge/chat-on_slack-blue.svg?logo=slack&style=flat-square]]
 
-- [[#what-is-it][What is it?]]
+- [[#description][Description]]
 - [[#settings][Settings]]
 - [[#live-refresh-without-save-file][Live-refresh (Without save file)]]
 - [[#documents][Documents]]
@@ -26,7 +26,7 @@
   - [[#author][Author]]
   - [[#contributors][Contributors]]
 
-* What is it?
+* Description
 Below 2 files represent the same structure.
 With compare 2 files, SEML is *short* and *easy to understand* for Lisp hacker.
 
@@ -63,8 +63,11 @@ With compare 2 files, SEML is *short* and *easy to understand* for Lisp hacker.
 [[https://raw.githubusercontent.com/conao3/files/master/blob/seml-mode.el/simple-seml.png]]
 
 Since SEML can use Elisp freely in SEML file, I think that it has *the same power as PHP*.
+You can open files, use information that is only visible to Emacs,
+and use the results of Emacs hitting an external API.
 
-~seml-mode.el~ provides major mode for editing SEML (S-Expression Markup Language) files for you.
+~seml-mode.el~ provides major mode for editing SEML (S-Expression Markup Language) files
+and utilities for you.
 
 ** SEML Syntax
 SEML syntax is very easy.
@@ -125,14 +128,51 @@ SEML syntax is very easy.
   </ul>
   "))
 #+end_src
-You only need to think about passing SEML list to SEML decoder.
+You only need to think about *passing SEML list* to SEML decoder.
 So you can use *any* function returning list.
-* Settings
+* Install
+** MELPA
+~seml-mode.el~ can install with package.el from MELPA,
+so sample instration code is below using [[https://github.com/conao3/leaf.el][leaf.el]].
+#+begin_src emacs-lisp
+  (prog1 "Load leaf.el"
+    (add-to-list 'load-path (locate-user-emacs-file "site-lisp/leaf.el"))
+    (require 'leaf)
+    (leaf leaf
+      :doc "Symplify your init.el configuration"
+      :doc "Initialize leaf dependent packages"
+      :url "https://github.com/conao3/leaf.el"
+      :custom ((leaf-backend-ensure . 'package))
+      :config
+      (leaf package
+        :custom ((package-archives . '(("org"   . "https://orgmode.org/elpa/")
+                                       ("melpa" . "https://melpa.org/packages/")
+                                       ("gnu"   . "https://elpa.gnu.org/packages/"))))
+        :config
+        (package-initialize))))
+
+  (leaf seml-mode
+    :when (version<= "25.1" emacs-version)
+    :ensure t)
+#+end_src
+
+** Manual install
 Put this package in your ~load-path~, require it.
 #+begin_src emacs-lisp
   (add-to-list 'load-path
-               (locate-user-emacs-file (format "site-lisp/seml-mode.el" )))
+               (locate-user-emacs-file (format "site-lisp/seml-mode.el")))
   (require 'seml-mode)
+#+end_src
+
+** Note
+It is already set to automatically enable seml-mode for typical seml file
+extensions as follows, but if you want to enable seml-mode for special extensions
+or for other reasons, you need to set it to an optional setting.
+#+begin_src emacs-lisp
+  ;;;###autoload
+  (add-to-list 'auto-mode-alist '("\\.seml\\'" . seml-mode))
+  ;;;###autoload
+  (add-to-list 'interpreter-mode-alist '("seml" . seml-mode))
 #+end_src
 
 * Auto-refresh (With save file)
@@ -385,4 +425,3 @@ Feel free to send PR!
 
 ** Contributors
 - Not yet... Now send PR and add your name!!
-

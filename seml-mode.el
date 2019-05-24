@@ -636,7 +636,9 @@ If you stop monitor SEML buffer, `seml-live-refresh-stop'.
   
   (set (make-local-variable 'lisp-indent-function) 'seml-indent-function))
 
+;;;###autoload
 (add-to-list 'auto-mode-alist '("\\.seml\\'" . seml-mode))
+;;;###autoload
 (add-to-list 'interpreter-mode-alist '("seml" . seml-mode))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
