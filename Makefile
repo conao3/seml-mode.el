@@ -1,84 +1,71 @@
+## Makefile
+
+# Copyright (C) 2019  Naoya Yamashita
+
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
 all:
 
-include Makefunc.mk
+REPO_USER    := conao3
+PACKAGE_NAME := seml-mode
+REPO_NAME    := seml-mode.el
 
-TOP         := $(dir $(lastword $(MAKEFILE_LIST)))
-EMACS_RAW   := $(filter-out emacs-undumped, $(shell compgen -c emacs- | xargs))
-AVAILABLE   := $(strip $(sort $(EMACS_RAW)))
-ALL_EMACS   := $(filter $(AVAILABLE),emacs-25.3 emacs-26.1)
+EMACS        ?= emacs
+ELS          := $(shell cask files)
 
-EMACS       ?= emacs
-BATCH       := $(EMACS) -Q --batch -L $(TOP)
-
-SIMPLEHTTPD := simple-httpd.el
-HTMLIZE     := htmlize.el
-WEBMODE     := web-mode.el
-DEPEND      := $(SIMPLEHTTPD) $(HTMLIZE) $(WEBMODE)
-DEPENDDIR   := sample
-
-TESTFILE    := seml-mode-tests.el
-ELS         := seml-mode.el
-
-CORTELS     := $(TESTFILE) $(DEPEND) cort-test.el
-CORT_ARGS   := -l $(TESTFILE) -f cort-run-tests
-
-GITHOOKDIR  := git-hooks
-GITHOOKS    := $(wildcard $(GITHOOKDIR)/*)
-LOGFILE     := .make-check.log
-MAKE-NPD    = $(MAKE) --no-print-directory
-
-export ELS CORT_ARGS DEPEND DEPENDDIR
+GIT_HOOKS    := pre-commit
 
 ##################################################
 
-all: $(GITHOOKS:git-hooks/%=.git/hooks/%) $(ELS:.el=.elc)
+.PHONY: all
 
-.git/hooks/%:git-hooks/%
+all: git-hook help
+
+git-hook: $(GIT_HOOKS:%=.git/hooks/%)
+
+.git/hooks/%: git-hooks/%
 	cp -a $< $@
 
-include Makefile-check.mk
+help:
+	$(info )
+	$(info Commands)
+	$(info ========)
+	$(info   - make          # Install git-hook to your local .git folder)
+	$(info   - make test     # Test $(PACKAGE_NAME))
+	$(info )
+	$(info Cleaning)
+	$(info ========)
+	$(info   - make clean    # Clean compiled files, docker conf files)
+	$(info )
+	$(info This Makefile required `cask`)
+	$(info See https://github.com/$(REPO_USER)/$(REPO_NAME)#contribution)
+	$(info )
 
 ##############################
-#  depend files
 
-_GITHUB := https://raw.githubusercontent.com
-$(SIMPLEHTTPD):
-	curl -O $(_GITHUB)/skeeto/emacs-web-server/master/$@
+%.elc: %.el .cask
+	cask exec $(EMACS) -Q --batch -f batch-byte-compile $<
 
-$(HTMLIZE):
-	curl -O $(_GITHUB)/hniksic/emacs-htmlize/master/$@
-
-$(WEBMODE):
-	curl -O $(_GITHUB)/fxbois/web-mode/master/$@
+.cask: Cask
+	cask install
+	touch $@
 
 ##############################
-#  test on all Emacs
 
-allcheck: $(ALL_EMACS:%=.make-check-%)
-	@echo ""
-	@cat $(LOGFILE) | grep =====
-	@rm $(LOGFILE)
+test: $(ELS:%.el=%.elc)
+	cask exec $(EMACS) -Q --batch -L . -l seml-mode-tests.el -f cort-run-tests
+#	cask exec buttercup -L .
 
-.make-check-%: $(DEPEND) $(DIPENDDIR)
-	$(if $(wildcard .make-$*),rm -rf .make-$*)
-	mkdir -p .make-$*
-	cp -rf $(ELS) $(CORTELS) $(DEPENDDIR) .make-$*/
-	cp -f Makefile-check.mk .make-$*/Makefile
-	+EMACS=$* $(MAKE-NPD) -C .make-$* check 2>&1 | tee -a $(LOGFILE)
-	rm -rf .make-$*
-
-##############################
-#  silent `allcheck' job
-
-test: $(ALL_EMACS:%=.make-test-%)
-	@echo ""
-	@cat $(LOGFILE) | grep =====
-	@rm $(LOGFILE)
-
-.make-test-%: $(DEPEND) $(DEPENDDIR)
-	$(if $(wildcard .make-$*),rm -rf .make-$*)
-	mkdir -p .make-$*
-	cp -rf $(ELS) $(CORTELS) $(DEPENDDIR) .make-$*/
-	cp -f Makefile-check.mk .make-$*/Makefile
-	+EMACS=$* $(MAKE-NPD) -C .make-$* check 2>&1 >> $(LOGFILE)
-	rm -rf .make-$*
+clean:
+	rm -rf $(ELS:%.el=%.elc) .cask
