@@ -5,8 +5,8 @@
 ;; Author: Naoya Yamashita <conao3@gmail.com>
 ;; Maintainer: Naoya Yamashita <conao3@gmail.com>
 ;; Keywords: lisp html
-;; Version: 1.6.0
-;; URL: https://github.com/conao3/seml-mode
+;; Version: 1.6.1
+;; URL: https://github.com/conao3/seml-mode.el
 ;; Package-Requires: ((emacs "25") (simple-httpd "1.5") (htmlize "1.5") (web-mode "16.0"))
 
 ;; This program is free software; you can redistribute it and/or modify
@@ -59,7 +59,7 @@
 ;;       (p nil "text sample")))
 ;; #+end_src
 ;;
-;; More information at [[https://github.com/conao3/seml-mode][github]]
+;; More information at [[https://github.com/conao3/seml-mode.el][github]]
 ;;
 ;; Sample configuration with [[https://github.com/conao3/leaf.el][leaf.el]]
 ;;
