@@ -236,8 +236,7 @@ or for other reasons, you need to set it to an optional setting.
 - (seml-replace-buffer-from-html)
 - (seml-replace-buffer-from-seml)
 *** Live refresh functions
-- (seml-live-refresh-start)
-- (seml-live-refresh-stop)
+- (seml-impatient-mode)
 *** Utility functions
 - (seml-indent-function indent-point state)
 - (seml-to-string sexp)
