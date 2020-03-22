@@ -1,13 +1,13 @@
-;;; seml-mode.el --- major-mode for SEML, S-Expression Markup Language, file        -*- lexical-binding: t; -*-
+;;; seml-mode.el --- Major-mode for SEML, S-Expression Markup Language, file  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2019  Naoya Yamashita
 
 ;; Author: Naoya Yamashita <conao3@gmail.com>
 ;; Maintainer: Naoya Yamashita <conao3@gmail.com>
 ;; Keywords: lisp html
-;; Version: 1.6.1
+;; Version: 1.6.2
 ;; URL: https://github.com/conao3/seml-mode.el
-;; Package-Requires: ((emacs "25") (simple-httpd "1.5") (htmlize "1.5") (web-mode "16.0"))
+;; Package-Requires: ((emacs "25.1") (simple-httpd "1.5") (htmlize "1.5") (web-mode "16.0"))
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -23,14 +23,25 @@
 ;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 ;;; Commentary:
-;;
+
 ;; Below 2 files represent the same structure.
 ;; I call the S expression representation of the markup language
 ;; (especially with HTML) SEML and this package provides
 ;; the major mode and utility for that file.
-;;
+
 ;; SEML is *short* and *easy to understand* for Lisp hacker.
-;;
+
+;; #+begin_src seml
+;;   (html ((lang . "en"))
+;;     (head nil
+;;       (meta ((charset . "utf-8")))
+;;       (title nil "sample page")
+;;       (link ((rel . "stylesheet") (href . "sample1.css"))))
+;;     (body nil
+;;       (h1 nil "sample")
+;;       (p nil "text sample")))
+;; #+end_src
+
 ;; #+begin_src html
 ;;   <!DOCTYPE html>
 ;;   <html lang="en">
@@ -47,52 +58,31 @@
 ;;     </body>
 ;;   </html>
 ;; #+end_src
-;;
-;; #+begin_src seml
-;;   (html ((lang . "en"))
-;;     (head nil
-;;       (meta ((charset . "utf-8")))
-;;       (title nil "sample page")
-;;       (link ((rel . "stylesheet") (href . "sample1.css"))))
-;;     (body nil
-;;       (h1 nil "sample")
-;;       (p nil "text sample")))
-;; #+end_src
-;;
-;; More information at [[https://github.com/conao3/seml-mode.el][github]]
-;;
-;; Sample configuration with [[https://github.com/conao3/leaf.el][leaf.el]]
-;;
-;; (leaf real-auto-save
-;;   :ensure t
-;;   :custom ((real-auto-save-interval . 0.3))
-;;   :hook (find-file-hook . real-auto-save-mode))
-;;
-;; (leaf seml-mode
-;;   :config (require 'seml-mode)
-;;   :custom ((seml-live-refresh-interval . 0.35)))
-;;
 
+;; More information at [[https://github.com/conao3/seml-mode.el][github]]
+
+;; Sample configuration with [[https://github.com/conao3/leaf.el][leaf.el]]
+
+;;   (leaf seml-mode
+;;     :custom ((seml-live-refresh-interval . 0.35))
+;;     :config
+;;     (leaf real-auto-save
+;;       :ensure t
+;;       :custom ((real-auto-save-interval . 0.3))
+;;       :hook (find-file-hook . real-auto-save-mode)))
+
+
 ;;; Code:
 
 (require 'elisp-mode)                  ; seml-mode is a derivative of elisp-mode
 (require 'simple-httpd)                ; seml provide Emacs's httpd process
 (require 'htmlize)                     ; Embed code with each fontlock
 (require 'web-mode)                    ; well-indent html by web-mode
-(require 'cl-lib)                      ; cl-mapcan
 
 (defgroup seml nil
   "Major mode for editing SEML (S-Expression Markup Language) file."
   :group 'lisp
   :prefix "seml-")
-
-(defcustom seml-mode-hook nil
-  "Hook run when entering seml mode."
-  :type 'hook
-  :group 'seml)
-
-(defvar seml-map (make-sparse-keymap)
-  "Keymap for SEML mode.")
 
 (defcustom seml-import-dir (locate-user-emacs-file "seml")
   "`seml-import' search directory."
@@ -114,11 +104,6 @@ NOTE: If you have auto-save settings, set this variable loger than it."
   "Live-refresh url."
   :type 'string
   :group 'seml)
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;
-;;  Const
-;;
 
 (defconst seml-mode-syntax-table lisp-mode-syntax-table
   "Syntax table of seml.")
@@ -150,31 +135,19 @@ NOTE: If you have auto-save settings, set this variable loger than it."
 (defconst seml-html-single-tags
   '(base link meta img br area param hr col option input wbr))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;
-;;  Polifills
-;;
+
+;;; functions
 
 (defsubst seml-pairp (var)
   "Return t if VAR is pair."
   (and (listp var) (atom (cdr var))))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;
-;;  macros
-;;
-
 (defmacro with-seml-elisp (&rest body)
   "Provide environment of eval BODY in seml.  Use ,@(with-seml-elisp (sexp))."
   (declare (indent 0) (debug t))
   `(progn ,@body nil))
-    
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;
-;;  functions
-;;
 
-(require 'lisp-mode)                   ; define seml indent function from lisp's
+(require 'lisp-mode)                     ; define seml indent function from lisp's
 (defvar calculate-lisp-indent-last-sexp) ; lisp-mode: L888
 (defun seml-indent-function (indent-point state)
   "Indent calculation function for seml.
@@ -188,35 +161,35 @@ at INDENT-POINT on STATE.  see original function `lisp-indent-function'."
         (progn
           (if (not (> (save-excursion (forward-line 1) (point))
                       calculate-lisp-indent-last-sexp))
-	      (progn (goto-char calculate-lisp-indent-last-sexp)
-		     (beginning-of-line)
-		     (parse-partial-sexp (point)
-					 calculate-lisp-indent-last-sexp 0 t)))
-	  ;; Indent under the list or under the first sexp on the same
-	  ;; line as calculate-lisp-indent-last-sexp.  Note that first
-	  ;; thing on that line has to be complete sexp since we are
+              (progn (goto-char calculate-lisp-indent-last-sexp)
+                     (beginning-of-line)
+                     (parse-partial-sexp (point)
+                                         calculate-lisp-indent-last-sexp 0 t)))
+          ;; Indent under the list or under the first sexp on the same
+          ;; line as calculate-lisp-indent-last-sexp.  Note that first
+          ;; thing on that line has to be complete sexp since we are
           ;; inside the innermost containing sexp.
           (backward-prefix-chars)
           (current-column))
       (let ((function (buffer-substring (point)
-					(progn (forward-sexp 1) (point))))
-	    method)
-	(setq method (or (function-get (intern-soft function)
+                                        (progn (forward-sexp 1) (point))))
+            method)
+        (setq method (or (function-get (intern-soft function)
                                        'lisp-indent-function)
-			 (get (intern-soft function) 'lisp-indent-hook)))
-	(cond ((or (eq method 'defun)
-		   (and (null method)
-			(> (length function) 3)
-			(string-match "\\`def" function)))
-	       (lisp-indent-defform state indent-point))
+                         (get (intern-soft function) 'lisp-indent-hook)))
+        (cond ((or (eq method 'defun)
+                   (and (null method)
+                        (> (length function) 3)
+                        (string-match "\\`def" function)))
+               (lisp-indent-defform state indent-point))
               ((memq (intern-soft function) seml-mode-keywords)
                (lisp-indent-specform 1 state
-				     indent-point normal-indent))
-	      ((integerp method)
-	       (lisp-indent-specform method state
-				     indent-point normal-indent))
-	      (method
-	       (funcall method indent-point state)))))))
+                                     indent-point normal-indent))
+              ((integerp method)
+               (lisp-indent-specform method state
+                                     indent-point normal-indent))
+              (method
+               (funcall method indent-point state)))))))
 
 ;;;###autoload
 (defun seml-to-string (sexp)
@@ -322,21 +295,19 @@ optional:
 (defun seml-import (path)
   "Import external seml file at `seml-import-dir'/PATH."
   (let ((path path))
-  (eval
-   (read
-    (with-temp-buffer
-      (insert-file-contents (expand-file-name path seml-import-dir))
-      (buffer-substring-no-properties (point-min) (point-max)))))))
+    (eval
+     (read
+      (with-temp-buffer
+        (insert-file-contents (expand-file-name path seml-import-dir))
+        (buffer-substring-no-properties (point-min) (point-max)))))))
 
 ;;;###autoload
 (defun seml-expand-url (path baseurl)
   "Return expanded url base at BASEURL to PATH."
   (expand-file-name path baseurl))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;
-;;  Encode
-;;
+
+;;; encode
 
 ;;;###autoload
 (defun seml-encode-html-from-region (start end)
@@ -348,7 +319,7 @@ optional:
                 (prep
                  (cond
                   ((and (consp x) (not (seml-pairp x)))
-                   `(,(cl-mapcan fn x)))
+                   `(,(mapcan fn x)))
                   (t
                    `(,x))))
                 ((and (consp x) (eq (car x) 'pre) (not (seml-pairp x)))
@@ -356,19 +327,19 @@ optional:
                      (setq prep t)
                      (cond
                       ((and (consp x) (not (seml-pairp x)))
-                       `(,(cl-mapcan fn x)))
+                       `(,(mapcan fn x)))
                       ((stringp x)
                        (when (string-match-p "[[:graph:]]" x) `(,x)))
                       (t
                        `(,x)))
                    (setq prep nil)))
                 ((and (consp x) (not (seml-pairp x)))
-                 `(,(cl-mapcan fn x)))
+                 `(,(mapcan fn x)))
                 ((stringp x)
                  (when (string-match-p "[[:graph:]]" x) `(,x)))
                 (t
-                  `(,x)))))
-    (cl-mapcan fn (libxml-parse-html-region start end))))
+                 `(,x)))))
+    (mapcan fn (libxml-parse-html-region start end))))
 
 ;;;###autoload
 (defun seml-encode-html-from-string (str)
@@ -392,10 +363,8 @@ If omit BUF, use `current-buffer'."
       (insert-file-contents filepath))
     (seml-encode-html-from-buffer buf)))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;
-;;  Decode
-;;
+
+;;; decode
 
 ;;;###autoload
 (defun seml-decode-seml-from-region (start end &optional doctype)
@@ -430,7 +399,7 @@ If gives DOCTYPE, concat DOCTYPE at head."
             (if (atom dom)
                 dom
               (let* ((tag  (pop dom))
-                     (prop (cl-mapcan jade--fn (pop dom)))
+                     (prop (mapcan jade--fn (pop dom)))
                      (rest dom)
                      (tagname (symbol-name tag)))
                 (cond
@@ -495,10 +464,8 @@ If gives DOCTYPE, concat DOCTYPE at head."
       (insert-file-contents filepath))
     (seml-decode-seml-from-buffer buf doctype)))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;
-;;  Replace
-;;
+
+;;; replace
 
 ;;;###autoload
 (defun seml-replace-buffer-from-html ()
@@ -519,10 +486,8 @@ If gives DOCTYPE, concat DOCTYPE at head."
     (insert
      (seml-decode-seml-from-string content "<!DOCTYPE html>"))))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;
-;;  Live refresh (Google chrome on macOS only)
-;;
+
+;;; replace feature
 
 (defvar seml-live-refresh-timer nil)
 (defvar seml-live-refresh-baffer "")
@@ -625,32 +590,28 @@ If you stop monitor SEML buffer, `seml-live-refresh-stop'.
                                      seml-live-refresh-baffer)))
                 (t (funcall fn (format "%s, URL is %s, Abort.\n"
                                        seml-live-refresh-baffer url)))))
-      
+
       (error (funcall fn (format "%s, Cannot eval, Abort. (Err msg: %s)\n"
                                  seml-live-refresh-baffer err))))))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;
-;;  Main
-;;
+
+;;; main
+
+(defvar seml-map (make-sparse-keymap)
+  "Keymap for SEML mode.")
 
 ;;;###autoload
 (define-derived-mode seml-mode emacs-lisp-mode "SEML"
   "Major mode for editing SEML (S-Expression Markup Language) file."
 
   (set-syntax-table seml-mode-syntax-table)
-  
+
   (set (make-local-variable 'lisp-indent-function) 'seml-indent-function))
 
 ;;;###autoload
 (add-to-list 'auto-mode-alist '("\\.seml\\'" . seml-mode))
 ;;;###autoload
 (add-to-list 'interpreter-mode-alist '("seml" . seml-mode))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;
-;;  font-lock
-;;
 
 ;; (defvar seml-font-lock-keywords
 ;;   `(,(eval `(rx "(" (group (regexp ,seml-mode-keywords-regexp)) (* not-wordchar)
@@ -676,4 +637,9 @@ If you stop monitor SEML buffer, `seml-live-refresh-stop'.
                            (1 font-lock-keyword-face nil nil))))
 
 (provide 'seml-mode)
+
+;; Local Variables:
+;; indent-tabs-mode: nil
+;; End:
+
 ;;; seml-mode.el ends here
