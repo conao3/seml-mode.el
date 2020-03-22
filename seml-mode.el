@@ -84,9 +84,6 @@
   :group 'lisp
   :prefix "seml-")
 
-(defvar seml-map (make-sparse-keymap)
-  "Keymap for SEML mode.")
-
 (defcustom seml-import-dir (locate-user-emacs-file "seml")
   "`seml-import' search directory."
   :type 'string
@@ -626,6 +623,9 @@ If you stop monitor SEML buffer, `seml-live-refresh-stop'.
 ;;
 ;;  Main
 ;;
+
+(defvar seml-map (make-sparse-keymap)
+  "Keymap for SEML mode.")
 
 ;;;###autoload
 (define-derived-mode seml-mode emacs-lisp-mode "SEML"
