@@ -71,6 +71,10 @@ and use the results of Emacs hitting an external API.
 ~seml-mode.el~ provides major mode for editing SEML (S-Expression Markup Language) files
 and utilities for you.
 
+#+name: complex-SS
+#+caption: complex-seml project with seml-mode
+[[https://raw.githubusercontent.com/conao3/files/master/blob/seml-mode.el/complex-seml.png]]
+
 ** SEML Syntax
 SEML syntax is very easy.
 
@@ -165,41 +169,6 @@ or for other reasons, you need to set it to an optional setting.
   (add-to-list 'interpreter-mode-alist '("seml" . seml-mode))
 #+end_src
 
-* Auto-refresh (With save file)
-* Live-refresh (Without save file)
-(Without saving file. Use buffer string instead of read file contents.
-As Depends on AppleScript, it works on macOS with Google Chrome only)
-
-~seml-mode.el~ provides the function of live refresh like other modern editors.
-
-If ~seml-mode.el~ read buffer string and eval temporally no error,
-send refresh message to Google Chrome.
-
-Sample settings with [[https://github.com/conao3/leaf.el][leaf.el]].
-#+begin_src emacs-lisp
-  (leaf real-auto-save
-    :ensure t
-    :custom ((real-auto-save-interval . 0.3))
-    :hook (find-file-hook . real-auto-save-mode))
-
-  (leaf seml-mode
-    :config (require 'seml-mode)
-    :custom ((seml-live-refresh-interval . 0.35)))
-#+end_src
-
-Then, with activating target SEML buffer, ~M-x seml-live-refresh-start~ to register
-servelet buffer (see [[https://github.com/skeeto/emacs-web-server][simple-httpd]]) and set timer function.
-
-If you stop monitor SEML buffer, ~M-x seml-live-refresh-stop~.
-
-~seml-mode.el~ send refresh message to Google Chrome...
-1. When no error read and eval register buffer string,
-2. And when the evaled sexp differs from last time,
-3. And when open ~seml-mode.el~ live-refresh page (http://localhost:8080/seml-mode/live-refresh).
-
-#+name: complex-SS
-#+caption: complex-seml project with live-refresh
-[[https://raw.githubusercontent.com/conao3/files/master/blob/seml-mode.el/complex-seml.png]]
 
 * Documents
 ** Customizable Variables
