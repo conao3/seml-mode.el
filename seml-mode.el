@@ -5,7 +5,7 @@
 ;; Author: Naoya Yamashita <conao3@gmail.com>
 ;; Maintainer: Naoya Yamashita <conao3@gmail.com>
 ;; Keywords: lisp html
-;; Version: 1.6.4
+;; Version: 1.6.5
 ;; URL: https://github.com/conao3/seml-mode.el
 ;; Package-Requires: ((emacs "25.1") (impatient-mode "1.1") (htmlize "1.5") (web-mode "16.0"))
 
@@ -428,10 +428,12 @@ If gives DOCTYPE, concat DOCTYPE at head."
 (defun seml-decode-seml-from-buffer (&optional buf doctype)
   "Return HTML string decode from BUF.
 If gives DOCTYPE, concat DOCTYPE at head."
-  (seml-decode-seml-from-string
-   (with-current-buffer (or buf (current-buffer))
-     (buffer-string))
-   doctype))
+  (with-current-buffer (or buf (current-buffer))
+    (let ((seml-import-dir (or (and (buffer-file-name)
+                                    (directory-file-name
+                                     (file-name-directory (buffer-file-name))))
+                               seml-import-dir)))
+      (seml-decode-seml-from-string (buffer-string) doctype))))
 
 ;;;###autoload
 (defun seml-decode-seml-from-file (filepath &optional doctype)
