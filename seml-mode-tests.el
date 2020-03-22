@@ -1,13 +1,10 @@
-;;; seml-mode-tests.el ---                           -*- lexical-binding: t; -*-
+;;; seml-mode-tests.el --- Test definition for seml-mode  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2018  Naoya Yamashita
 
 ;; Author: Naoya Yamashita <conao3@gmail.com>
 ;; Maintainer: Naoya Yamashita <conao3@gmail.com>
-;; Keywords: lisp
-;; Version: 1.4.1
 ;; URL: https://github.com/conao3/seml-mode.el
-;; Package-Requires: ((emacs "24.3") (simple-httpd "1.5") (htmlize "1.5"))
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -24,35 +21,21 @@
 
 ;;; Commentary:
 
-;;
+;; Test definition for seml-mode.
 
+
 ;;; Code:
 
 (load "cort-test")
 (require 'seml-mode)
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;
-;;  test settings
-;;
-
 (defalias 'message 'ignore)
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;
-;;  support macros
-;;
 
 (defmacro seml-expansion (given expect)
   `(:equal ,given ,expect))
 
 (defmacro seml-str-expansion (given expect)
   `(:string= ,given ,(eval expect)))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;
-;;  support variables
-;;
 
 (defvar seml-sample-str1 "
 <!DOCTYPE html>
@@ -98,16 +81,10 @@
                     (file-name-directory
                      (or load-file-name (buffer-file-name)))))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;
-;;  test definition
-;;
+
+;;; test definition
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;
-;;  encode html
-;;
-
+;;; encode html
 (cort-deftest seml-test:/simple-encode-region
   (seml-expansion
    (with-temp-buffer
@@ -142,11 +119,7 @@
     (expand-file-name "test-1.html" seml-sample-dir))
    seml-sample-sexp1))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;
-;;  decode seml
-;;
-
+;;; decode seml
 (cort-deftest seml-test:/simple-decode-region
   (seml-str-expansion
    (let ((buf (get-buffer-create (format "*seml-%s*" (gensym)))))
@@ -193,11 +166,7 @@
    "<!-- Created by htmlize-1.55 in css mode. -->
 <!-- Created by htmlize-1.55 in css mode. -->"))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;
-;;  other functions
-;;
-
+;;; other functions
 (cort-deftest seml-test:/simple-format
   (seml-str-expansion
    (seml-to-string

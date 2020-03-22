@@ -1,4 +1,4 @@
-;;; seml-mode.el --- Major-mode for SEML, S-Expression Markup Language, file        -*- lexical-binding: t; -*-
+;;; seml-mode.el --- Major-mode for SEML, S-Expression Markup Language, file  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2019  Naoya Yamashita
 
@@ -71,6 +71,7 @@
 ;;       :custom ((real-auto-save-interval . 0.3))
 ;;       :hook (find-file-hook . real-auto-save-mode)))
 
+
 ;;; Code:
 
 (require 'elisp-mode)                  ; seml-mode is a derivative of elisp-mode
@@ -105,11 +106,6 @@ NOTE: If you have auto-save settings, set this variable loger than it."
   :type 'string
   :group 'seml)
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;
-;;  Const
-;;
-
 (defconst seml-mode-syntax-table lisp-mode-syntax-table
   "Syntax table of seml.")
 
@@ -140,31 +136,19 @@ NOTE: If you have auto-save settings, set this variable loger than it."
 (defconst seml-html-single-tags
   '(base link meta img br area param hr col option input wbr))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;
-;;  Polifills
-;;
+
+;;; functions
 
 (defsubst seml-pairp (var)
   "Return t if VAR is pair."
   (and (listp var) (atom (cdr var))))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;
-;;  macros
-;;
 
 (defmacro with-seml-elisp (&rest body)
   "Provide environment of eval BODY in seml.  Use ,@(with-seml-elisp (sexp))."
   (declare (indent 0) (debug t))
   `(progn ,@body nil))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;
-;;  functions
-;;
-
-(require 'lisp-mode)                   ; define seml indent function from lisp's
+(require 'lisp-mode)                     ; define seml indent function from lisp's
 (defvar calculate-lisp-indent-last-sexp) ; lisp-mode: L888
 (defun seml-indent-function (indent-point state)
   "Indent calculation function for seml.
@@ -323,10 +307,8 @@ optional:
   "Return expanded url base at BASEURL to PATH."
   (expand-file-name path baseurl))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;
-;;  Encode
-;;
+
+;;; encode
 
 ;;;###autoload
 (defun seml-encode-html-from-region (start end)
@@ -382,10 +364,8 @@ If omit BUF, use `current-buffer'."
       (insert-file-contents filepath))
     (seml-encode-html-from-buffer buf)))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;
-;;  Decode
-;;
+
+;;; decode
 
 ;;;###autoload
 (defun seml-decode-seml-from-region (start end &optional doctype)
@@ -485,10 +465,8 @@ If gives DOCTYPE, concat DOCTYPE at head."
       (insert-file-contents filepath))
     (seml-decode-seml-from-buffer buf doctype)))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;
-;;  Replace
-;;
+
+;;; replace
 
 ;;;###autoload
 (defun seml-replace-buffer-from-html ()
@@ -509,10 +487,8 @@ If gives DOCTYPE, concat DOCTYPE at head."
     (insert
      (seml-decode-seml-from-string content "<!DOCTYPE html>"))))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;
-;;  Live refresh (Google chrome on macOS only)
-;;
+
+;;; replace feature
 
 (defvar seml-live-refresh-timer nil)
 (defvar seml-live-refresh-baffer "")
@@ -619,10 +595,8 @@ If you stop monitor SEML buffer, `seml-live-refresh-stop'.
       (error (funcall fn (format "%s, Cannot eval, Abort. (Err msg: %s)\n"
                                  seml-live-refresh-baffer err))))))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;
-;;  Main
-;;
+
+;;; main
 
 (defvar seml-map (make-sparse-keymap)
   "Keymap for SEML mode.")
@@ -639,11 +613,6 @@ If you stop monitor SEML buffer, `seml-live-refresh-stop'.
 (add-to-list 'auto-mode-alist '("\\.seml\\'" . seml-mode))
 ;;;###autoload
 (add-to-list 'interpreter-mode-alist '("seml" . seml-mode))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;
-;;  font-lock
-;;
 
 ;; (defvar seml-font-lock-keywords
 ;;   `(,(eval `(rx "(" (group (regexp ,seml-mode-keywords-regexp)) (* not-wordchar)
