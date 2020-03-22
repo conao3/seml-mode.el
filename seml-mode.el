@@ -168,7 +168,7 @@ NOTE: If you have auto-save settings, set this variable loger than it."
   "Provide environment of eval BODY in seml.  Use ,@(with-seml-elisp (sexp))."
   (declare (indent 0) (debug t))
   `(progn ,@body nil))
-    
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;
 ;;  functions
@@ -188,35 +188,35 @@ at INDENT-POINT on STATE.  see original function `lisp-indent-function'."
         (progn
           (if (not (> (save-excursion (forward-line 1) (point))
                       calculate-lisp-indent-last-sexp))
-	      (progn (goto-char calculate-lisp-indent-last-sexp)
-		     (beginning-of-line)
-		     (parse-partial-sexp (point)
-					 calculate-lisp-indent-last-sexp 0 t)))
-	  ;; Indent under the list or under the first sexp on the same
-	  ;; line as calculate-lisp-indent-last-sexp.  Note that first
-	  ;; thing on that line has to be complete sexp since we are
+              (progn (goto-char calculate-lisp-indent-last-sexp)
+                     (beginning-of-line)
+                     (parse-partial-sexp (point)
+                                         calculate-lisp-indent-last-sexp 0 t)))
+          ;; Indent under the list or under the first sexp on the same
+          ;; line as calculate-lisp-indent-last-sexp.  Note that first
+          ;; thing on that line has to be complete sexp since we are
           ;; inside the innermost containing sexp.
           (backward-prefix-chars)
           (current-column))
       (let ((function (buffer-substring (point)
-					(progn (forward-sexp 1) (point))))
-	    method)
-	(setq method (or (function-get (intern-soft function)
+                                        (progn (forward-sexp 1) (point))))
+            method)
+        (setq method (or (function-get (intern-soft function)
                                        'lisp-indent-function)
-			 (get (intern-soft function) 'lisp-indent-hook)))
-	(cond ((or (eq method 'defun)
-		   (and (null method)
-			(> (length function) 3)
-			(string-match "\\`def" function)))
-	       (lisp-indent-defform state indent-point))
+                         (get (intern-soft function) 'lisp-indent-hook)))
+        (cond ((or (eq method 'defun)
+                   (and (null method)
+                        (> (length function) 3)
+                        (string-match "\\`def" function)))
+               (lisp-indent-defform state indent-point))
               ((memq (intern-soft function) seml-mode-keywords)
                (lisp-indent-specform 1 state
-				     indent-point normal-indent))
-	      ((integerp method)
-	       (lisp-indent-specform method state
-				     indent-point normal-indent))
-	      (method
-	       (funcall method indent-point state)))))))
+                                     indent-point normal-indent))
+              ((integerp method)
+               (lisp-indent-specform method state
+                                     indent-point normal-indent))
+              (method
+               (funcall method indent-point state)))))))
 
 ;;;###autoload
 (defun seml-to-string (sexp)
@@ -322,11 +322,11 @@ optional:
 (defun seml-import (path)
   "Import external seml file at `seml-import-dir'/PATH."
   (let ((path path))
-  (eval
-   (read
-    (with-temp-buffer
-      (insert-file-contents (expand-file-name path seml-import-dir))
-      (buffer-substring-no-properties (point-min) (point-max)))))))
+    (eval
+     (read
+      (with-temp-buffer
+        (insert-file-contents (expand-file-name path seml-import-dir))
+        (buffer-substring-no-properties (point-min) (point-max)))))))
 
 ;;;###autoload
 (defun seml-expand-url (path baseurl)
@@ -367,7 +367,7 @@ optional:
                 ((stringp x)
                  (when (string-match-p "[[:graph:]]" x) `(,x)))
                 (t
-                  `(,x)))))
+                 `(,x)))))
     (cl-mapcan fn (libxml-parse-html-region start end))))
 
 ;;;###autoload
@@ -625,7 +625,7 @@ If you stop monitor SEML buffer, `seml-live-refresh-stop'.
                                      seml-live-refresh-baffer)))
                 (t (funcall fn (format "%s, URL is %s, Abort.\n"
                                        seml-live-refresh-baffer url)))))
-      
+
       (error (funcall fn (format "%s, Cannot eval, Abort. (Err msg: %s)\n"
                                  seml-live-refresh-baffer err))))))
 
@@ -639,7 +639,7 @@ If you stop monitor SEML buffer, `seml-live-refresh-stop'.
   "Major mode for editing SEML (S-Expression Markup Language) file."
 
   (set-syntax-table seml-mode-syntax-table)
-  
+
   (set (make-local-variable 'lisp-indent-function) 'seml-indent-function))
 
 ;;;###autoload
@@ -676,4 +676,9 @@ If you stop monitor SEML buffer, `seml-live-refresh-stop'.
                            (1 font-lock-keyword-face nil nil))))
 
 (provide 'seml-mode)
+
+;; Local Variables:
+;; indent-tabs-mode: nil
+;; End:
+
 ;;; seml-mode.el ends here
