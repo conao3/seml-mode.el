@@ -84,11 +84,6 @@
   :group 'lisp
   :prefix "seml-")
 
-(defcustom seml-mode-hook nil
-  "Hook run when entering seml mode."
-  :type 'hook
-  :group 'seml)
-
 (defvar seml-map (make-sparse-keymap)
   "Keymap for SEML mode.")
 
