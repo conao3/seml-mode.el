@@ -7,7 +7,7 @@
 ;; Keywords: lisp html
 ;; Version: 1.6.3
 ;; URL: https://github.com/conao3/seml-mode.el
-;; Package-Requires: ((emacs "25.1") (htmlize "1.5") (web-mode "16.0"))
+;; Package-Requires: ((emacs "25.1") (impatient-mode "1.1") (htmlize "1.5") (web-mode "16.0"))
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -71,6 +71,7 @@
 (require 'elisp-mode)                  ; seml-mode is a derivative of elisp-mode
 (require 'htmlize)                     ; Embed code with each fontlock
 (require 'web-mode)                    ; well-indent html by web-mode
+(require 'impatient-mode)              ; live-refresh feature
 
 (defgroup seml nil
   "Major mode for editing SEML (S-Expression Markup Language) file."
@@ -465,6 +466,41 @@ If gives DOCTYPE, concat DOCTYPE at head."
 
 
 ;;; main
+
+(defvar seml-httpd-before-enabled nil)
+(defvar-local seml-impatient-before-enabled nil)
+(defvar-local seml-impatient-before-user-filter nil)
+
+(define-minor-mode seml-impatient-mode
+  "Serves the seml buffer over HTTP using `impatient-mode'."
+  :group 'seml
+  :lighter " seml-imp"
+  (if seml-impatient-mode
+      (progn
+        (progn
+          (setq seml-httpd-before-enabled (httpd-running-p))
+          (unless (httpd-running-p) (httpd-start)))
+        (progn
+          (setq-local seml-impatient-before-enabled impatient-mode)
+          (impatient-mode +1))
+        (setq-local seml-impatient-before-user-filter imp-user-filter)
+        (setq-local imp-user-filter
+                    (lambda (buffer)
+                      (let ((str (condition-case err
+                                     (seml-decode-seml-from-buffer buffer)
+                                   (error
+                                    (seml-decode-seml-from-sexp
+                                     `(html nil
+                                            (body nil
+                                                  (h1 nil ,(format "Parse error: %s" (prin1-to-string err)))
+                                                  (pre nil ,(with-output-to-string
+                                                            (backtrace))))))))))
+                        (princ str))))
+        ;; (browse-url (format "localhost:%s/imp/live/%s" httpd-port (buffer-name)))
+        )
+    (unless seml-httpd-before-enabled (httpd-stop))
+    (impatient-mode (if seml-impatient-before-enabled 1 -1))
+    (setq-local imp-user-filter seml-impatient-before-user-filter)))
 
 (defvar seml-map (make-sparse-keymap)
   "Keymap for SEML mode.")
