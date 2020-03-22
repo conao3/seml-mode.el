@@ -5,9 +5,9 @@
 ;; Author: Naoya Yamashita <conao3@gmail.com>
 ;; Maintainer: Naoya Yamashita <conao3@gmail.com>
 ;; Keywords: lisp html
-;; Version: 1.6.2
+;; Version: 1.6.4
 ;; URL: https://github.com/conao3/seml-mode.el
-;; Package-Requires: ((emacs "25.1") (simple-httpd "1.5") (htmlize "1.5") (web-mode "16.0"))
+;; Package-Requires: ((emacs "25.1") (impatient-mode "1.1") (htmlize "1.5") (web-mode "16.0"))
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -63,21 +63,15 @@
 
 ;; Sample configuration with [[https://github.com/conao3/leaf.el][leaf.el]]
 
-;;   (leaf seml-mode
-;;     :custom ((seml-live-refresh-interval . 0.35))
-;;     :config
-;;     (leaf real-auto-save
-;;       :ensure t
-;;       :custom ((real-auto-save-interval . 0.3))
-;;       :hook (find-file-hook . real-auto-save-mode)))
+;;   (leaf seml-mode :ensure t)
 
 
 ;;; Code:
 
 (require 'elisp-mode)                  ; seml-mode is a derivative of elisp-mode
-(require 'simple-httpd)                ; seml provide Emacs's httpd process
 (require 'htmlize)                     ; Embed code with each fontlock
 (require 'web-mode)                    ; well-indent html by web-mode
+(require 'impatient-mode)              ; live-refresh feature
 
 (defgroup seml nil
   "Major mode for editing SEML (S-Expression Markup Language) file."
@@ -86,22 +80,6 @@
 
 (defcustom seml-import-dir (locate-user-emacs-file "seml")
   "`seml-import' search directory."
-  :type 'string
-  :group 'seml)
-
-(defcustom seml-live-refresh-interval 1.1
-  "Live-refresh interval.
-NOTE: If you have auto-save settings, set this variable loger than it."
-  :type 'integer
-  :group 'seml)
-
-(defcustom seml-live-refresh-url-variable ":arg1/:arg2/:arg3"
-  "Live-refresh url."
-  :type 'strings
-  :group 'seml)
-
-(defcustom seml-live-refresh-url-quety "query"
-  "Live-refresh url."
   :type 'string
   :group 'seml)
 
@@ -487,115 +465,42 @@ If gives DOCTYPE, concat DOCTYPE at head."
      (seml-decode-seml-from-string content "<!DOCTYPE html>"))))
 
 
-;;; replace feature
-
-(defvar seml-live-refresh-timer nil)
-(defvar seml-live-refresh-baffer "")
-(defvar seml-live-refresh-prev-sexp-history nil)
-
-;;;###autoload
-(defun seml-live-refresh-start ()
-  "Start live refresh from buffer string (without saving)."
-  (interactive)
-
-  ;; register timer function
-  (if seml-live-refresh-timer
-      (message "Already live refresh enabled (Taget buffer: %s)"
-               seml-live-refresh-baffer)
-    (setq seml-live-refresh-baffer (buffer-name))
-    (setq seml-live-refresh-timer
-          (run-with-idle-timer
-           seml-live-refresh-interval t 'seml-live-refresh-func))
-    (message "Live refresh enabled (Taget buffer: %s)"
-             seml-live-refresh-baffer))
-
-  ;; defvar simple-httpd's variable
-  (when seml-live-refresh-url-variable
-    (mapc (lambda (x)
-            (eval `(defvar ,(intern x) "")))
-          `(,@(mapcar (lambda (y)
-                        (replace-regexp-in-string "^:" "" y))
-                      (split-string seml-live-refresh-url-variable "/"))
-            ,@(mapcar #'symbol-name seml-live-refresh-url-quety))))
-
-  ;; register servlet
-  (eval `(defservlet*
-           ,(intern (format "seml-mode/live-refresh/%s"
-                            seml-live-refresh-url-variable))
-           "text/html"
-           (,@seml-live-refresh-url-quety)
-           (insert (seml-decode-seml-from-buffer
-                    seml-live-refresh-baffer "<!DOCTYPE html>")))))
-
-(defun seml-live-refresh-stop ()
-  "Stop live refresh."
-  (interactive)
-  (when seml-live-refresh-timer
-    (setq seml-live-refresh-baffer "")
-    (cancel-timer seml-live-refresh-timer)
-    (setq seml-live-refresh-timer nil)))
-
-(defun seml-live-refresh-func ()
-  "Send refresh message to Google Chrome timer function.
-
-Then, with activating target SEML buffer, `seml-live-refresh-start'
-to register `servelet*' buffer and set timer function.
-
-If you stop monitor SEML buffer, `seml-live-refresh-stop'.
-
-~seml-mode.el~ send refresh message to Google Chrome...
-1. When no error read and eval register buffer string,
-2. When the evaled sexp differs from last time.
-3. When Open ~seml-mode.el~ live-refresh page
-   (http://localhost:8080/seml-mode/live-refresh)."
-  (let ((fn (lambda (x)
-              (save-excursion
-                (with-current-buffer (get-buffer-create "*seml-live-refresh*")
-                  (goto-char (point-max))
-                  (when (< 10 (line-number-at-pos))
-                    (erase-buffer))
-                  (insert x)))))
-        (url) (sexp))
-    (condition-case err
-        (progn
-          (setq sexp (eval
-                      (read
-                       (with-current-buffer seml-live-refresh-baffer
-                         (buffer-substring-no-properties (point-min) (point-max))))))
-          (setq url (replace-regexp-in-string
-                     "\n" ""
-                     (shell-command-to-string
-                      (mapconcat 'identity
-                                 '("osascript -e"
-                                   "'tell application \"/Applications/Google Chrome.app\""
-                                   "to URL of active tab of window 1'") " "))))
-
-          (cond ((equal sexp seml-live-refresh-prev-sexp-history)
-                 (funcall fn (format "%s, Nothing to change, Abort\n"
-                                     seml-live-refresh-baffer)))
-                ((string-match "localhost.*seml-mode/live-refresh" url)
-                 (setq seml-live-refresh-prev-sexp-history
-                       (eval (read
-                              (with-current-buffer seml-live-refresh-baffer
-                                (buffer-substring-no-properties (point-min) (point-max))))))
-
-                 (shell-command-to-string
-                  (mapconcat 'identity
-                             '("osascript -e"
-                               "'tell application \"/Applications/Google Chrome.app\""
-                               "to reload active tab of window 1'") " "))
-
-                 (setq seml-live-refresh-prev-sexp-history sexp)
-                 (funcall fn (format "%s, Success.\n"
-                                     seml-live-refresh-baffer)))
-                (t (funcall fn (format "%s, URL is %s, Abort.\n"
-                                       seml-live-refresh-baffer url)))))
-
-      (error (funcall fn (format "%s, Cannot eval, Abort. (Err msg: %s)\n"
-                                 seml-live-refresh-baffer err))))))
-
-
 ;;; main
+
+(defvar seml-httpd-before-enabled nil)
+(defvar-local seml-impatient-before-enabled nil)
+(defvar-local seml-impatient-before-user-filter nil)
+
+(define-minor-mode seml-impatient-mode
+  "Serves the seml buffer over HTTP using `impatient-mode'."
+  :group 'seml
+  :lighter " seml-imp"
+  (if seml-impatient-mode
+      (progn
+        (progn
+          (setq seml-httpd-before-enabled (httpd-running-p))
+          (unless (httpd-running-p) (httpd-start)))
+        (progn
+          (setq-local seml-impatient-before-enabled impatient-mode)
+          (impatient-mode +1))
+        (setq-local seml-impatient-before-user-filter imp-user-filter)
+        (setq-local imp-user-filter
+                    (lambda (buffer)
+                      (let ((str (condition-case err
+                                     (seml-decode-seml-from-buffer buffer)
+                                   (error
+                                    (seml-decode-seml-from-sexp
+                                     `(html nil
+                                            (body nil
+                                                  (h1 nil ,(format "Parse error: %s" (prin1-to-string err)))
+                                                  (pre nil ,(with-output-to-string
+                                                            (backtrace))))))))))
+                        (princ str))))
+        ;; (browse-url (format "localhost:%s/imp/live/%s" httpd-port (buffer-name)))
+        )
+    (unless seml-httpd-before-enabled (httpd-stop))
+    (impatient-mode (if seml-impatient-before-enabled 1 -1))
+    (setq-local imp-user-filter seml-impatient-before-user-filter)))
 
 (defvar seml-map (make-sparse-keymap)
   "Keymap for SEML mode.")
