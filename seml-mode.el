@@ -7,7 +7,7 @@
 ;; Keywords: lisp html
 ;; Version: 1.6.1
 ;; URL: https://github.com/conao3/seml-mode.el
-;; Package-Requires: ((emacs "25") (simple-httpd "1.5") (htmlize "1.5") (web-mode "16.0"))
+;; Package-Requires: ((emacs "25.1") (simple-httpd "1.5") (htmlize "1.5") (web-mode "16.0"))
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
