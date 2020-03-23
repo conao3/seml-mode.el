@@ -89,12 +89,12 @@
   (seml-expansion
    (with-temp-buffer
      (insert seml-sample-str1)
-     (seml-encode-html-from-region (point-min) (point-max)))
+     (seml-encode-region-from-html (point-min) (point-max)))
    seml-sample-sexp1))
 
 (cort-deftest seml-test:/simple-encode
   (seml-expansion
-   (seml-encode-html-from-string seml-sample-str1)
+   (seml-encode-string-from-html seml-sample-str1)
    seml-sample-sexp1))
 
 (cort-deftest seml-test:/simple-encode-buffer
@@ -102,7 +102,7 @@
    (let ((buf (get-buffer-create (format "*seml-%s*" (gensym)))))
      (with-current-buffer buf
        (insert seml-sample-str1))
-     (seml-encode-html-from-buffer buf))
+     (seml-encode-buffer-from-html buf))
    seml-sample-sexp1))
 
 (cort-deftest seml-test:/simple-encode-current-buffer
@@ -110,12 +110,12 @@
    (let ((buf (get-buffer-create (format "*seml-%s*" (gensym)))))
      (with-current-buffer buf
        (insert seml-sample-str1)
-       (seml-encode-html-from-buffer)))
+       (seml-encode-buffer-from-html)))
    seml-sample-sexp1))
 
 (cort-deftest seml-test:/simple-encode-file
   (seml-expansion
-   (seml-encode-html-from-file
+   (seml-encode-file-from-html
     (expand-file-name "test-1.html" seml-sample-dir))
    seml-sample-sexp1))
 
@@ -125,17 +125,17 @@
    (let ((buf (get-buffer-create (format "*seml-%s*" (gensym)))))
      (with-current-buffer buf
        (insert (prin1-to-string `',seml-sample-sexp1))
-       (seml-decode-seml-from-region (point-min) (point-max) "<!DOCTYPE html>")))
+       (seml-encode-region-from-seml (point-min) (point-max) "<!DOCTYPE html>")))
    seml-sample-str1-decode))
 
 (cort-deftest seml-test:/simple-decode-sexp
   (seml-str-expansion
-   (seml-decode-seml-from-sexp seml-sample-sexp1 "<!DOCTYPE html>")
+   (seml-encode-sexp-from-seml seml-sample-sexp1 "<!DOCTYPE html>")
    seml-sample-str1-decode))
 
 (cort-deftest seml-test:/simple-decode-string
   (seml-str-expansion
-   (seml-decode-seml-from-string
+   (seml-encode-string-from-seml
     (prin1-to-string `',seml-sample-sexp1) "<!DOCTYPE html>")
    seml-sample-str1-decode))
 
@@ -144,23 +144,23 @@
    (let ((buf (get-buffer-create (format "*seml-%s*" (gensym)))))
      (with-current-buffer buf
        (insert (prin1-to-string `',seml-sample-sexp1))
-       (seml-decode-seml-from-buffer nil "<!DOCTYPE html>")))
+       (seml-encode-buffer-from-seml nil "<!DOCTYPE html>")))
      seml-sample-str1-decode))
 
 (cort-deftest seml-test:/simple-decode-file
   (seml-str-expansion
-   (seml-decode-seml-from-file
+   (seml-encode-file-from-seml
     (expand-file-name "test-1.seml" seml-sample-dir) "<!DOCTYPE html>")
    seml-sample-str1-decode))
 
 (cort-deftest seml-test:/simple-comment
   (seml-str-expansion
-   (seml-decode-seml-from-sexp '(comment nil " Created by htmlize-1.55 in css mode. "))
+   (seml-encode-sexp-from-seml '(comment nil " Created by htmlize-1.55 in css mode. "))
    "<!-- Created by htmlize-1.55 in css mode. -->"))
 
 (cort-deftest seml-test:/simple-top
   (seml-str-expansion
-   (seml-decode-seml-from-sexp '(top nil
+   (seml-encode-sexp-from-seml '(top nil
                                      (comment nil " Created by htmlize-1.55 in css mode. ")
                                      (comment nil " Created by htmlize-1.55 in css mode. ")))
    "<!-- Created by htmlize-1.55 in css mode. -->
@@ -198,7 +198,7 @@
 
 (cort-deftest seml-test:/simple-pre
   (seml-str-expansion
-   (seml-decode-seml-from-sexp
+   (seml-encode-sexp-from-seml
     '(pre nil
           "\n("
           (span ((class . "keyword")) "leaf")
@@ -323,7 +323,7 @@
           nil))
 
 (cort-deftest seml-mode:/simple-pre-do-not-reduce-space
-  (:string= (seml-decode-seml-from-sexp
+  (:string= (seml-encode-sexp-from-seml
              (seml-htmlize
               'emacs-lisp-mode
               "(string :tag \"Sun\")"))
@@ -367,19 +367,19 @@
 "))
 
 (cort-deftest seml-mode:/simple-jade
-  (:string= (seml-decode-seml-from-sexp '(h1 ("#header.class1.class2") "sample"))
+  (:string= (seml-encode-sexp-from-seml '(h1 ("#header.class1.class2") "sample"))
             "<h1 id=\"header\" class=\"class1 class2\">sample</h1>"))
 
 (cort-deftest seml-mode:/simple-jade2
-  (:string= (seml-decode-seml-from-sexp '(h1 ("#header.class1") "sample"))
+  (:string= (seml-encode-sexp-from-seml '(h1 ("#header.class1") "sample"))
             "<h1 id=\"header\" class=\"class1\">sample</h1>"))
 
 (cort-deftest seml-mode:/simple-jade3
-  (:string= (seml-decode-seml-from-sexp '(h1 ("class1") "sample"))
+  (:string= (seml-encode-sexp-from-seml '(h1 ("class1") "sample"))
             "<h1 class=\"class1\">sample</h1>"))
 
 (cort-deftest seml-mode:/simple-ul
-  (:string= (seml-decode-seml-from-sexp
+  (:string= (seml-encode-sexp-from-seml
              `(ul nil
                   ,@(mapcar (lambda (x)
                              `(li nil ,(format "item-%s" x)))
@@ -393,9 +393,9 @@
 </ul>"))
 
 (cort-deftest seml-mode:simple-ignore-nil
-  (:string= (seml-decode-seml-from-sexp '(h1 ("#d" nil (class . "class")) "s"))
+  (:string= (seml-encode-sexp-from-seml '(h1 ("#d" nil (class . "class")) "s"))
            "<h1 id=\"d\" class=\"class\">s</h1>"))
 
 (cort-deftest seml-mode:simple-ignore-beginning-dot
-  (:string= (seml-decode-seml-from-sexp '(h1 (".class") "s"))
+  (:string= (seml-encode-sexp-from-seml '(h1 (".class") "s"))
            "<h1 class=\"class\">s</h1>"))
