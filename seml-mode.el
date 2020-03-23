@@ -5,7 +5,7 @@
 ;; Author: Naoya Yamashita <conao3@gmail.com>
 ;; Maintainer: Naoya Yamashita <conao3@gmail.com>
 ;; Keywords: lisp html
-;; Version: 1.6.5
+;; Version: 1.6.6
 ;; URL: https://github.com/conao3/seml-mode.el
 ;; Package-Requires: ((emacs "25.1") (impatient-mode "1.1") (htmlize "1.5") (web-mode "16.0"))
 
@@ -264,7 +264,7 @@ optional:
               (ignore-errors
                 (indent-region (point-min) (point-max)))))
           (setq htmlize-buf (htmlize-buffer source-buf))
-          (setq result (seml-encode-html-from-buffer htmlize-buf)))
+          (setq result (seml-encode-buffer-from-html htmlize-buf)))
       (kill-buffer source-buf)
       (kill-buffer htmlize-buf))
     (car (seml-xpath '(pre) result))))
@@ -288,7 +288,7 @@ optional:
 ;;; encode
 
 ;;;###autoload
-(defun seml-encode-html-from-region (start end)
+(defun seml-encode-region-from-html (start end)
   "Return SEML sexp encoded from region from START to END."
   (interactive "r")
   (let ((fn) (prep))
@@ -320,38 +320,38 @@ optional:
     (mapcan fn (libxml-parse-html-region start end))))
 
 ;;;###autoload
-(defun seml-encode-html-from-string (str)
+(defun seml-encode-string-from-html (str)
   "Return SEML sexp encoded from HTML STR."
   (with-temp-buffer
     (insert str)
-    (seml-encode-html-from-region (point-min) (point-max))))
+    (seml-encode-region-from-html (point-min) (point-max))))
 
 ;;;###autoload
-(defun seml-encode-html-from-buffer (&optional buf)
+(defun seml-encode-buffer-from-html (&optional buf)
   "Return SEML sexp encoded from HTML BUF.
 If omit BUF, use `current-buffer'."
   (with-current-buffer (or buf (current-buffer))
-    (seml-encode-html-from-region (point-min) (point-max))))
+    (seml-encode-region-from-html (point-min) (point-max))))
 
 ;;;###autoload
-(defun seml-encode-html-from-file (filepath)
+(defun seml-encode-file-from-html (filepath)
   "Return SEML sexp encoded from html file located in FILEPATH."
   (let ((buf (generate-new-buffer " *seml-encode*")))
     (with-current-buffer buf
       (insert-file-contents filepath))
-    (seml-encode-html-from-buffer buf)))
+    (seml-encode-buffer-from-html buf)))
 
 
 ;;; decode
 
 ;;;###autoload
-(defun seml-decode-seml-from-region (start end &optional doctype)
+(defun seml-encode-region-from-seml (start end &optional doctype)
   "Return HTML string from buffer region at START to END.
 If gives DOCTYPE, concat DOCTYPE at head."
-  (seml-decode-seml-from-string (buffer-substring-no-properties start end) doctype))
+  (seml-encode-string-from-seml (buffer-substring-no-properties start end) doctype))
 
 ;;;###autoload
-(defun seml-decode-seml-from-sexp (sexp &optional doctype)
+(defun seml-encode-sexp-from-seml (sexp &optional doctype)
   "Return HTML decoded from seml SEXP.
 If gives DOCTYPE, concat DOCTYPE at head."
   (let ((prop--fn (lambda (x)
@@ -419,13 +419,13 @@ If gives DOCTYPE, concat DOCTYPE at head."
       (buffer-substring-no-properties (point-min) (point-max)))))
 
 ;;;###autoload
-(defun seml-decode-seml-from-string (str &optional doctype)
+(defun seml-encode-string-from-seml (str &optional doctype)
   "Return HTML string decode from seml STR.
 If gives DOCTYPE, concat DOCTYPE at head."
-  (seml-decode-seml-from-sexp (eval (read str)) doctype))
+  (seml-encode-sexp-from-seml (eval (read str)) doctype))
 
 ;;;###autoload
-(defun seml-decode-seml-from-buffer (&optional buf doctype)
+(defun seml-encode-buffer-from-seml (&optional buf doctype)
   "Return HTML string decode from BUF.
 If gives DOCTYPE, concat DOCTYPE at head."
   (with-current-buffer (or buf (current-buffer))
@@ -433,38 +433,48 @@ If gives DOCTYPE, concat DOCTYPE at head."
                                     (directory-file-name
                                      (file-name-directory (buffer-file-name))))
                                seml-import-dir)))
-      (seml-decode-seml-from-string (buffer-string) doctype))))
+      (seml-encode-string-from-seml (buffer-string) doctype))))
 
 ;;;###autoload
-(defun seml-decode-seml-from-file (filepath &optional doctype)
+(defun seml-encode-file-from-seml (filepath &optional doctype)
   "Return HTML string decoded from seml file located in FILEPATH.
 If gives DOCTYPE, concat DOCTYPE at head."
   (let ((buf (generate-new-buffer " *seml-decode*")))
     (with-current-buffer buf
       (insert-file-contents filepath))
-    (seml-decode-seml-from-buffer buf doctype)))
+    (seml-encode-buffer-from-seml buf doctype)))
 
 
 ;;; replace
 
 ;;;###autoload
-(defun seml-replace-buffer-from-html ()
-  "Replace buffer string HTML to SEML."
-  (interactive)
-  (let ((content (buffer-substring-no-properties (point-min) (point-max))))
-    (erase-buffer)
-    (insert (seml-to-string (seml-encode-html-from-string content)))
-    (seml-mode)
-    (indent-region (point-min) (point-max))))
+(defun seml-replace-region-from-html (beg end)
+  "Replace buffer string HTML to SEML in BEG to END.."
+  (interactive "r")
+  (let ((content (buffer-substring-no-properties beg end)))
+    (funcall region-extract-function 'delete-only)
+    (insert (seml-to-string (seml-encode-string-from-html content)))))
 
 ;;;###autoload
-(defun seml-replace-buffer-from-seml ()
-  "Replace buffer string SEML to HTML."
-  (interactive)
-  (let ((content (buffer-substring-no-properties (point-min) (point-max))))
-    (erase-buffer)
+(defun seml-replace-region-from-seml (beg end)
+  "Replace buffer string SEML to HTML in BEG to END."
+  (interactive "r")
+  (let ((content (buffer-substring-no-properties beg end)))
+    (funcall region-extract-function 'delete-only)
     (insert
-     (seml-decode-seml-from-string content "<!DOCTYPE html>"))))
+     (seml-encode-string-from-seml content "<!DOCTYPE html>"))))
+
+(define-obsolete-function-alias 'seml-encode-html-from-region  'seml-encode-region-from-html)
+(define-obsolete-function-alias 'seml-encode-html-from-string  'seml-encode-string-from-html)
+(define-obsolete-function-alias 'seml-encode-html-from-buffer  'seml-encode-buffer-from-html)
+(define-obsolete-function-alias 'seml-encode-html-from-file    'seml-encode-file-from-html)
+(define-obsolete-function-alias 'seml-decode-seml-from-region  'seml-encode-region-from-seml)
+(define-obsolete-function-alias 'seml-decode-seml-from-sexp    'seml-encode-sexp-from-seml)
+(define-obsolete-function-alias 'seml-decode-seml-from-string  'seml-encode-string-from-seml)
+(define-obsolete-function-alias 'seml-decode-seml-from-buffer  'seml-encode-buffer-from-seml)
+(define-obsolete-function-alias 'seml-decode-seml-from-file    'seml-encode-file-from-seml)
+(define-obsolete-function-alias 'seml-replace-buffer-from-html 'seml-replace-region-from-html)
+(define-obsolete-function-alias 'seml-replace-buffer-from-seml 'seml-replace-region-from-seml)
 
 
 ;;; main
@@ -489,9 +499,9 @@ If gives DOCTYPE, concat DOCTYPE at head."
         (setq-local imp-user-filter
                     (lambda (buffer)
                       (let ((str (condition-case err
-                                     (seml-decode-seml-from-buffer buffer)
+                                     (seml-encode-buffer-from-seml buffer)
                                    (error
-                                    (seml-decode-seml-from-sexp
+                                    (seml-encode-sexp-from-seml
                                      `(html nil
                                             (body nil
                                                   (h1 nil ,(format "Parse error: %s" (prin1-to-string err)))

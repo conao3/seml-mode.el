@@ -222,19 +222,19 @@ or for other reasons, you need to set it to an optional setting.
 
 ** Functions
 *** Encode functions (HTML to SEML)
-- (seml-encode-html-from-region pointmin pointmax)
-- (seml-encode-html-from-string str)
-- (seml-encode-html-from-buffer &optional buf)
-- (seml-encode-html-from-file filepath)
+- (seml-encode-region-from-html pointmin pointmax)
+- (seml-encode-string-from-html str)
+- (seml-encode-buffer-from-html &optional buf)
+- (seml-encode-file-from-html filepath)
 *** Decode functions (SEML to HTML)
-- (seml-decode-seml-from-region start end &optional doctype)
-- (seml-decode-seml-from-sexp sexp &optional doctype)
-- (seml-decode-seml-from-string str &optional doctype)
-- (seml-decode-seml-from-buffer &optional buf doctype)
-- (seml-decode-seml-from-file filepath &optional doctype)
-*** Buffer replace functions
-- (seml-replace-buffer-from-html)
-- (seml-replace-buffer-from-seml)
+- (seml-encode-region-from-seml start end &optional doctype)
+- (seml-encode-sexp-from-seml sexp &optional doctype)
+- (seml-encode-string-from-seml str &optional doctype)
+- (seml-encode-buffer-from-seml &optional buf doctype)
+- (seml-encode-file-from-seml filepath &optional doctype)
+*** Region replace functions
+- (seml-replace-region-from-html)
+- (seml-replace-region-from-seml)
 *** Live refresh functions
 - (seml-impatient-mode)
 *** Utility functions
