@@ -520,9 +520,6 @@ If gives DOCTYPE, concat DOCTYPE at head."
 
 ;;; Main
 
-(defvar seml-map (make-sparse-keymap)
-  "Keymap for SEML mode.")
-
 ;;;###autoload
 (define-derived-mode seml-mode emacs-lisp-mode "SEML"
   "Major mode for editing SEML (S-Expression Markup Language) file."
