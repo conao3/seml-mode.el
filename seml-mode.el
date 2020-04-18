@@ -508,8 +508,7 @@ If gives DOCTYPE, concat DOCTYPE at head."
                                                   (pre nil ,(with-output-to-string
                                                               (backtrace))))))))))
                         (princ str))))
-        ;; (browse-url (format "localhost:%s/imp/live/%s" httpd-port (buffer-name)))
-        )
+        (message (format "Now localhost:%s/imp/live/%s served!" httpd-port (buffer-name))))
     (unless seml-httpd-before-enabled (httpd-stop))
     (impatient-mode (if seml-impatient-before-enabled 1 -1))
     (setq-local imp-user-filter seml-impatient-before-user-filter)))
