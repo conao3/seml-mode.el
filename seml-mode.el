@@ -477,7 +477,11 @@ If gives DOCTYPE, concat DOCTYPE at head."
 (define-obsolete-function-alias 'seml-replace-buffer-from-seml 'seml-replace-region-from-seml)
 
 
-;;; main
+;;; Httpd integration
+
+
+
+;;; Impatient-mode integration
 
 (defvar seml-httpd-before-enabled nil)
 (defvar-local seml-impatient-before-enabled nil)
@@ -512,6 +516,9 @@ If gives DOCTYPE, concat DOCTYPE at head."
     (unless seml-httpd-before-enabled (httpd-stop))
     (impatient-mode (if seml-impatient-before-enabled 1 -1))
     (setq-local imp-user-filter seml-impatient-before-user-filter)))
+
+
+;;; Main
 
 (defvar seml-map (make-sparse-keymap)
   "Keymap for SEML mode.")
