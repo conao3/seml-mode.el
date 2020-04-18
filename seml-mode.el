@@ -5,7 +5,7 @@
 ;; Author: Naoya Yamashita <conao3@gmail.com>
 ;; Maintainer: Naoya Yamashita <conao3@gmail.com>
 ;; Keywords: lisp html
-;; Version: 1.6.6
+;; Version: 1.6.7
 ;; URL: https://github.com/conao3/seml-mode.el
 ;; Package-Requires: ((emacs "25.1") (impatient-mode "1.1") (htmlize "1.5") (web-mode "16.0"))
 
@@ -506,10 +506,9 @@ If gives DOCTYPE, concat DOCTYPE at head."
                                             (body nil
                                                   (h1 nil ,(format "Parse error: %s" (prin1-to-string err)))
                                                   (pre nil ,(with-output-to-string
-                                                            (backtrace))))))))))
+                                                              (backtrace))))))))))
                         (princ str))))
-        ;; (browse-url (format "localhost:%s/imp/live/%s" httpd-port (buffer-name)))
-        )
+        (message (format "Now localhost:%s/imp/live/%s served!" httpd-port (buffer-name))))
     (unless seml-httpd-before-enabled (httpd-stop))
     (impatient-mode (if seml-impatient-before-enabled 1 -1))
     (setq-local imp-user-filter seml-impatient-before-user-filter)))
