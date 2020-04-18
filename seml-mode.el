@@ -506,7 +506,7 @@ If gives DOCTYPE, concat DOCTYPE at head."
                                             (body nil
                                                   (h1 nil ,(format "Parse error: %s" (prin1-to-string err)))
                                                   (pre nil ,(with-output-to-string
-                                                            (backtrace))))))))))
+                                                              (backtrace))))))))))
                         (princ str))))
         ;; (browse-url (format "localhost:%s/imp/live/%s" httpd-port (buffer-name)))
         )
