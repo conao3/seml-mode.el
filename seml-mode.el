@@ -5,7 +5,7 @@
 ;; Author: Naoya Yamashita <conao3@gmail.com>
 ;; Maintainer: Naoya Yamashita <conao3@gmail.com>
 ;; Keywords: lisp html
-;; Version: 1.6.8
+;; Version: 1.6.9
 ;; URL: https://github.com/conao3/seml-mode.el
 ;; Package-Requires: ((emacs "25.1") (impatient-mode "1.1") (htmlize "1.5") (web-mode "16.0"))
 
@@ -486,18 +486,16 @@ If gives DOCTYPE, concat DOCTYPE at head."
   :group 'seml
   :lighter " seml-httpd"
   (if seml-httpd-serve-mode
-      (progn
+      (let ((url (if (string-match "index\\.seml" (buffer-name))
+                     (url-encode-url "seml-mode")
+                   (url-encode-url (format "seml-mode/%s" (buffer-name))))))
         (progn
           (setq seml-httpd-before-enabled (httpd-running-p))
           (unless (httpd-running-p) (httpd-start)))
         (eval
-         (let ((url (url-encode-url
-                     (format "seml-mode/%s" (buffer-name)))))
-           `(defservlet* ,(intern url) text/html ()
-              (insert (seml-decode-seml-from-buffer (get-buffer ,(buffer-name)))))))
-        (message (format "Now localhost:%s/%s served!"
-                         httpd-port
-                         (url-encode-url (format "seml-mode/%s" (buffer-name))))))
+         `(defservlet* ,(intern url) text/html ()
+            (insert (seml-decode-seml-from-buffer (get-buffer ,(buffer-name))))))
+        (message (format "Now localhost:%s/%s served!" httpd-port url)))
     (unless seml-httpd-before-enabled (httpd-stop))))
 
 
