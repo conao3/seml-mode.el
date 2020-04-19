@@ -5,7 +5,7 @@
 ;; Author: Naoya Yamashita <conao3@gmail.com>
 ;; Maintainer: Naoya Yamashita <conao3@gmail.com>
 ;; Keywords: lisp html
-;; Version: 1.6.7
+;; Version: 1.6.8
 ;; URL: https://github.com/conao3/seml-mode.el
 ;; Package-Requires: ((emacs "25.1") (impatient-mode "1.1") (htmlize "1.5") (web-mode "16.0"))
 
@@ -477,9 +477,32 @@ If gives DOCTYPE, concat DOCTYPE at head."
 (define-obsolete-function-alias 'seml-replace-buffer-from-seml 'seml-replace-region-from-seml)
 
 
-;;; main
+;;; Httpd integration
 
 (defvar seml-httpd-before-enabled nil)
+
+(define-minor-mode seml-httpd-serve-mode
+  "Serves the seml buffer over HTTP using `httpd'."
+  :group 'seml
+  :lighter " seml-httpd"
+  (if seml-httpd-serve-mode
+      (progn
+        (progn
+          (setq seml-httpd-before-enabled (httpd-running-p))
+          (unless (httpd-running-p) (httpd-start)))
+        (eval
+         (let ((url (url-encode-url
+                     (format "seml-mode/%s" (buffer-name)))))
+           `(defservlet* ,(intern url) text/html ()
+              (insert (seml-decode-seml-from-buffer (get-buffer ,(buffer-name)))))))
+        (message (format "Now localhost:%s/%s served!"
+                         httpd-port
+                         (url-encode-url (format "seml-mode/%s" (buffer-name))))))
+    (unless seml-httpd-before-enabled (httpd-stop))))
+
+
+;;; Impatient-mode integration
+
 (defvar-local seml-impatient-before-enabled nil)
 (defvar-local seml-impatient-before-user-filter nil)
 
@@ -513,8 +536,8 @@ If gives DOCTYPE, concat DOCTYPE at head."
     (impatient-mode (if seml-impatient-before-enabled 1 -1))
     (setq-local imp-user-filter seml-impatient-before-user-filter)))
 
-(defvar seml-map (make-sparse-keymap)
-  "Keymap for SEML mode.")
+
+;;; Main
 
 ;;;###autoload
 (define-derived-mode seml-mode emacs-lisp-mode "SEML"
