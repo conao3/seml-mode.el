@@ -479,11 +479,30 @@ If gives DOCTYPE, concat DOCTYPE at head."
 
 ;;; Httpd integration
 
+(defvar seml-httpd-before-enabled nil)
+
+(define-minor-mode seml-httpd-serve-mode
+  "Serves the seml buffer over HTTP using `httpd'."
+  :group 'seml
+  :lighter " seml-httpd"
+  (if seml-httpd-serve-mode
+      (progn
+        (progn
+          (setq seml-httpd-before-enabled (httpd-running-p))
+          (unless (httpd-running-p) (httpd-start)))
+        (eval
+         (let ((url (url-encode-url
+                     (format "seml-mode/%s" (buffer-name)))))
+           `(defservlet* ,(intern url) text/html ()
+              (insert (seml-decode-seml-from-buffer (get-buffer ,(buffer-name)))))))
+        (message (format "Now localhost:%s/%s served!"
+                         httpd-port
+                         (url-encode-url (format "seml-mode/%s" (buffer-name))))))
+    (unless seml-httpd-before-enabled (httpd-stop))))
 
 
 ;;; Impatient-mode integration
 
-(defvar seml-httpd-before-enabled nil)
 (defvar-local seml-impatient-before-enabled nil)
 (defvar-local seml-impatient-before-user-filter nil)
 
