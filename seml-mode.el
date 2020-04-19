@@ -486,18 +486,16 @@ If gives DOCTYPE, concat DOCTYPE at head."
   :group 'seml
   :lighter " seml-httpd"
   (if seml-httpd-serve-mode
-      (progn
+      (let ((url (if (string-match "index\\.seml" (buffer-name))
+                     (url-encode-url "seml-mode")
+                   (url-encode-url (format "seml-mode/%s" (buffer-name))))))
         (progn
           (setq seml-httpd-before-enabled (httpd-running-p))
           (unless (httpd-running-p) (httpd-start)))
         (eval
-         (let ((url (url-encode-url
-                     (format "seml-mode/%s" (buffer-name)))))
-           `(defservlet* ,(intern url) text/html ()
-              (insert (seml-decode-seml-from-buffer (get-buffer ,(buffer-name)))))))
-        (message (format "Now localhost:%s/%s served!"
-                         httpd-port
-                         (url-encode-url (format "seml-mode/%s" (buffer-name))))))
+         `(defservlet* ,(intern url) text/html ()
+            (insert (seml-decode-seml-from-buffer (get-buffer ,(buffer-name))))))
+        (message (format "Now localhost:%s/%s served!" httpd-port url)))
     (unless seml-httpd-before-enabled (httpd-stop))))
 
 
