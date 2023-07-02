@@ -464,18 +464,6 @@ If gives DOCTYPE, concat DOCTYPE at head."
     (insert
      (seml-encode-string-from-seml content "<!DOCTYPE html>"))))
 
-(define-obsolete-function-alias 'seml-encode-html-from-region  'seml-encode-region-from-html)
-(define-obsolete-function-alias 'seml-encode-html-from-string  'seml-encode-string-from-html)
-(define-obsolete-function-alias 'seml-encode-html-from-buffer  'seml-encode-buffer-from-html)
-(define-obsolete-function-alias 'seml-encode-html-from-file    'seml-encode-file-from-html)
-(define-obsolete-function-alias 'seml-decode-seml-from-region  'seml-encode-region-from-seml)
-(define-obsolete-function-alias 'seml-decode-seml-from-sexp    'seml-encode-sexp-from-seml)
-(define-obsolete-function-alias 'seml-decode-seml-from-string  'seml-encode-string-from-seml)
-(define-obsolete-function-alias 'seml-decode-seml-from-buffer  'seml-encode-buffer-from-seml)
-(define-obsolete-function-alias 'seml-decode-seml-from-file    'seml-encode-file-from-seml)
-(define-obsolete-function-alias 'seml-replace-buffer-from-html 'seml-replace-region-from-html)
-(define-obsolete-function-alias 'seml-replace-buffer-from-seml 'seml-replace-region-from-seml)
-
 
 ;;; Httpd integration
 
