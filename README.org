@@ -1,36 +1,19 @@
-#+author: conao
-#+date: <2018-10-25 Thu>
+#+title: seml-mode.el
+#+author: conao3
 
 [[https://github.com/conao3/seml-mode.el][https://raw.githubusercontent.com/conao3/files/master/blob/headers/png/seml-mode.el.png]]
+
 [[https://github.com/conao3/seml-mode.el/blob/master/LICENSE][https://img.shields.io/github/license/conao3/seml-mode.el.svg?style=flat-square]]
 [[https://github.com/conao3/seml-mode.el/releases][https://img.shields.io/github/tag/conao3/seml-mode.el.svg?style=flat-square]]
 [[https://github.com/conao3/seml-mode.el/actions][https://github.com/conao3/seml-mode.el/workflows/Main%20workflow/badge.svg]]
-[[https://app.codacy.com/project/conao3/seml-mode.el/dashboard][https://img.shields.io/codacy/grade/e4d9b69ffc2143019ea3a3a729c571f1.svg?logo=codacy&style=flat-square]]
-[[https://www.patreon.com/conao3][https://img.shields.io/badge/patreon-become%20a%20patron-orange.svg?logo=patreon&style=flat-square]]
-[[https://twitter.com/conao_3][https://img.shields.io/badge/twitter-@conao__3-blue.svg?logo=twitter&style=flat-square]]
-[[https://join.slack.com/t/conao3-support/shared_invite/enQtNjUzMDMxODcyMjE1LTA4ZGRmOWYwZWE3NmE5NTkyZjk3M2JhYzU2ZmRkMzdiMDdlYTQ0ODMyM2ExOGY0OTkzMzZiMTNmZjJjY2I5NTM][https://img.shields.io/badge/chat-on_slack-blue.svg?logo=slack&style=flat-square]]
 [[https://melpa.org/#/seml-mode][https://melpa.org/packages/seml-mode-badge.svg]]
 [[https://stable.melpa.org/#/seml-mode][https://stable.melpa.org/packages/seml-mode-badge.svg]]
 
-- [[#description][Description]]
-- [[#settings][Settings]]
-- [[#live-refresh-without-save-file][Live-refresh (Without save file)]]
-- [[#documents][Documents]]
-  - [[#customizable-variables][Customizable Variables]]
-  - [[#constants][Constants]]
-  - [[#functions][Functions]]
-- [[#projects][Projects]]
-- [[#information][Information]]
-  - [[#donation][Donation]]
-  - [[#community][Community]]
-  - [[#contribution][Contribution]]
-  - [[#license][License]]
-  - [[#author][Author]]
-  - [[#contributors][Contributors]]
+* Overview
 
-* Description
-Below 2 files represent the same structure.
-With compare 2 files, SEML is *short* and *easy to understand* for Lisp hacker.
+seml-mode.el provides a major mode for editing SEML (S-Expression Markup Language) files. SEML lets you write HTML using familiar Lisp S-expressions instead of angle brackets.
+
+The two files below represent the same structure. SEML is concise and intuitive for Lisp users:
 
 #+begin_src html
   <!DOCTYPE html>
@@ -60,37 +43,25 @@ With compare 2 files, SEML is *short* and *easy to understand* for Lisp hacker.
       (p nil "text sample")))
 #+end_src
 
-#+name: simple-SS
-#+caption: simple-seml
 [[https://raw.githubusercontent.com/conao3/files/master/blob/seml-mode.el/simple-seml.png]]
 
-Since SEML can use Elisp freely in SEML file, I think that it has *the same power as PHP*.
-You can open files, use information that is only visible to Emacs,
-and use the results of Emacs hitting an external API.
+Since SEML supports full Elisp evaluation within templates, you can open files, access Emacs internals, call external APIs, and generate dynamic content - similar to what PHP offers for HTML templating.
 
-~seml-mode.el~ provides major mode for editing SEML (S-Expression Markup Language) files
-and utilities for you.
-
-#+name: complex-SS
-#+caption: complex-seml project with seml-mode
 [[https://raw.githubusercontent.com/conao3/files/master/blob/seml-mode.el/complex-seml.png]]
 
 ** SEML Syntax
-SEML syntax is very easy.
+
+The basic syntax is straightforward:
 
 #+begin_src emacs-lisp
   (TAG ATTRS VALUE...)
 #+end_src
 
-- ~TAG~ is symbol of html tag name.
-- ~ATTRS~ is list of ~attribute~.
-  - ~attribute~ is dotted pair such as ~(ATTR . VALUE)~.
-  - ~attribute~ is also allowed jade/pug like syntax sugar such as ~#id.class1.class2~
-    
-    You do not need to specify ~id~, but you need to put it at the beginning.
-    And ~class~ must be separated by ~.~.
-- ~VALUE~ is string.
-- ~VALUE~ is also allowed another SEML.
+- =TAG= is a symbol representing an HTML tag name
+- =ATTRS= is a list of attributes as dotted pairs =(ATTR . VALUE)=
+  - Attributes also support Jade/Pug-style shorthand like =#id.class1.class2=
+  - The id must come first if specified, and classes are separated by =.=
+- =VALUE= is a string or another nested SEML expression
 
 #+begin_src emacs-lisp
   (cort-deftest seml-mode:/simple-jade
@@ -106,7 +77,10 @@ SEML syntax is very easy.
               "<h1 class=\"class1\">sample</h1>"))
 #+end_src
 
-*** Complex SEML example
+*** Dynamic Content Example
+
+Since SEML is just Elisp, you can generate content programmatically. Pass any SEML list to the decoder:
+
 #+begin_src emacs-lisp
   (cort-deftest seml-mode:/simple-ul
     (:string= (seml-decode-seml-from-sexp
@@ -122,65 +96,61 @@ SEML syntax is very easy.
     <li>item-5</li>
   </ul>"))
 #+end_src
-You only need to think about *passing SEML list* to SEML decoder.
-So you can use *any* function returning list.
-* Install
-** MELPA
-~seml-mode.el~ can install with package.el from MELPA,
-so sample instration code is below using [[https://github.com/conao3/leaf.el][leaf.el]].
-#+begin_src emacs-lisp
-  (prog1 "Load leaf.el"
-    (add-to-list 'load-path (locate-user-emacs-file "site-lisp/leaf.el"))
-    (require 'leaf)
-    (leaf leaf
-      :doc "Symplify your init.el configuration"
-      :doc "Initialize leaf dependent packages"
-      :url "https://github.com/conao3/leaf.el"
-      :custom ((leaf-backend-ensure . 'package))
-      :config
-      (leaf package
-        :custom ((package-archives . '(("org"   . "https://orgmode.org/elpa/")
-                                       ("melpa" . "https://melpa.org/packages/")
-                                       ("gnu"   . "https://elpa.gnu.org/packages/"))))
-        :config
-        (package-initialize))))
 
+You can use any function that returns a list.
+
+* Installation
+
+Requires Emacs 25.1 or later.
+
+** From MELPA
+
+#+begin_src emacs-lisp
+  ;; Using package.el
+  (package-install 'seml-mode)
+
+  ;; Using use-package
+  (use-package seml-mode
+    :ensure t)
+
+  ;; Using leaf.el
   (leaf seml-mode
-    :when (version<= "25.1" emacs-version)
     :ensure t)
 #+end_src
 
-** Manual install
-Put this package in your ~load-path~, require it.
+** Manual Installation
+
+Add this package to your =load-path= and require it:
+
 #+begin_src emacs-lisp
   (add-to-list 'load-path
-               (locate-user-emacs-file (format "site-lisp/seml-mode.el")))
+               (locate-user-emacs-file "site-lisp/seml-mode.el"))
   (require 'seml-mode)
 #+end_src
 
 ** Note
-It is already set to automatically enable seml-mode for typical seml file
-extensions as follows, but if you want to enable seml-mode for special extensions
-or for other reasons, you need to set it to an optional setting.
+
+The mode automatically activates for =.seml= files. For custom extensions, add:
+
 #+begin_src emacs-lisp
-  ;;;###autoload
   (add-to-list 'auto-mode-alist '("\\.seml\\'" . seml-mode))
-  ;;;###autoload
   (add-to-list 'interpreter-mode-alist '("seml" . seml-mode))
 #+end_src
 
+* API Reference
 
-* Documents
 ** Customizable Variables
-- seml-mode-hook
-- seml-import-dir
-- seml-live-refresh-interval
-- seml-live-refresh-url-variable
-- seml-live-refresh-url-quety
-** Constants
-- seml-mode-keywords
 
-  Support HTML5 tags.
+- =seml-mode-hook=
+- =seml-import-dir=
+- =seml-live-refresh-interval=
+- =seml-live-refresh-url-variable=
+- =seml-live-refresh-url-quety=
+
+** Constants
+
+- =seml-mode-keywords= - Supported HTML5 tags:
+
   #+begin_src emacs-lisp
     (defconst seml-mode-keywords
       '(html
@@ -204,44 +174,53 @@ or for other reasons, you need to set it to an optional setting.
         comment top))
   #+end_src
 
-- seml-html-single-tags
+- =seml-html-single-tags= - Self-closing tags:
 
-  Define single tag (without closing tag)
   #+begin_src emacs-lisp
     (defconst seml-html-single-tags
       '(base link meta img br area param hr col option input wbr))
   #+end_src
+
 ** Macros
-- with-seml-elisp
 
-  Provide environment to eval Elisp. Use ~,@(with-seml-elisp (sexp) (sexp) ...)~
-
-  (seml-mode misunderstands Elisp's return value as a component of SEML.
-  If you want to freely execute Elisp that does not need a return value,
-  you need to use this macro to remove the return value from seml.)
+- =with-seml-elisp= - Evaluate Elisp without returning a value to SEML.
+  Use =,@(with-seml-elisp (sexp) (sexp) ...)= when you need to execute Elisp
+  that should not contribute to the SEML output.
 
 ** Functions
-*** Encode functions (HTML to SEML)
-- (seml-encode-region-from-html pointmin pointmax)
-- (seml-encode-string-from-html str)
-- (seml-encode-buffer-from-html &optional buf)
-- (seml-encode-file-from-html filepath)
-*** Decode functions (SEML to HTML)
-- (seml-encode-region-from-seml start end &optional doctype)
-- (seml-encode-sexp-from-seml sexp &optional doctype)
-- (seml-encode-string-from-seml str &optional doctype)
-- (seml-encode-buffer-from-seml &optional buf doctype)
-- (seml-encode-file-from-seml filepath &optional doctype)
-*** Region replace functions
-- (seml-replace-region-from-html)
-- (seml-replace-region-from-seml)
-*** Live refresh functions
-- (seml-impatient-mode)
-*** Utility functions
-- (seml-indent-function indent-point state)
-- (seml-to-string sexp)
-- (seml-pp sexp &optional stream return-p)
-- (seml-xpath xpath sexp &optional without-top)
+
+*** Encode Functions (HTML to SEML)
+
+- =(seml-encode-region-from-html pointmin pointmax)=
+- =(seml-encode-string-from-html str)=
+- =(seml-encode-buffer-from-html &optional buf)=
+- =(seml-encode-file-from-html filepath)=
+
+*** Decode Functions (SEML to HTML)
+
+- =(seml-decode-region-from-seml start end &optional doctype)=
+- =(seml-decode-sexp-from-seml sexp &optional doctype)=
+- =(seml-decode-string-from-seml str &optional doctype)=
+- =(seml-decode-buffer-from-seml &optional buf doctype)=
+- =(seml-decode-file-from-seml filepath &optional doctype)=
+
+*** Region Replace Functions
+
+- =(seml-replace-region-from-html)=
+- =(seml-replace-region-from-seml)=
+
+*** Live Refresh
+
+- =(seml-impatient-mode)= - Enable live browser preview as you edit.
+
+*** Utility Functions
+
+- =(seml-indent-function indent-point state)=
+- =(seml-to-string sexp)=
+- =(seml-pp sexp &optional stream return-p)=
+
+- =(seml-xpath xpath sexp &optional without-top)= - Navigate SEML with XPath-like paths:
+
   #+begin_src emacs-lisp
     (cort-deftest seml-test:simple-xpath
       (:equal
@@ -266,7 +245,9 @@ or for other reasons, you need to set it to an optional setting.
           ((rel . "stylesheet")
            (href . "sample2.css"))))))
   #+end_src
-- (seml-xpath-single xpath sexp &optional without-top)
+
+- =(seml-xpath-single xpath sexp &optional without-top)= - Return first matching element:
+
   #+begin_src emacs-lisp
     (cort-deftest seml-test:/simple-xpath-single
       (:equal
@@ -294,7 +275,8 @@ or for other reasons, you need to set it to an optional setting.
                  "text sample"))))
   #+end_src
 
-- (seml-xpath-without-top xpath sexp)
+- =(seml-xpath-without-top xpath sexp)= - Return matches without the top element:
+
   #+begin_src emacs-lisp
     (cort-deftest seml-test:/simple-xpath-without-top
       (:equal
@@ -319,10 +301,10 @@ or for other reasons, you need to set it to an optional setting.
          ("sample-3"))))
   #+end_src
 
-- (seml-xpath-single-without-top xpath sexp)
-- (seml-htmlize majormode codestr &optional noindentp formatfn)
+- =(seml-xpath-single-without-top xpath sexp)=
 
-  Get SEML expression of any code in syntax highlight as specify major-mode.
+- =(seml-htmlize majormode codestr &optional noindentp formatfn)= - Generate SEML with syntax highlighting:
+
   #+begin_src emacs-lisp
     (cort-deftest seml-mode:/simple-htmlize
       (:equal (seml-htmlize 'emacs-lisp-mode "(leaf real-auto-save
@@ -347,41 +329,26 @@ or for other reasons, you need to set it to an optional setting.
                     (span ((class . "builtin")) ":hook")
                     " (find-file-hook . real-auto-save-mode))")))
   #+end_src
-- (seml-import path)
-- (seml-expand-url path baseurl)
-*** Major mode
-- (seml-mode)
 
-* Projects
-Packages build on seml-mode.
-- [[https://github.com/conao3/leaf-browser.el][leaf-browser.el]] - Web browser frontend of Emacs customize-mode for [[https://github.com/conao3/leaf.el][leaf.el]].
+- =(seml-import path)=
+- =(seml-expand-url path baseurl)=
 
-* Information
-** Donation
-I love OSS and I am dreaming of working on it as *full-time* job.
+*** Major Mode
 
-*With your support*, I will be able to spend more time at OSS!
+- =(seml-mode)=
 
-[[https://www.patreon.com/conao3][https://c5.patreon.com/external/logo/become_a_patron_button.png]]
+* Related Projects
 
-** Community
-All feedback and suggestions are welcome!
+- [[https://github.com/conao3/leaf-browser.el][leaf-browser.el]] - Web browser frontend for Emacs customize-mode with [[https://github.com/conao3/leaf.el][leaf.el]]
 
-You can use github issues, but you can also use [[https://join.slack.com/t/conao3-support/shared_invite/enQtNjUzMDMxODcyMjE1LTA4ZGRmOWYwZWE3NmE5NTkyZjk3M2JhYzU2ZmRkMzdiMDdlYTQ0ODMyM2ExOGY0OTkzMzZiMTNmZjJjY2I5NTM][Slack]]
-if you want a more casual conversation.
+* Contributing
 
-** Contribution
-Feel free to send PR!
+Contributions are welcome. Please feel free to submit issues and pull requests on GitHub.
 
-** License
-#+begin_example
-  Affero General Public License Version 3 (AGPLv3)
-  Copyright (c) Naoya Yamashita - https://seml-mode.el
-  https://github.com/conao3/seml-mode.el/blob/master/LICENSE
-#+end_example
+* License
 
-** Author
-- Naoya Yamashita ([[https://github.com/conao3][conao3]])
+AGPLv3. See [[https://github.com/conao3/seml-mode.el/blob/master/LICENSE][LICENSE]] for details.
 
-** Contributors
-- Not yet... Now send PR and add your name!!
+* Author
+
+Naoya Yamashita ([[https://github.com/conao3][conao3]])
