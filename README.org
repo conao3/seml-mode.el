@@ -101,7 +101,7 @@ You can use any function that returns a list.
 
 * Installation
 
-Requires Emacs 25.1 or later.
+Requires Emacs 27.1 or later.
 
 ** From MELPA
 
