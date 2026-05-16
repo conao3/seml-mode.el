@@ -4,6 +4,3 @@
 (source melpa)
 
 (package-file "seml-mode.el")
-
-(development
- (depends-on "buttercup"))
