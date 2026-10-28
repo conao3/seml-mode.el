@@ -360,9 +360,9 @@
                       (insert "\n")))))))
             "(pre nil
   \"
-(debug\\\\.seml
- footer\\\\.seml
- main\\\\.seml
+(debug.seml
+ footer.seml
+ main.seml
  )\")
 "))
 
