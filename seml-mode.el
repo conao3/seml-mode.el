@@ -108,7 +108,7 @@
     comment top))
 
 (defconst seml-mode-keywords-regexp
-  (rx-to-string `(or ,@(mapcar 'symbol-name seml-mode-keywords))))
+  (rx-to-string `(or ,@(mapcar #'symbol-name seml-mode-keywords))))
 
 (defconst seml-html-single-tags
   '(base link meta img br area param hr col option input wbr))
@@ -176,14 +176,16 @@ at INDENT-POINT on STATE.  see original function `lisp-indent-function'."
     (insert (prin1-to-string sexp))
     (goto-char (point-min))
     (save-excursion
-      (ignore-errors
-        (while t
-          (if (equal (following-char) ?\")
+      (condition-case nil
+          (while (not (eobp))
+            (if (equal (following-char) ?\")
+                (forward-sexp)
+              (forward-char)
               (forward-sexp)
-            (forward-char)
-            (forward-sexp) (forward-sexp))
-          (skip-chars-forward ") ")
-          (insert "\n"))))
+              (forward-sexp))
+            (skip-chars-forward ") ")
+            (insert "\n"))
+        (scan-error nil)))
     (delete-trailing-whitespace)
     (seml-mode)
     (indent-sexp)
@@ -261,12 +263,14 @@ optional:
             (when formatfn
               (funcall formatfn))
             (unless noindentp
-              (ignore-errors
-                (indent-region (point-min) (point-max)))))
+              (condition-case nil
+                  (indent-region (point-min) (point-max))
+                (scan-error nil))))
           (setq htmlize-buf (htmlize-buffer source-buf))
           (setq result (seml-encode-buffer-from-html htmlize-buf)))
       (kill-buffer source-buf)
-      (kill-buffer htmlize-buf))
+      (when htmlize-buf
+        (kill-buffer htmlize-buf)))
     (car (seml-xpath '(pre) result))))
 
 ;;;###autoload
@@ -368,7 +372,7 @@ If gives DOCTYPE, concat DOCTYPE at head."
                         (when (and elms (string= (car elms) ""))
                           (pop elms))
                         (when elms
-                          (push `(class . ,(mapconcat 'identity elms " "))
+                          (push `(class . ,(mapconcat #'identity elms " "))
                                 ret))
                         (nreverse ret)))))
         (decode-fn) (prep))
@@ -411,7 +415,7 @@ If gives DOCTYPE, concat DOCTYPE at head."
                           (if (< 1 (length rest)) "\n" "")
                           (format "</%s>" tagname))))))))
     (with-temp-buffer
-      (and doctype (insert (concat doctype "\n")))
+      (and doctype (insert doctype "\n"))
       (insert (funcall decode-fn sexp))
       (web-mode)
       (let ((web-mode-markup-indent-offset 2))
@@ -477,13 +481,12 @@ If gives DOCTYPE, concat DOCTYPE at head."
       (let ((url (if (string-match "index\\.seml" (buffer-name))
                      (url-encode-url "seml-mode")
                    (url-encode-url (format "seml-mode/%s" (buffer-name))))))
-        (progn
-          (setq seml-httpd-before-enabled (httpd-running-p))
-          (unless (httpd-running-p) (httpd-start)))
+        (setq seml-httpd-before-enabled (httpd-running-p))
+        (unless seml-httpd-before-enabled (httpd-start))
         (eval
          `(defservlet* ,(intern url) text/html ()
             (insert (seml-decode-seml-from-buffer (get-buffer ,(buffer-name))))))
-        (message (format "Now localhost:%s/%s served!" httpd-port url)))
+        (message "Now localhost:%s/%s served!" httpd-port url))
     (unless seml-httpd-before-enabled (httpd-stop))))
 
 
@@ -498,12 +501,10 @@ If gives DOCTYPE, concat DOCTYPE at head."
   :lighter " seml-imp"
   (if seml-impatient-mode
       (progn
-        (progn
-          (setq seml-httpd-before-enabled (httpd-running-p))
-          (unless (httpd-running-p) (httpd-start)))
-        (progn
-          (setq-local seml-impatient-before-enabled impatient-mode)
-          (impatient-mode +1))
+        (setq seml-httpd-before-enabled (httpd-running-p))
+        (unless seml-httpd-before-enabled (httpd-start))
+        (setq-local seml-impatient-before-enabled impatient-mode)
+        (impatient-mode +1)
         (setq-local seml-impatient-before-user-filter imp-user-filter)
         (setq-local imp-user-filter
                     (lambda (buffer)
@@ -517,7 +518,7 @@ If gives DOCTYPE, concat DOCTYPE at head."
                                                   (pre nil ,(with-output-to-string
                                                               (backtrace))))))))))
                         (princ str))))
-        (message (format "Now localhost:%s/imp/live/%s served!" httpd-port (buffer-name))))
+        (message "Now localhost:%s/imp/live/%s served!" httpd-port (buffer-name)))
     (unless seml-httpd-before-enabled (httpd-stop))
     (impatient-mode (if seml-impatient-before-enabled 1 -1))
     (setq-local imp-user-filter seml-impatient-before-user-filter)))
@@ -531,7 +532,7 @@ If gives DOCTYPE, concat DOCTYPE at head."
 
   (set-syntax-table seml-mode-syntax-table)
 
-  (set (make-local-variable 'lisp-indent-function) 'seml-indent-function))
+  (set (make-local-variable 'lisp-indent-function) #'seml-indent-function))
 
 ;;;###autoload
 (add-to-list 'auto-mode-alist '("\\.seml\\'" . seml-mode))
