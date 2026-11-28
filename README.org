@@ -1,4 +1,3 @@
-#+title: seml-mode.el
 #+author: conao3
 
 #+html: <p align="center"><img src="docs/assets/banner.png" alt="seml-mode.el: Major mode for editing SEML (S-Expression Markup Language) files" width="880"></p>
