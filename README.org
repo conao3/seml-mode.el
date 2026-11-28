@@ -1,13 +1,15 @@
 #+title: seml-mode.el
 #+author: conao3
 
-[[https://github.com/conao3/seml-mode.el][https://raw.githubusercontent.com/conao3/files/master/blob/headers/png/seml-mode.el.png]]
+#+html: <p align="center"><img src="docs/assets/banner.png" alt="seml-mode.el: Major mode for editing SEML (S-Expression Markup Language) files" width="880"></p>
 
-[[https://github.com/conao3/seml-mode.el/blob/master/LICENSE][https://img.shields.io/github/license/conao3/seml-mode.el.svg?style=flat-square]]
-[[https://github.com/conao3/seml-mode.el/releases][https://img.shields.io/github/tag/conao3/seml-mode.el.svg?style=flat-square]]
-[[https://github.com/conao3/seml-mode.el/actions][https://github.com/conao3/seml-mode.el/workflows/Main%20workflow/badge.svg]]
-[[https://melpa.org/#/seml-mode][https://melpa.org/packages/seml-mode-badge.svg]]
-[[https://stable.melpa.org/#/seml-mode][https://stable.melpa.org/packages/seml-mode-badge.svg]]
+#+html: <p align="center"><strong>Major mode for editing SEML (S-Expression Markup Language) files</strong></p>
+
+#+html: <p align="center"><a href="https://github.com/conao3/seml-mode.el/actions/workflows/test.yml"><img src="https://github.com/conao3/seml-mode.el/actions/workflows/test.yml/badge.svg?branch=master" alt="CI"></a> <a href="LICENSE"><img src="https://img.shields.io/github/license/conao3/seml-mode.el" alt="License: AGPL-3.0"></a> <a href="seml-mode.el"><img src="https://img.shields.io/badge/Emacs-27.1%2B-7F5AB6" alt="Emacs 27.1+"></a> <a href="https://github.com/conao3/seml-mode.el/releases"><img src="https://img.shields.io/github/v/tag/conao3/seml-mode.el" alt="Latest tag"></a> <a href="https://github.com/conao3/seml-mode.el/stargazers"><img src="https://img.shields.io/github/stars/conao3/seml-mode.el?style=flat" alt="GitHub stars"></a></p>
+
+#+html: <p align="center"><a href="#overview">Overview</a> | <a href="#installation">Installation</a> | <a href="#api-reference">API Reference</a> | <a href="#contributing">Contributing</a> | <a href="#license">License</a></p>
+
+#+html: <h1>seml-mode.el</h1>
 
 * Overview
 
